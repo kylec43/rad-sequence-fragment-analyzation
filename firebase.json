@@ -7,7 +7,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": ".",
+    "public": "functions/public/",
     "ignore": [
       "firebase.json",
       "**/.*",
