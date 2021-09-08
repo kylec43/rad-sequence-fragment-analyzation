@@ -10,8 +10,8 @@ body {
 form {
     margin-left:auto;
     margin-right:auto;
-    width: 400px;
-    height: 380px;
+    width: 450px;
+    height: 450px;
     padding:30px;
     border: 1px solid rgba(0,0,0,.2);
     -moz-border-radius: 5px;
@@ -51,7 +51,7 @@ form {
     box-shadow: rgba(255,255,255,0.1) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
     text-shadow: #333333 0 1px 0;
     color: #e1e1e1;
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 .post-btn:hover {
@@ -65,6 +65,8 @@ form {
     background: -o-linear-gradient(top, #77b2b0, #416b68);
     background-image: -ms-linear-gradient(top, #77b2b0 0%, #416b68 100%);
     color: #fff;
+    margin-top: 30px;
+
  }
 
 .post-btn:active {
@@ -82,6 +84,7 @@ form {
     -webkit-box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
     -moz-box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
     box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
+    margin-top: 30px;
 }
 
 
