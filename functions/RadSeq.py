@@ -1,7 +1,7 @@
 import sys
 
 #This function will be responsible for fragmenting the genome
-def SliceGenome(genome, enzyme, probability):
+def FragmentGenome(genome, enzyme, probability):
     return
 
 
@@ -12,7 +12,7 @@ enzyme = sys.argv[2]
 probability = sys.arv[3]
 
 #Perform slicing, Get Fragments
-fragments = SliceGenome(genome, enzyme, probability)
+fragments = FragmentGenome(genome, enzyme, probability)
 
 
 #Return results

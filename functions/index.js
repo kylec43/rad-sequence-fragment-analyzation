@@ -28,13 +28,11 @@ app.post('/results', async (req, res) => {
     } else {
         probability = probability.toString();
     }
+
     //get restriction enzyme and genome from database
 
 
-    //call python script and perform fragment analysis of genome using the specified restriction enzyme 
-
-
-    //get results
+    //call python script to fragment the genome and get results
     var result = "";
 
     let options = {
