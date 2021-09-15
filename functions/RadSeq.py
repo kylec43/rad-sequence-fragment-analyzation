@@ -20,7 +20,6 @@ fragments = FragmentGenome(genome, enzyme, probability)
 
 
 
-
 #This is for testing purposes. print() will send the results back to the server
 results = [genome, enzyme, probability]
 print(f"Python script response: {results}")
