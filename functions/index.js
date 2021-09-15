@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const express = require('express');
 const Pages = require('./ejsConstants.js');
-const {PythonShell} = require('python-shell')
+const RadSeqAnalyzation = require('./radseq.js').RadSeqAnalyzation;
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', './ejsviews');
@@ -32,24 +32,11 @@ app.post('/results', async (req, res) => {
     //get restriction enzyme and genome from database
 
 
-    //call python script to fragment the genome and get results
-    var result = "";
-
-    let options = {
-        mode: 'text',
-        args: [genome, enzyme, probability]
-    };
-
-    const message = await new Promise((resolve, reject) => {
-        PythonShell.run('RadSeq.py', options,(err, results) => {
-          if (err) return reject(err);
-          return resolve(results);
-        });
-      });
-      result = message
+    //get analyzation results
+    let result = RadSeqAnalyzation(genome, enzyme, probability);
+    
     
     //post results
-    console.log(`TEST: ${result}`);
     return res.render(Pages.RESULTS_PAGE, {error:false, errorMessage:"", result: result});
 });
 
