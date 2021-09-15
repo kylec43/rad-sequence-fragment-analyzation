@@ -7,11 +7,11 @@ body {
     padding-top:100px;
 }
 
-form {
+.myForm{
     margin-left:auto;
     margin-right:auto;
     width: 450px;
-    height: 450px;
+    height: 580px;
     padding:30px;
     border: 1px solid rgba(0,0,0,.2);
     -moz-border-radius: 5px;
@@ -92,5 +92,10 @@ form {
     height: 40px;
     width: 300px;
     overflow: auto;
+    margin-bottom: 20px;
+}
+
+.myNumberInput
+{
     margin-bottom: 20px;
 }

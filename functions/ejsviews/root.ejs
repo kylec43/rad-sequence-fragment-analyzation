@@ -15,13 +15,17 @@
     <body>
         <link rel="stylesheet" type="text/css" href="css/form.css">
 
-        <form>
+        <form action="/login" style="position:absolute; top:0px; right:0px" method="get">
+            <input class="post-btn" style="font-size: 32; font-weight: bold; text-align: center;" type="submit" value="...."/>
+        </form>
+
+        <form action="/results" class="myForm" method="post">
             <div style="text-align:center">
                 <h1 style="margin-bottom: 40px; font-weight: bold;">RAD-Seq Fragment Analysis</h1>
 
                 <h4 style="font-weight: bold;">Genome</h4>
                 <div>
-                    <select class="myDropDown">
+                    <select class="myDropDown" name="genome" id="genome">
                         <option>Largemouth Bass</option>
                         <option>N/A</option>
                         <option>N/A</option>
@@ -30,7 +34,7 @@
 
                 <h4 style="font-weight: bold;">Restriction Enzyme</h4>
                 <div>
-                    <select class="myDropDown">
+                    <select class="myDropDown" name="enzyme" id="enzyme">
                         <option>AgeI</option>
                         <option>ApoI</option>
                         <option>BsrFI</option>
@@ -51,9 +55,27 @@
                         <option>SgrAI</option>
                     </select>
                 </div>
+
+                <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
+                <div>
+                    <input type="number" name="probability" id="probability" step="0.01" class="myNumberInput" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                </div>
+                <% if(error){ %>
+                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                <% } %>
                 <input name="submit" class="post-btn" type="submit" value="Get Analysis" />
             </div>
         </form>
+
+
+        <script>
+            function updateToFixed(){
+                let value = parseFloat(document.getElementById("probability").value);
+                if(!isNaN(value) && value >= 0.01 && value <= 1.00){
+                    document.getElementById("probability").value = value.toFixed(2);
+                }
+            }
+        </script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
     </body>
