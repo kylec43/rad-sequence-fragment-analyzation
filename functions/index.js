@@ -42,10 +42,43 @@ app.post('/results', async (req, res) => {
 
 
 app.get('/login', (req, res) => {
+    return res.render(Pages.SIGNIN_PAGE, {error:false, errorMessage:""});
+});
+
+app.post('/login', (req, res) => {
+    //check password
+
+    //if wrong, deny access
+
+    //if right, grant access
+    return res.render(Pages.ADMIN_PAGE, {error:false, errorMessage: ""});
+})
+
+
+
+
+
+app.get('/register', (req, res) => {
     return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage:""});
 });
 
-app.post('/admin', (req, res) => {
+app.post('/register', (req, res) => {
+    //check password
+
+    //if wrong, deny access
+
+    //if right, grant access
+    return res.render(Pages.ADMIN_PAGE, {error:false, errorMessage: ""});
+})
+
+
+
+
+app.get('/upload', (req, res) => {
+    return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage:""});
+});
+
+app.post('/upload', (req, res) => {
     //check password
 
     //if wrong, deny access
