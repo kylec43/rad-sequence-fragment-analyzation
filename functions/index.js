@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 const express = require('express');
 const Pages = require('./ejsConstants.js');
 const RadSeqAnalyzation = require('./radseq.js').RadSeqAnalyzation;
+const adminUtil = require('./adminUtil.js');
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', './ejsviews');
@@ -42,7 +43,7 @@ app.post('/results', async (req, res) => {
 
 
 app.get('/login', (req, res) => {
-    return res.render(Pages.SIGNIN_PAGE, {error:false, errorMessage:""});
+    return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage:""});
 });
 
 app.post('/login', (req, res) => {
@@ -51,7 +52,7 @@ app.post('/login', (req, res) => {
     //if wrong, deny access
 
     //if right, grant access
-    return res.render(Pages.ADMIN_PAGE, {error:false, errorMessage: ""});
+    return adminUtil.loginUser(req, res);
 })
 
 
@@ -59,16 +60,11 @@ app.post('/login', (req, res) => {
 
 
 app.get('/register', (req, res) => {
-    return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage:""});
+    return res.render(Pages.REGISTER_PAGE, {error:false, errorMessage:""});
 });
 
 app.post('/register', (req, res) => {
-    //check password
-
-    //if wrong, deny access
-
-    //if right, grant access
-    return res.render(Pages.ADMIN_PAGE, {error:false, errorMessage: ""});
+    return adminUtil.registerUser(req, res);
 })
 
 
