@@ -9,9 +9,8 @@ app.set('views', './ejsviews');
 
 exports.httpReq = functions.https.onRequest(app);
 
-
-app.get('/', (req, res) => {
-
+app.get('/', auth, (req, res) => {
+    console.log(req.user);
     return res.render(Pages.ROOT_PAGE, {error: false, errorMessage:""});
 });
 
@@ -65,7 +64,7 @@ app.get('/register', (req, res) => {
 
 app.post('/register', (req, res) => {
     return adminUtil.registerUser(req, res);
-})
+});
 
 
 
@@ -81,4 +80,13 @@ app.post('/upload', (req, res) => {
 
     //if right, grant access
     return res.render(Pages.ADMIN_PAGE, {error:false, errorMessage: ""});
-})
+});
+
+
+
+async function auth(req, res, next)
+{
+
+    req.user = adminUtil.getCurrentUser();
+    return next();
+}

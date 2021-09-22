@@ -22,13 +22,11 @@ const firebaseConfig = {
     appId: "1:882666194084:web:51cfa1dcae998ef47c9231",
     measurementId: "G-C33DL3DE4M"
 };
-  
+
 firebase.initializeApp(firebaseConfig);
 
 async function registerUser(req, res) 
 {
-
-    
     const email = req.body.email;
     const confirmEmail = req.body.confirmEmail;
     const password = req.body.password;
@@ -72,7 +70,12 @@ async function loginUser(req, res){
     }
 }
 
+function getCurrentUser(){
+    return firebase.auth().currentUser;
+}
+
 module.exports = {
     registerUser,
     loginUser,
+    getCurrentUser,
 };
