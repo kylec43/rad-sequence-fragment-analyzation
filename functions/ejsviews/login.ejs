@@ -12,18 +12,18 @@
     </head>
 
     <body style="background-color: rgba(210,210,210,1);">
-        <%- include ('partials/nav.ejs', {page: 'root'}) %>
+        <%- include ('partials/nav.ejs', {page: 'root'}, user) %>
 
         <script src="js/gotoLink.js"></script>
 
 
-        <form action="/login" class="myForm" method="post" style="height:400px">
+        <form action="/login" class="myForm" method="post" style="height:420px">
             <div style="text-align:center">
                 <h3 style="margin-bottom: 30px; font-weight: bold;">Log In</h1>
                 <% if (error) { %>
                     <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
                 <% } %>    
-                <input type="email" class="form-control" name="password" id="password" placeholder="Email Address" style="margin-top: 20px;" required>
+                <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px;" required>
                 <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-top: 20px;" required>
             </div>
             <a href="/forgotPassword">Forgot Password?</a>
