@@ -11,7 +11,7 @@ admin.initializeApp({
 
 
 //initialize firebase
-const firebase = require('firebase');
+var firebase = require('./firebase');
 
 const firebaseConfig = {
     apiKey: "AIzaSyBF_dfisH-WtNUO4CVMJTEtPqE4FoITrog",
