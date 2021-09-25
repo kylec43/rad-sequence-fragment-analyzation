@@ -7,11 +7,10 @@ var admin = require('firebase-admin');
 var serviceAccount = require("./rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
-  });
+});
 
-
-//initialize firebase
-var firebase = require('./firebase');
+//initialize firebase app
+const initializeApp = require("firebase/app").initializeApp;
 
 const firebaseConfig = {
     apiKey: "AIzaSyBF_dfisH-WtNUO4CVMJTEtPqE4FoITrog",
@@ -23,7 +22,11 @@ const firebaseConfig = {
     measurementId: "G-C33DL3DE4M"
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const getAuth = require("firebase/auth").getAuth;
+const onAuthStateChanged = require("firebase/auth").onAuthStateChanged;
+const signInWithEmailAndPassword = require('firebase/auth').signInWithEmailAndPassword;
+const signOut = require('firebase/auth').signOut;
 
 async function registerUser(req, res) 
 {
@@ -48,12 +51,12 @@ async function registerUser(req, res)
             throw new Error(errorMessage);
         } else {
             
-            await admin.auth().createUser({email, password});
-            return res.render(Pages.ROOT_PAGE, {error: false, errorMessage: ""});
+            req.user = await admin.auth().createUser({email, password});
+            return res.redirect('/');
         }
 
     } catch (e) {
-        return res.render(Pages.REGISTER_PAGE, {error: true, errorMessage: e});
+        return res.render(Pages.REGISTER_PAGE, {error: true, errorMessage: e, user: req.user});
     }
 
 }
@@ -62,20 +65,50 @@ async function loginUser(req, res){
     let email = req.body.email;
     let password = req.body.password;
 
-    try {
-        const userRecord = await admin.auth().signInWithEmailAndPassword(email, password);
-        return res.render(Pages.ROOT_PAGE, {error: false, errorMessage: ""});
-    } catch(e) {
-        return res.render(Pages.LOGIN_PAGE, {error: true, errorMessage: e});
-    }
+    const auth = getAuth();
+
+    console.log(`email ${email} password ${password}`);
+    await signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        return res.redirect('/');
+    })
+    .catch((e) => {
+        return res.render(Pages.LOGIN_PAGE, {error: true, errorMessage: e, user: req.user});
+    });
+    
 }
 
-function getCurrentUser(){
-    return firebase.auth().currentUser;
+async function logoutUser(req, res){
+
+    const auth = getAuth();
+
+    await signOut(auth)
+    .then(() => {
+        return res.redirect('/login');
+    })
+    .catch((e) => {
+        return res.render(Pages.LOGIN_PAGE, {error: true, errorMessage: e, user: req.user});
+    });
+    
+}
+
+async function getCurrentUser(){
+    
+   const auth = getAuth()
+   return auth.currentUser;
+
+}
+
+async function userSignedIn(){
+    const auth = getAuth();
+    let currentUser = auth.currentUser;
+    return currentUser ? true : false;
 }
 
 module.exports = {
     registerUser,
     loginUser,
     getCurrentUser,
+    userSignedIn,
+    logoutUser,
 };
