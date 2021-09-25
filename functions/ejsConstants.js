@@ -4,4 +4,5 @@ module.exports = {
     LOGIN_PAGE: 'login.ejs',
     ADMIN_PAGE: 'admin.ejs',
     REGISTER_PAGE: 'register.ejs',
+    UPLOAD_PAGE: 'upload.ejs',
 };

@@ -14,7 +14,7 @@
 
     <body style="background-color: rgba(210,210,210,1);">
 
-        <%- include ('partials/nav.ejs', {page: 'root'}) %>
+        <%- include ('partials/nav.ejs', {page: 'root'}, user) %>
 
         <form action="/results" class="myForm" method="post">
             <div style="text-align:center">
