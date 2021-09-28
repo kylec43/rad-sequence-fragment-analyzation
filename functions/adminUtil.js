@@ -52,7 +52,7 @@ async function registerUser(req, res)
         } else {
             
             req.user = await admin.auth().createUser({email, password});
-            return res.redirect('/');
+            return await loginUser(req, res);
         }
 
     } catch (e) {

@@ -13,9 +13,11 @@
         <li>
           <button class="navButton" onclick="gotoLink('/')">Home</button>
         </li>
+        <% if (user) { %>
         <li>
           <button class="navButton" onclick="gotoLink('/upload')">Upload</button>
         </li>
+        <% } %>
       </ul>
       <ul class="navbar-nav ml-auto">
         <% if(!user) { %>
