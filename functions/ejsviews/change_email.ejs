@@ -14,24 +14,21 @@
     <body style="background-color: rgba(210,210,210,1);">
         <%- include ('partials/nav.ejs', {page: 'root'}, user) %>
 
-        <script src="js/gotoLink.js"></script>
 
 
-        <form action="/login" class="myForm" method="post">
+        <form action="/change_email" class="myForm" method="post">
             <div style="text-align:center">
-                <h3 style="margin-bottom: 30px; font-weight: bold;">Log In</h1>
+                <h3 style="margin-bottom: 30px; font-weight: bold;">Change Email</h1>
                 <% if (error) { %>
                     <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                <% } %>    
-                <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px;" required>
-                <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-top: 20px;" required>
+                <% } %>
+
+                <h5 style="margin-top: 20px;">Current Email</h5>
+                <input type="email" class="form-control" name="currentEmail" id="currentEmail" value=<%= user.email %> style="margin-top: 10px;" disabled>
+                <input type="email" class="form-control" name="newEmail" id="newEmail" placeholder="New Email Address" style="margin-top: 30px;" required>
+                <input type="email" class="form-control" name="confirmNewEmail" id="confirmNewEmail" placeholder="Confirm New Email Address" style="margin-top: 20px;" required>
+                <input name="submit" class="post-btn" type="submit" value="Change" style="margin-top: 25px; font-weight: bold;"/>
             </div>
-            <a href="/forgot_password">Forgot Password?</a>
-            <div style="text-align: center;">
-                <input name="submit" class="post-btn" type="submit" value="Log In" style="margin-top: 15px; font-weight: bold;"/>
-            </div>
-            <hr style="border-top: 3px solid #bbb;";>
-            <button style="width:380px; margin-top: 10px;" onclick="gotoLink('/register')" type="button">Create a new account</button>
         </form>
 
 

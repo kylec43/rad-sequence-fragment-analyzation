@@ -77,7 +77,37 @@ app.post('/upload', authAndRedirectLogIn, (req, res) => {
 });
 
 
-app.get('/logout', auth, async (req, res) => {
+app.get('/change_email', authAndRedirectLogIn, async (req, res) => {
+    return res.render(Pages.CHANGE_EMAIL_PAGE, {error:false, errorMessage: "", user: req.user});
+});
+
+app.post('/change_email', authAndRedirectLogIn, async (req, res) => {
+    return await adminUtil.changeEmail(req, res);
+});
+
+
+app.get('/change_password', authAndRedirectLogIn, async (req, res) => {
+    return res.render(Pages.CHANGE_PASSWORD_PAGE, {error:false, errorMessage: "", user: req.user});
+});
+
+app.post('/change_password', authAndRedirectLogIn, async (req, res) => {
+    return await adminUtil.changePassword(req, res);
+});
+
+
+app.get('/forgot_password', auth, async (req, res) => {
+    return res.render(Pages.FORGOT_PASSWORD_PAGE, {error:false, errorMessage: "", user: req.user});
+});
+
+app.post('/forgot_password', auth, async (req, res) => {
+    return await adminUtil.sendPasswordResetLink(req, res);
+});
+
+
+
+
+
+app.get('/logout', authAndRedirectLogIn, async (req, res) => {
     return await adminUtil.logoutUser(req, res);
 });
 

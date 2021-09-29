@@ -27,15 +27,21 @@ const getAuth = require("firebase/auth").getAuth;
 const onAuthStateChanged = require("firebase/auth").onAuthStateChanged;
 const signInWithEmailAndPassword = require('firebase/auth').signInWithEmailAndPassword;
 const signOut = require('firebase/auth').signOut;
+const updateEmail = require('firebase/auth').updateEmail;
+const updatePassword = require('firebase/auth').updatePassword;
+const sendPasswordResetEmail = require('firebase/auth').sendPasswordResetEmail;
+const emailAuthProvider = require("firebase/auth").EmailAuthProvider;
+const reauthenticateWithCredential = require('firebase/auth').reauthenticateWithCredential;
 
 async function registerUser(req, res) 
 {
+    
     const email = req.body.email;
     const confirmEmail = req.body.confirmEmail;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
 
-
+    
     try {
         let errorMessage = "";
         if(email !== confirmEmail){
@@ -57,6 +63,77 @@ async function registerUser(req, res)
 
     } catch (e) {
         return res.render(Pages.REGISTER_PAGE, {error: true, errorMessage: e, user: req.user});
+    }
+
+}
+
+async function changeEmail(req, res) 
+{
+    const newEmail = req.body.newEmail;
+    const confirmNewEmail = req.body.confirmNewEmail;
+
+
+
+    try {
+
+        let errorMessage = "";
+        if(newEmail !== confirmNewEmail){
+            error = true;
+            errorMessage += "• Email and Confirmation Email do not match";
+        }
+
+        if(errorMessage.length > 0){
+            throw new Error(errorMessage);
+        } else {
+            
+            await updateEmail(getAuth().currentUser, newEmail);
+            return res.render(Pages.CHANGE_EMAIL_SUCCESS_PAGE, {error:false, errorMessage: "", user: req.user});
+        }
+
+    } catch (e) {
+        return res.render(Pages.CHANGE_EMAIL_PAGE, {error: true, errorMessage: e, user: req.user});
+    }
+
+}
+
+
+async function sendPasswordResetLink(req, res) 
+{
+    const email = req.body.email;
+    
+    await sendPasswordResetEmail(getAuth(), email).then(()=>{
+        return res.render(Pages.FORGOT_PASSWORD_LINK_SENT_PAGE, {error: false, errorMessage: "", user: req.user});
+    }).catch(e => {
+        return res.render(Pages.FORGOT_PASSWORD_PAGE, {error: true, errorMessage: e, user: req.user});
+    });
+}
+
+
+async function changePassword(req, res) 
+{
+    const newPassword = req.body.newPassword;
+    const confirmNewPassword = req.body.confirmNewPassword;
+
+
+    
+    try {
+
+        let errorMessage = "";
+        if(newPassword !== confirmNewPassword){
+            error = true;
+            errorMessage += "• New password and New password confirmation do not match";
+        }
+
+        if(errorMessage.length > 0){
+            throw new Error(errorMessage);
+        } else {
+            
+            await updatePassword(getAuth().currentUser, newPassword);
+            return res.render(Pages.CHANGE_PASSWORD_SUCCESS_PAGE, {error:false, errorMessage: "", user: req.user});
+        }
+
+    } catch (e) {
+        return res.render(Pages.CHANGE_PASSWORD_PAGE, {error: true, errorMessage: e, user: req.user});
     }
 
 }
@@ -111,4 +188,7 @@ module.exports = {
     getCurrentUser,
     userSignedIn,
     logoutUser,
+    changeEmail,
+    changePassword,
+    sendPasswordResetLink,
 };

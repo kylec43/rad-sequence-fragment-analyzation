@@ -10,8 +10,8 @@ body {
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
-    width: 450px;
-    height: 580px;
+    width: auto;
+    height: auto;
     padding:30px;
     border: 1px solid rgb(200, 200, 200);
     border-radius: 10px;
