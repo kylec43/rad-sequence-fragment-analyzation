@@ -1,7 +1,4 @@
-
-
 <link rel="stylesheet" type="text/css" href="css/nav.css">
-<script src="js/gotoLink.js"></script>
 
 <nav class="navbar navbar-expand-lg" style = "position:fixed; top: 0px; background:rgb(226, 226, 226);">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
@@ -11,21 +8,21 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li>
-          <button class="navButton" onclick="gotoLink('/')">Home</button>
+          <a class="navButton" href='/'>Home</a>
         </li>
         <% if (user) { %>
         <li>
-          <button class="navButton" onclick="gotoLink('/upload')">Upload</button>
+          <a class="navButton" href='/upload'>Upload</a>
         </li>
         <% } %>
       </ul>
       <ul class="navbar-nav ml-auto">
         <% if(!user) { %>
           <li>
-            <button class="navButton" onclick="gotoLink('/register')">Register</button>
+            <a class="navButton" href='/register'>Register</a>
           </li>
           <li>
-            <button class="navButton" onclick="gotoLink('/login')">Log In</button>
+            <a class="navButton" href='/login'>Log In</a>
           </li>
         <% } else { %>
           <li>

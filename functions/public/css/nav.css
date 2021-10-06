@@ -5,6 +5,9 @@ nav{
 }
 
 .navButton{
+    display:inline-block;
+    text-align: center;
+    line-height: 50px;
     width: 120px;
     height: 50px;
     background: linear-gradient(#6da5a3, #395f5d);

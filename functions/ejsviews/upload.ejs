@@ -2,8 +2,74 @@
 <html>
     <head>
         <meta charset="utf-8">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+        <!--My CSS-->
+        <link rel="stylesheet" type="text/css" href="css/form.css">
+
+        <title>RAD-Seq</title>
     </head>
-    <body>
-        <h1>Upload Page</h1>
+
+    <body style="background-color: rgba(210,210,210,1);">
+
+        <%- include ('partials/nav.ejs', {page: 'root'}, user) %>
+
+        <form class="myForm" action="/upload" method="POST">
+            <div style="text-align:center">
+                <h3 style="font-weight: bold;">Upload</h3>
+            </div>
+            <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;">Upload Type: </label>
+            <select id="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
+                <option>Genome</option>
+                <option>Restriction Enzyme</option>
+            </select>
+            <br>
+
+            <label style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Name:</label>
+            <input style="width: 300px" type="text">
+            <br>
+            <label id="genomeFileLabel" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
+            <input id="genomeFileInput" type="file">
+            <label id="rsLabel" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" hidden>Restriction Site</label>
+            <input id="rsInput" style="width: 300px" type="text" hidden>
+            <br>
+
+            <input name="type" hidden>
+
+            <div style="text-align: center;">
+                <input type="submit" class="post-btn" style="font-weight: bold" value="Upload">
+            </div>
+        </form>
+
+        <script>
+            var selectType = document.getElementById("selectType");
+            var rsLabel = document.getElementById("rsLabel");
+            var rsInput = document.getElementById("rsInput");
+            var genomeFileLabel = document.getElementById("genomeFileLabel");
+            var genomeFileInput = document.getElementById("genomeFileInput");
+            var type = document.getElementById("type");
+
+            function onTypeChange(){
+                let value = selectType.value;
+
+                if(value === "Genome"){
+                    rsLabel.hidden = true;
+                    rsInput.hidden = true;
+                    genomeFileLabel.hidden = false;
+                    genomeFileInput.hidden = false;
+                    type.value = "Genome";
+                } else if(value === "Restriction Enzyme") {
+                    genomeFileLabel.hidden = true;
+                    genomeFileInput.hidden = true;
+                    rsLabel.hidden = false;
+                    rsInput.hidden = false;
+                    type.value = "Restriction Enzyme";
+                }
+            }
+        </script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
     </body>
 </html>
