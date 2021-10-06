@@ -1,10 +1,10 @@
-var Pages = require('./ejsConstants.js'); 
+var Pages = require('../model/ejs_constants.js'); 
 
 
 //initialize firebase admin
 var admin = require('firebase-admin');
 
-var serviceAccount = require("./rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
+var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -180,6 +180,11 @@ async function userSignedIn(){
     const auth = getAuth();
     let currentUser = auth.currentUser;
     return currentUser ? true : false;
+}
+
+
+async function uploadGenome(){
+    
 }
 
 module.exports = {

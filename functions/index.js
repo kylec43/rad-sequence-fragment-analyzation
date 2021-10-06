@@ -1,11 +1,11 @@
 const functions = require("firebase-functions");
 const express = require('express');
-const Pages = require('./ejsConstants.js');
-const RadSeqAnalyzation = require('./radseq.js').RadSeqAnalyzation;
-const adminUtil = require('./adminUtil.js');
+const Pages = require('./model/ejs_constants.js');
+const FragmentAnalyzer = require('./model/dna_fragment_analyzer');
+const FirebaseController = require('./controller/firebase_controller.js');
 const app = express();
 app.set('view engine', 'ejs');
-app.set('views', './ejsviews');
+app.set('views', './view');
 
 exports.httpReq = functions.https.onRequest(app);
 
@@ -32,8 +32,7 @@ app.post('/results', auth, async (req, res) => {
 
 
     //get analyzation results
-    let result = RadSeqAnalyzation(genome, enzyme, probability);
-    
+    let result = 0;    
     
     //post results
     return res.render(Pages.RESULTS_PAGE, {error:false, errorMessage:"", result: result, user: req.user});
@@ -45,7 +44,7 @@ app.get('/login', authAndRedirectRoot, (req, res) => {
 });
 
 app.post('/login', authAndRedirectRoot, (req, res) => {
-    return adminUtil.loginUser(req, res);
+    return FirebaseController.loginUser(req, res);
 })
 
 
@@ -57,7 +56,7 @@ app.get('/register', authAndRedirectRoot, (req, res) => {
 });
 
 app.post('/register', authAndRedirectRoot, (req, res) => {
-    return adminUtil.registerUser(req, res);
+    return FirebaseController.registerUser(req, res);
 });
 
 
@@ -82,7 +81,7 @@ app.get('/change_email', authAndRedirectLogIn, async (req, res) => {
 });
 
 app.post('/change_email', authAndRedirectLogIn, async (req, res) => {
-    return await adminUtil.changeEmail(req, res);
+    return await FirebaseController.changeEmail(req, res);
 });
 
 
@@ -91,7 +90,7 @@ app.get('/change_password', authAndRedirectLogIn, async (req, res) => {
 });
 
 app.post('/change_password', authAndRedirectLogIn, async (req, res) => {
-    return await adminUtil.changePassword(req, res);
+    return await FirebaseController.changePassword(req, res);
 });
 
 
@@ -100,7 +99,7 @@ app.get('/forgot_password', auth, async (req, res) => {
 });
 
 app.post('/forgot_password', auth, async (req, res) => {
-    return await adminUtil.sendPasswordResetLink(req, res);
+    return await FirebaseController.sendPasswordResetLink(req, res);
 });
 
 
@@ -108,14 +107,14 @@ app.post('/forgot_password', auth, async (req, res) => {
 
 
 app.get('/logout', authAndRedirectLogIn, async (req, res) => {
-    return await adminUtil.logoutUser(req, res);
+    return await FirebaseController.logoutUser(req, res);
 });
 
 
 
 async function auth(req, res, next)
 {
-    req.user = await adminUtil.getCurrentUser();
+    req.user = await FirebaseController.getCurrentUser();
     console.log('begin');
     if(req.user){
         console.log(req.user.email);
@@ -127,7 +126,7 @@ async function auth(req, res, next)
 
 async function authAndRedirectLogIn(req, res, next)
 {
-    req.user = await adminUtil.getCurrentUser();
+    req.user = await FirebaseController.getCurrentUser();
     
     if(req.user){
         return next();
@@ -140,7 +139,7 @@ async function authAndRedirectLogIn(req, res, next)
 
 async function authAndRedirectRoot(req, res, next){
         
-    req.user = await adminUtil.getCurrentUser();
+    req.user = await FirebaseController.getCurrentUser();
     
     if(req.user){
         res.redirect('/');
