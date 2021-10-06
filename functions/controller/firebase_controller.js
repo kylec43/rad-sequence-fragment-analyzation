@@ -1,12 +1,13 @@
 var Pages = require('../model/ejs_constants.js'); 
+const FirebaseAuth = require("firebase/auth");
 
 
 //initialize firebase admin
-var admin = require('firebase-admin');
+var FirebaseAdmin = require('firebase-admin');
 
 var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+FirebaseAdmin.initializeApp({
+    credential: FirebaseAdmin.credential.cert(serviceAccount)
 });
 
 //initialize firebase app
@@ -21,16 +22,8 @@ const firebaseConfig = {
     appId: "1:882666194084:web:51cfa1dcae998ef47c9231",
     measurementId: "G-C33DL3DE4M"
 };
+
 const app = initializeApp(firebaseConfig);
-const getAuth = require("firebase/auth").getAuth;
-const onAuthStateChanged = require("firebase/auth").onAuthStateChanged;
-const signInWithEmailAndPassword = require('firebase/auth').signInWithEmailAndPassword;
-const signOut = require('firebase/auth').signOut;
-const updateEmail = require('firebase/auth').updateEmail;
-const updatePassword = require('firebase/auth').updatePassword;
-const sendPasswordResetEmail = require('firebase/auth').sendPasswordResetEmail;
-const emailAuthProvider = require("firebase/auth").EmailAuthProvider;
-const reauthenticateWithCredential = require('firebase/auth').reauthenticateWithCredential;
 
 async function registerUser(req, res) 
 {
@@ -55,8 +48,7 @@ async function registerUser(req, res)
         if(errorMessage.length > 0){
             throw new Error(errorMessage);
         } else {
-            
-            req.user = await admin.auth().createUser({email, password});
+            req.user = await FirebaseAuth.createUserWithEmailAndPassword(FirebaseAuth.getAuth(), email, password);
             return await loginUser(req, res);
         }
 
@@ -71,8 +63,6 @@ async function changeEmail(req, res)
     const newEmail = req.body.newEmail;
     const confirmNewEmail = req.body.confirmNewEmail;
 
-
-
     try {
 
         let errorMessage = "";
@@ -85,7 +75,7 @@ async function changeEmail(req, res)
             throw new Error(errorMessage);
         } else {
             
-            await updateEmail(getAuth().currentUser, newEmail);
+            await FirebaseAuth.updateEmail(FirebaseAuth.getAuth().currentUser, newEmail);
             return res.render(Pages.CHANGE_EMAIL_SUCCESS_PAGE, {error:false, errorMessage: "", user: req.user});
         }
 
@@ -99,8 +89,7 @@ async function changeEmail(req, res)
 async function sendPasswordResetLink(req, res) 
 {
     const email = req.body.email;
-    
-    await sendPasswordResetEmail(getAuth(), email).then(()=>{
+    await FirebaseAuth.sendPasswordResetEmail(FirebaseAuth.getAuth(), email).then(()=>{
         return res.render(Pages.FORGOT_PASSWORD_LINK_SENT_PAGE, {error: false, errorMessage: "", user: req.user});
     }).catch(e => {
         return res.render(Pages.FORGOT_PASSWORD_PAGE, {error: true, errorMessage: e, user: req.user});
@@ -113,8 +102,6 @@ async function changePassword(req, res)
     const newPassword = req.body.newPassword;
     const confirmNewPassword = req.body.confirmNewPassword;
 
-
-    
     try {
 
         let errorMessage = "";
@@ -127,7 +114,7 @@ async function changePassword(req, res)
             throw new Error(errorMessage);
         } else {
             
-            await updatePassword(getAuth().currentUser, newPassword);
+            await FirebaseAuth.updatePassword(FirebaseAuth.getAuth().currentUser, newPassword);
             return res.render(Pages.CHANGE_PASSWORD_SUCCESS_PAGE, {error:false, errorMessage: "", user: req.user});
         }
 
@@ -141,10 +128,8 @@ async function loginUser(req, res){
     let email = req.body.email;
     let password = req.body.password;
 
-    const auth = getAuth();
-
     console.log(`email ${email} password ${password}`);
-    await signInWithEmailAndPassword(auth, email, password)
+    await FirebaseAuth.signInWithEmailAndPassword(FirebaseAuth.getAuth(), email, password)
     .then((userCredential) => {
         return res.redirect('/');
     })
@@ -156,9 +141,7 @@ async function loginUser(req, res){
 
 async function logoutUser(req, res){
 
-    const auth = getAuth();
-
-    await signOut(auth)
+    await FirebaseAuth.getAuth().signOut()
     .then(() => {
         return res.redirect('/login');
     })
@@ -170,14 +153,12 @@ async function logoutUser(req, res){
 
 async function getCurrentUser(){
     
-   const auth = getAuth()
-   return auth.currentUser;
+   return FirebaseAuth.getAuth().currentUser;
 
 }
 
 async function userSignedIn(){
-    const auth = getAuth();
-    let currentUser = auth.currentUser;
+    let currentUser = FirebaseAuth.getAuth().currentUser;
     return currentUser ? true : false;
 }
 
