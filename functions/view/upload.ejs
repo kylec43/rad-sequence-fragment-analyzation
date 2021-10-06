@@ -16,27 +16,27 @@
 
         <%- include ('partials/nav.ejs', {page: 'root'}, user) %>
 
-        <form class="myForm" action="/upload" method="POST">
+        <form class="myForm" action="/upload" method="POST" onsubmit="onSubmit()">
             <div style="text-align:center">
                 <h3 style="font-weight: bold;">Upload</h3>
             </div>
-            <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;">Upload Type: </label>
-            <select id="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
+            <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;" for="selectType">Upload Type: </label>
+            <select id="selectType" name="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
                 <option>Genome</option>
                 <option>Restriction Enzyme</option>
             </select>
             <br>
 
-            <label style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Name:</label>
-            <input style="width: 300px" type="text">
+            <label style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" for="name">Name:</label>
+            <input style="width: 300px" id="name" name="name" type="text">
             <br>
-            <label id="genomeFileLabel" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
+            <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
             <input id="genomeFileInput" type="file">
-            <label id="rsLabel" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" hidden>Restriction Site</label>
-            <input id="rsInput" style="width: 300px" type="text" hidden>
+            <label id="rsLabel" for="rsInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" hidden>Restriction Site:</label>
+            <input id="rsInput" name="rsInput" style="width: 300px" type="text" hidden>
             <br>
 
-            <input name="type" hidden>
+            <input name="type" value="Genome" id="type" name="type" hidden>
 
             <div style="text-align: center;">
                 <input type="submit" class="post-btn" style="font-weight: bold" value="Upload">
@@ -68,6 +68,7 @@
                     type.value = "Restriction Enzyme";
                 }
             }
+
         </script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

@@ -66,13 +66,13 @@ app.get('/upload', authAndRedirectLogIn, (req, res) => {
     return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user});
 });
 
-app.post('/upload', authAndRedirectLogIn, (req, res) => {
-    //check password
-
-    //if wrong, deny access
-
-    //if right, grant access
-    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage: "", user: req.user});
+app.post('/upload', authAndRedirectLogIn, async (req, res) => {
+    
+    if(req.body.type === "Genome"){
+        return await FirebaseController.uploadGenome(req, res);
+    } else {
+        return await FirebaseController.uploadRestrictionEnzyme(req, res);
+    }
 });
 
 

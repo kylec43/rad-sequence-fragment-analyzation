@@ -21,7 +21,6 @@ const firebaseConfig = {
     appId: "1:882666194084:web:51cfa1dcae998ef47c9231",
     measurementId: "G-C33DL3DE4M"
 };
-
 const app = initializeApp(firebaseConfig);
 const getAuth = require("firebase/auth").getAuth;
 const onAuthStateChanged = require("firebase/auth").onAuthStateChanged;
@@ -183,7 +182,11 @@ async function userSignedIn(){
 }
 
 
-async function uploadGenome(){
+async function uploadGenome(req, res){
+
+}
+
+async function uploadRestrictionEnzyme(req, res){
     
 }
 
