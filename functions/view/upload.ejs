@@ -10,13 +10,18 @@
         <link rel="stylesheet" type="text/css" href="css/form.css">
 
         <title>RAD-Seq</title>
+
     </head>
 
     <body style="background-color: rgba(210,210,210,1);">
 
+
+        <script type="module" src="js/init_firebase.js"></script>
+
+
         <%- include ('partials/nav.ejs', {page: 'upload'}, user) %>
 
-        <form class="myForm" action="/upload" method="POST" onsubmit="onSubmit()">
+        <form class="myForm" method="POST">
             <div style="text-align:center">
                 <h3 style="font-weight: bold;">Upload</h3>
             </div>
@@ -28,7 +33,7 @@
             <br>
 
             <label style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" for="name">Name:</label>
-            <input style="width: 300px" id="name" name="name" type="text">
+            <input style="width: 300px" id="selectionName" name="selectionName" type="text">
             <br>
             <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
             <input id="genomeFileInput" name="genomeFileInput" type="file">
@@ -39,7 +44,7 @@
             <input name="type" value="Genome" id="type" name="type" hidden>
 
             <div style="text-align: center;">
-                <input type="submit" class="post-btn" style="font-weight: bold" value="Upload">
+                <input type="button" id="submitButton" class="post-btn" style="font-weight: bold" value="Upload">
             </div>
         </form>
 
@@ -50,7 +55,9 @@
             var genomeFileLabel = document.getElementById("genomeFileLabel");
             var genomeFileInput = document.getElementById("genomeFileInput");
             var type = document.getElementById("type");
-
+            var selectionName = document.getElementById("selectionName");
+            var GENOME_FOLDER = "genomes/" + '<%= user.uid%>' + "/"
+            var DOC_NAME = '<%= user.uid%>';
             function onTypeChange(){
                 let value = selectType.value;
 
@@ -70,7 +77,11 @@
             }
 
         </script>
+
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+        <script type="module" src="js/upload_data.js"></script>
+
+
     </body>
 </html>
