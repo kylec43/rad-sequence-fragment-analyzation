@@ -164,11 +164,19 @@ async function userSignedIn(){
 
 
 async function uploadGenome(req, res){
+    let name = req.body.name;
+    let genomeFile = req.body.genomeFileInput;
+    console.log(`${name} ${JSON.stringify(genomeFile)}`);
 
+    return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
 }
 
 async function uploadRestrictionEnzyme(req, res){
-    
+    let name = req.body.name;
+    let restrictionSite = req.body.rsInput;
+    console.log(`${name} ${restrictionSite1}`);
+
+    return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
 }
 
 module.exports = {
@@ -180,4 +188,6 @@ module.exports = {
     changeEmail,
     changePassword,
     sendPasswordResetLink,
+    uploadGenome,
+    uploadRestrictionEnzyme,
 };

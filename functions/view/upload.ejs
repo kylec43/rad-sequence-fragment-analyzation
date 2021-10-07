@@ -14,7 +14,7 @@
 
     <body style="background-color: rgba(210,210,210,1);">
 
-        <%- include ('partials/nav.ejs', {page: 'root'}, user) %>
+        <%- include ('partials/nav.ejs', {page: 'upload'}, user) %>
 
         <form class="myForm" action="/upload" method="POST" onsubmit="onSubmit()">
             <div style="text-align:center">
@@ -31,7 +31,7 @@
             <input style="width: 300px" id="name" name="name" type="text">
             <br>
             <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
-            <input id="genomeFileInput" type="file">
+            <input id="genomeFileInput" name="genomeFileInput" type="file">
             <label id="rsLabel" for="rsInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" hidden>Restriction Site:</label>
             <input id="rsInput" name="rsInput" style="width: 300px" type="text" hidden>
             <br>

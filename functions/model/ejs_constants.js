@@ -1,5 +1,5 @@
 module.exports = {
-    ROOT_PAGE: 'root.ejs', 
+    HOME_PAGE: 'home.ejs', 
     RESULTS_PAGE: 'results.ejs', 
     LOGIN_PAGE: 'login.ejs',
     ADMIN_PAGE: 'admin.ejs',

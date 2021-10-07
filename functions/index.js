@@ -10,7 +10,7 @@ app.set('views', './view');
 exports.httpReq = functions.https.onRequest(app);
 
 app.get('/', auth, (req, res) => {
-    return res.render(Pages.ROOT_PAGE, {error: false, errorMessage:"", user: req.user});
+    return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user});
 });
 
 
@@ -23,7 +23,7 @@ app.post('/results', auth, async (req, res) => {
     probability = parseFloat(probability);
 
     if(isNaN(probability) || probability < 0.01 || probability > 1.00){
-        return res.render(Pages.ROOT_PAGE, {error:true, errorMessage:"Invalid Probability: Min Value=0.01, Max Value=1.00", user: req.user});
+        return res.render(Pages.HOME_PAGE, {error:true, errorMessage:"Invalid Probability: Min Value=0.01, Max Value=1.00", user: req.user});
     } else {
         probability = probability.toString();
     }
@@ -39,11 +39,11 @@ app.post('/results', auth, async (req, res) => {
 });
 
 
-app.get('/login', authAndRedirectRoot, (req, res) => {
+app.get('/login', authAndRedirectHome, (req, res) => {
     return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage:"", user: req.user});
 });
 
-app.post('/login', authAndRedirectRoot, (req, res) => {
+app.post('/login', authAndRedirectHome, (req, res) => {
     return FirebaseController.loginUser(req, res);
 })
 
@@ -51,11 +51,11 @@ app.post('/login', authAndRedirectRoot, (req, res) => {
 
 
 
-app.get('/register', authAndRedirectRoot, (req, res) => {
+app.get('/register', authAndRedirectHome, (req, res) => {
     return res.render(Pages.REGISTER_PAGE, {error:false, errorMessage:"", user: req.user});
 });
 
-app.post('/register', authAndRedirectRoot, (req, res) => {
+app.post('/register', authAndRedirectHome, (req, res) => {
     return FirebaseController.registerUser(req, res);
 });
 
@@ -137,7 +137,7 @@ async function authAndRedirectLogIn(req, res, next)
     }
 }
 
-async function authAndRedirectRoot(req, res, next){
+async function authAndRedirectHome(req, res, next){
         
     req.user = await FirebaseController.getCurrentUser();
     
