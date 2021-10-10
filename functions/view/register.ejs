@@ -17,19 +17,21 @@
     <body style="background-color: rgba(210,210,210,1);">
         <%- include ('partials/nav.ejs', {page: 'register'}, user) %>
 
-        <form action="/register" class="myForm" method="post">
-            <div style="text-align:center">
-                <h3 style="margin-bottom: 30px; font-weight: bold;">Register</h1>
-                <% if (error) { %>
-                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                <% } %>    
-                <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px; width: 400px;" required>
-                <input type="email" class="form-control" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Address" style="margin-top: 20px; width: 400px;" required>
-                <input type="password" class="form-control" name="password" id="password" placeholder="Password" minlength="6" style="margin-top: 20px; width: 400px;" required>
-                <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" minlength="6" placeholder="Confirm Password" style="margin-top: 20px; width: 400px;" required>
-                <input name="submit" class="post-btn" type="submit" value="Register" style="margin-top: 25px; font-weight: bold;"/>
-            </div>
-        </form>
+        <div style="text-align: center;">
+            <form action="/register" class="myForm" method="post">
+                <div style="text-align:center">
+                    <h3 style="margin-bottom: 30px; font-weight: bold;">Register</h1>
+                    <% if (error) { %>
+                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                    <% } %>    
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px; width: 400px;" required>
+                    <input type="email" class="form-control" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Address" style="margin-top: 20px; width: 400px;" required>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" minlength="6" style="margin-top: 20px; width: 400px;" required>
+                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" minlength="6" placeholder="Confirm Password" style="margin-top: 20px; width: 400px;" required>
+                    <input name="submit" class="post-btn" type="submit" value="Register" style="margin-top: 25px; font-weight: bold;"/>
+                </div>
+            </form>
+        </div>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

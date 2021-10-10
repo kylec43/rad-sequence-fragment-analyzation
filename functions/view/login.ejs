@@ -18,25 +18,26 @@
         <%- include ('partials/nav.ejs', {page: 'login'}, user) %>
 
 
-
-        <form action="/login" class="myForm" method="post">
-            <div style="text-align:center">
-                <h3 style="margin-bottom: 30px; font-weight: bold;">Log In</h1>
-                <% if (error) { %>
-                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                <% } %>    
-                <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px; width: 400px;" required>
-                <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-top: 20px; width: 400px;" required>
-            </div>
-            <a href="/forgot_password">Forgot Password?</a>
-            <div style="text-align: center;">
-                <input name="submit" class="post-btn" type="submit" value="Log In" style="margin-top: 15px; font-weight: bold;"/>
-            </div>
-            <hr style="border-top: 3px solid #bbb;";>
-            <div style="text-align: center;">
-                <a style="margin-top: 10px;" href='/register' type="button">Create a new account</a>
-            </div>
-        </form>
+        <div style="text-align: center;">
+            <form action="/login" class="myForm" method="post">
+                <div style="text-align:center">
+                    <h3 style="margin-bottom: 30px; font-weight: bold;">Log In</h1>
+                    <% if (error) { %>
+                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                    <% } %>    
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px; width: 400px;" required>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-top: 20px; width: 400px;" required>
+                </div>
+                <a href="/forgot_password">Forgot Password?</a>
+                <div style="text-align: center;">
+                    <input name="submit" class="post-btn" type="submit" value="Log In" style="margin-top: 15px; font-weight: bold;"/>
+                </div>
+                <hr style="border-top: 3px solid #bbb;";>
+                <div style="text-align: center;">
+                    <a style="margin-top: 10px;" href='/register' type="button">Create a new account</a>
+                </div>
+            </form>
+        </div>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

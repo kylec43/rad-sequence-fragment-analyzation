@@ -19,32 +19,35 @@
 
         <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
 
-        <form action="/results" class="myForm" method="post">
-            <div style="text-align:center">
-                <h1 style="margin-bottom: 40px; font-weight: bold;">RAD-Seq Fragment Analysis</h1>
+        <div style="text-align: center;">
+            <form action="/results" class="myForm" method="post">
+                <div style="text-align:center">
+                    <h1 style="margin-bottom: 40px; font-weight: bold;">RAD-Seq Fragment Analysis</h1>
 
-                <h4 style="font-weight: bold;">Genome</h4>
-                <div>
-                    <select class="myDropDown" name="genome" id="genome">
-                    </select>
-                </div>
+                    <h4 style="font-weight: bold;">Genome</h4>
+                    <div>
+                        <select class="myDropDown" name="genome" id="genome">
+                        </select>
+                    </div>
 
-                <h4 style="font-weight: bold;">Restriction Enzyme</h4>
-                <div>
-                    <select class="myDropDown" name="enzyme" id="enzyme">
-                    </select>
-                </div>
+                    <h4 style="font-weight: bold;">Restriction Enzyme</h4>
+                    <div>
+                        <select class="myDropDown" name="enzyme" id="enzyme">
+                        </select>
+                    </div>
 
-                <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
-                <div>
-                    <input type="number" name="probability" id="probability" step="0.01" class="myNumberInput" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                    <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
+                    <div>
+                        <input type="number" name="probability" id="probability" step="0.01" class="myNumberInput" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                    </div>
+                    <% if(error){ %>
+                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                    <% } %>
+                    <input name="submit" class="post-btn" type="submit" style="font-weight: bold;" value="Get Analysis" />
                 </div>
-                <% if(error){ %>
-                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                <% } %>
-                <input name="submit" class="post-btn" type="submit" style="font-weight: bold;" value="Get Analysis" />
-            </div>
-        </form>
+            </form>
+        </div>
+        
 
 
         <script>

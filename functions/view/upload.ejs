@@ -21,51 +21,52 @@
 
         <%- include ('partials/nav.ejs', {page: 'upload'}, user) %>
 
-        <form class="myForm" method="POST">
-            <div style="text-align:center">
-                <h3 style="font-weight: bold;">Upload</h3>
-            </div>
-            <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;" for="selectType">Upload Type: </label>
-            <select id="selectType" name="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
-                <option>Genome</option>
-                <option>Restriction Enzyme</option>
-            </select>
-            <br>
-
-            <label style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" for="name">Name:</label>
-            <input style="width: 300px" id="selectionName" name="selectionName" type="text">
-            <br>
-            <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
-            <input id="genomeFileInput" name="genomeFileInput" type="file">
-            <label id="rsLabel" for="rsInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold; display:none;">Restriction Site:</label>
-            <input id="rsInput" name="rsInput" style="width: 300px; display: none;" type="text">
-            <br>
-
-            <div id="uploadProgressDiv" style="display: none;">
-                <div class="progress" style="margin-top: 20px;">
-                    <div
-                    id="progressBar"
-                    class="progress-bar"
-                    role="progressbar"
-                    style="width: 0%;"
-                    aria-valuenow="0"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    ></div>
+        <div style="text-align: center;">
+            <form class="myForm" method="POST">
+                <div style="text-align:center">
+                    <h3 style="font-weight: bold;">Upload</h3>
                 </div>
-                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
-                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Uploading</h6>
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
+                <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;" for="selectType">Upload Type: </label>
+                <select id="selectType" name="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
+                    <option>Genome</option>
+                    <option>Restriction Enzyme</option>
+                </select>
+                <br>
+
+                <label style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;" for="name">Name:</label>
+                <input style="width: 300px" id="selectionName" name="selectionName" type="text">
+                <br>
+                <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
+                <input id="genomeFileInput" name="genomeFileInput" type="file">
+                <label id="rsLabel" for="rsInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold; display:none;">Restriction Site:</label>
+                <input id="rsInput" name="rsInput" style="width: 300px; display: none;" type="text">
+                <br>
+
+                <div id="uploadProgressDiv" style="display: none;">
+                    <div class="progress" style="margin-top: 20px;">
+                        <div
+                        id="progressBar"
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: 0%;"
+                        aria-valuenow="0"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        ></div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
+                        <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Uploading</h6>
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <input name="type" value="Genome" id="type" name="type" style="display: none;">
-            <div style="text-align: center;">
-                <input type="button" id="submitButton" class="post-btn" style="font-weight: bold" value="Upload" onsubmit="uploadSelection();">
-        </form>
-
+                <input name="type" value="Genome" id="type" name="type" style="display: none;">
+                <div style="text-align: center;">
+                    <input type="button" id="submitButton" class="post-btn" style="font-weight: bold" value="Upload" onsubmit="uploadSelection();">
+            </form>
+        </div>
 
         <script>
             var selectType = document.getElementById("selectType");

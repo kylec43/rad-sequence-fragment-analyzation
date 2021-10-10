@@ -18,21 +18,22 @@
         <%- include ('partials/nav.ejs', {page: 'change_email'}, user) %>
 
 
+        <div style="text-align: center;">
+            <form action="/change_email" class="myForm" method="post">
+                <div style="text-align:center">
+                    <h3 style="margin-bottom: 30px; font-weight: bold;">Change Email</h1>
+                    <% if (error) { %>
+                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                    <% } %>
 
-        <form action="/change_email" class="myForm" method="post">
-            <div style="text-align:center">
-                <h3 style="margin-bottom: 30px; font-weight: bold;">Change Email</h1>
-                <% if (error) { %>
-                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                <% } %>
-
-                <h5 style="margin-top: 20px;">Current Email</h5>
-                <input type="email" class="form-control" name="currentEmail" id="currentEmail" value=<%= user.email %> style="margin-top: 20px; width: 400px;" disabled>
-                <input type="email" class="form-control" name="newEmail" id="newEmail" placeholder="New Email Address" style="margin-top: 20px; width: 400px;" required>
-                <input type="email" class="form-control" name="confirmNewEmail" id="confirmNewEmail" placeholder="Confirm New Email Address" style="margin-top: 20px; width: 400px;" required>
-                <input name="submit" class="post-btn" type="submit" value="Change" style="margin-top: 25px; font-weight: bold;"/>
-            </div>
-        </form>
+                    <h5 style="margin-top: 20px;">Current Email</h5>
+                    <input type="email" class="form-control" name="currentEmail" id="currentEmail" value=<%= user.email %> style="margin-top: 20px; width: 400px;" disabled>
+                    <input type="email" class="form-control" name="newEmail" id="newEmail" placeholder="New Email Address" style="margin-top: 20px; width: 400px;" required>
+                    <input type="email" class="form-control" name="confirmNewEmail" id="confirmNewEmail" placeholder="Confirm New Email Address" style="margin-top: 20px; width: 400px;" required>
+                    <input name="submit" class="post-btn" type="submit" value="Change" style="margin-top: 25px; font-weight: bold;"/>
+                </div>
+            </form>
+        </div>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
