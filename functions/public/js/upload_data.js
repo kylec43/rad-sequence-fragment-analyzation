@@ -1,4 +1,4 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-storage.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-storage.js";
 import { getFirestore, collection, addDoc, setDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
 
@@ -20,14 +20,28 @@ async function uploadGenome(name, genomeToUpload){
     const fileRef = ref(getStorage(), GENOME_FOLDER + fileName);
     
     console.log("uploading file")
-    let taskSnapshot = await uploadBytes(fileRef, genomeFile);
-    taskSnapshot
+    uploadProgressDiv.style.display = "block";
+    submitButton.style.display = "none";
+    let uploadTask = uploadBytesResumable(fileRef, genomeFile);
 
+
+    uploadTask.on('state_changed', (snapshot) => {
+    // Observe state change events such as progress, pause, and resume
+    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    progressBar.style.width = `${progress}%`;
+
+  }, (error) => {
+    console.log(`Failed: ${error}`);
+    uploadProgressDiv.style.display = "none";
+    submitButton.style.display = "inline-block";
+  }, 
+  async () => {
     console.log("getting download url");
     let downloadUrl;
     await getDownloadURL(fileRef).then((url)=>{
         downloadUrl = url;
-    })
+    });
 
     console.log("uploading to firestore");
     var docRef = doc(getFirestore(), 'genomes', DOC_NAME)
@@ -42,6 +56,12 @@ async function uploadGenome(name, genomeToUpload){
     }
 
     console.log("file uploaded")
+    uploadProgressDiv.style.display = "none";
+    submitButton.style.display = "inline-block";
+  }
+);
+
+
 }
 
 async function uploadRestrictionEnzyme(name, restrictionEnzyme){
