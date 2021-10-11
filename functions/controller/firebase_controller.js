@@ -4,6 +4,7 @@ const FirebaseAuth = require("firebase/auth");
 
 //initialize firebase admin
 var FirebaseAdmin = require('firebase-admin');
+var FirebaseFirestore = require('firebase/firestore');
 
 var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
 FirebaseAdmin.initializeApp({
@@ -151,7 +152,7 @@ async function logoutUser(req, res){
     
 }
 
-async function getCurrentUser(){
+function getCurrentUser(){
     
    return FirebaseAuth.getAuth().currentUser;
 
@@ -167,14 +168,13 @@ async function uploadGenome(req, res){
     let name = req.body.name;
     let genomeFile = req.body.genomeFileInput;
     console.log(`${name} ${JSON.stringify(genomeFile)}`);
-
     return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
 }
 
 async function uploadRestrictionEnzyme(req, res){
     let name = req.body.name;
     let restrictionSite = req.body.rsInput;
-    console.log(`${name} ${restrictionSite1}`);
+    console.log(`${name} ${restrictionSite}`);
 
     return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
 }

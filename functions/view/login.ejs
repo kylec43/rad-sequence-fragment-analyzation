@@ -15,22 +15,25 @@
     </head>
 
     <body style="background-color: rgba(210,210,210,1);">
+
+        <script type="module" src="js/init_firebase.js"></script>
+
         <%- include ('partials/nav.ejs', {page: 'login'}, user) %>
 
 
         <div style="text-align: center;">
-            <form action="/login" class="myForm" method="post">
-                <div style="text-align:center">
+            <form action="/login" id="loginForm" class="myForm" method="post">
+                <div style="text-align: center;">
                     <h3 style="margin-bottom: 30px; font-weight: bold;">Log In</h1>
                     <% if (error) { %>
                         <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
                     <% } %>    
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px; width: 400px;" required>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-top: 20px; width: 400px;" required>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-left:auto; margin-right:auto; margin-top: 20px; width: 400px;" required>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-left:auto; margin-right:auto; margin-top: 20px; width: 400px;" required>
                 </div>
                 <a href="/forgot_password">Forgot Password?</a>
                 <div style="text-align: center;">
-                    <input name="submit" class="post-btn" type="submit" value="Log In" style="margin-top: 15px; font-weight: bold;"/>
+                    <input name="loginButton" class="post-btn" type="submit" value="Log In" style="margin-top: 15px; font-weight: bold;">
                 </div>
                 <hr style="border-top: 3px solid #bbb;";>
                 <div style="text-align: center;">

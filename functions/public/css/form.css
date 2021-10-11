@@ -4,9 +4,10 @@ body {
 }
 
 .myForm{
+    text-align: left;
     margin-top: 50px;
     display: inline-block;
-    width: 600px;
+    width: auto;
     height: auto;
     padding:30px;
     border: 1px solid rgb(200, 200, 200);

@@ -2,15 +2,15 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://w
 import { getFirestore, collection, addDoc, setDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
 
-async function uploadSelection(){
-
+window.uploadSelection = async function uploadSelection(){
+    console.log("YES!");
     if(selectType.value === "Genome"){
         await uploadGenome(selectionName.value, genomeFile);
     } else {
         await uploadRestrictionEnzyme(selectionName, genomeFile)
     }
 }
-async function uploadGenome(name, genomeToUpload){
+window.uploadGenome = async function uploadGenome(name, genomeToUpload){
     
     //Get genomeFile text
     console.log("getting file name")
@@ -64,9 +64,10 @@ async function uploadGenome(name, genomeToUpload){
 
 }
 
-async function uploadRestrictionEnzyme(name, restrictionEnzyme){
+window.uploadRestrictionEnzyme = async function uploadRestrictionEnzyme(name, restrictionEnzyme){
     
 }
+
 
 var genomeFile;
 genomeFileInput.addEventListener('change', e => {

@@ -68,7 +68,7 @@ app.get('/upload', authAndRedirectLogIn, (req, res) => {
 
 app.post('/upload', authAndRedirectLogIn, async (req, res) => {
     
-    if(req.body.type === "Genome"){
+    if(true){
         return await FirebaseController.uploadGenome(req, res);
     } else {
         return await FirebaseController.uploadRestrictionEnzyme(req, res);
