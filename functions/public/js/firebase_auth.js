@@ -1,19 +1,18 @@
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 
-window.test = async function test(){
-    console.log("TTESSTT");
-}
-
-window.signIn = async function signIn(form){
+window.signIn = async function signIn(email, password){
 
     try{
+        authError.innerHTML = "";
+        authError.style.display = "none";
         console.log("signing in");
-        await signInWithEmailAndPassword(getAuth(), document.getElementById('email').value, document.getElementById('password').value);
+        await signInWithEmailAndPassword(getAuth(), email, password);
         console.log("Sign in success!");
-        form.submit();
     } catch(e) {
         console.log(`Sign in fail! ${e}`);
-        return false;
+        authError.style.display = "block";
+        authError.innerHTML = `${e}`;
+        throw e;
     }
 }
 

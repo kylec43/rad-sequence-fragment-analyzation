@@ -26,6 +26,7 @@
                 <div style="text-align:center">
                     <h3 style="font-weight: bold;">Upload</h3>
                 </div>
+                <li id="uploadError" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
                 <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;" for="selectType">Upload Type: </label>
                 <select id="selectType" name="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
                     <option>Genome</option>
@@ -37,7 +38,8 @@
                 <input style="width: 300px" id="selectionName" name="selectionName" type="text">
                 <br>
                 <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
-                <input id="genomeFileInput" name="genomeFileInput" type="file">
+                <input id="genomeFileInput" type="file">
+                <br>
                 <label id="rsLabel" for="rsInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold; display:none;">Restriction Site:</label>
                 <input id="rsInput" name="rsInput" style="width: 300px; display: none;" type="text">
                 <br>
@@ -62,9 +64,15 @@
                     </div>
                 </div>
 
-                <input name="type" value="Genome" id="type" name="type" style="display: none;">
                 <div style="text-align: center;">
-                    <input type="button" id="submitButton" class="post-btn" style="font-weight: bold" value="Upload" onclick="uploadSelection();">
+                    <input type="button" id="uploadButton" class="post-btn" style="font-weight: bold" value="Upload" onclick="uploadSelection();">
+                </div>
+                <div id="passwordPromptBlock" style="text-align: center; display: none;">
+                    <label id="passwordLabel" for="passwordInput" style="display: block; margin-top: 20px; font-weight: bold;">Enter your password to continue:</label>
+                    <input id="passwordInput" type="password" style="width: 300px;">
+                    <li id="authError" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
+                    <br>
+                    <input type="button" id="continueButton" class="post-btn" style="font-weight: bold" value="Continue" onclick="signInUploadGenome();">
                 </div>
             </form>
         </div>
@@ -75,13 +83,21 @@
             var rsInput = document.getElementById("rsInput");
             var genomeFileLabel = document.getElementById("genomeFileLabel");
             var genomeFileInput = document.getElementById("genomeFileInput");
-            var type = document.getElementById("type");
             var selectionName = document.getElementById("selectionName");
             var uploadProgressDiv = document.getElementById("uploadProgressDiv");
             var progressBar = document.getElementById('progressBar');
-            var submitButton = document.getElementById('submitButton');
+            var uploadButton = document.getElementById('uploadButton');
+            var continueButton = document.getElementById('continueButton');
+            var passwordInput = document.getElementById('passwordInput');
+            var passwordLabel = document.getElementById('passwordLabel');
+            var passwordPromptBlock = document.getElementById('passwordPromptBlock');
+            var userEmail = "<%= user.email%>";
             var GENOME_FOLDER = "genomes/" + '<%= user.uid%>' + "/"
             var DOC_NAME = '<%= user.uid%>';
+            var authError = document.getElementById('authError');
+            var uploadError = document.getElementById('uploadError');
+            var authenticated = false;
+
             function onTypeChange(){
                 let value = selectType.value;
 
@@ -90,13 +106,22 @@
                     genomeFileInput.style.display = "inline-block";
                     rsLabel.style.display = "none";
                     rsInput.style.display = "none";
-                    type.value = "Genome";
                 } else if(value === "Restriction Enzyme") {
                     rsLabel.style.display = "inline-block";
                     rsInput.style.display = "inline-block";
                     genomeFileLabel.style.display = "none";
                     genomeFileInput.style.display = "none";
-                    type.value = "Restriction Enzyme";
+                }
+            }
+
+
+            async function signInUploadGenome(){
+                try{
+                    await signIn(userEmail, passwordInput.value); 
+                    authenticated = true;
+                    await uploadGenome(selectionName.value, genomeFile);
+                } catch(e){
+                    console.log(`Error: ${e}`);
                 }
             }
 
@@ -105,5 +130,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
         <script type="module" src="js/upload_data.js"></script>  
+        <script type="module" src="js/firebase_auth.js"></script>  
+
     </body>
 </html>
