@@ -118,7 +118,7 @@
                 try{
                     await signIn(userEmail, passwordInput.value); 
                     authenticated = true;
-                    if(selectType == "Genome"){
+                    if(selectType.value === "Genome"){
                         await uploadGenome(selectionName.value, genomeFile);
                     } else {
                         await uploadRestrictionEnzyme(selectionName.value, rsInput.value);
