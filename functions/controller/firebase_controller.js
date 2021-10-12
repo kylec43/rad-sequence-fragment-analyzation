@@ -129,7 +129,6 @@ async function loginUser(req, res){
     let email = req.body.email;
     let password = req.body.password;
 
-    console.log(`email ${email} password ${password}`);
     await FirebaseAuth.signInWithEmailAndPassword(FirebaseAuth.getAuth(), email, password)
     .then((userCredential) => {
         return res.redirect('/');
@@ -164,27 +163,12 @@ async function userSignedIn(){
 }
 
 
-async function uploadGenome(req, res){
-    let name = req.body.name;
-    let genomeFile = req.body.genomeFileInput;
-    console.log(`${name} ${JSON.stringify(genomeFile)}`);
-    return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
-}
-
-async function uploadRestrictionEnzyme(req, res){
-    let name = req.body.name;
-    let restrictionSite = req.body.rsInput;
-    console.log(`${name} ${restrictionSite}`);
-    
-    return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
-}
-
 async function getRestrictionEnzymes(user){
     var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'restriction_enzymes', user.uid);
     var docSnap = await FirebaseFirestore.getDoc(docRef);
     if(docSnap.exists()){
         let enzymes = docSnap.data()["restriction_enzymes"];
-        console.log(JSON.stringify(enzymes));
+
         for(let i = 1; i < enzymes.length; i++){
             let j = i-1;
             let value = enzymes[i];
@@ -230,8 +214,6 @@ module.exports = {
     changeEmail,
     changePassword,
     sendPasswordResetLink,
-    uploadGenome,
-    uploadRestrictionEnzyme,
     getRestrictionEnzymes,
     getGenomes,
 };

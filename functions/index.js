@@ -19,8 +19,7 @@ app.get('/', auth, async (req, res) => {
         restriction_enzymes = await FirebaseController.getRestrictionEnzymes(req.user);
         genomes = await FirebaseController.getGenomes(req.user);
     }
-    console.log(restriction_enzymes);
-    console.log(genomes);
+
     return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user, 'restriction_enzymes': restriction_enzymes, 'genomes': genomes});
 });
 
@@ -75,15 +74,6 @@ app.post('/register', authAndRedirectHome, (req, res) => {
 
 app.get('/upload', authAndRedirectLogIn, (req, res) => {
     return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user});
-});
-
-app.post('/upload', authAndRedirectLogIn, async (req, res) => {
-    
-    if(true){
-        return await FirebaseController.uploadGenome(req, res);
-    } else {
-        return await FirebaseController.uploadRestrictionEnzyme(req, res);
-    }
 });
 
 
