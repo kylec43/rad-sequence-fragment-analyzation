@@ -19,7 +19,11 @@ window.uploadSelection = async function(){
                 await uploadGenome(selectionName.value, genomeFile);
             }
         } else {
-            await uploadRestrictionEnzyme(selectionName,value, rsInput.value);
+            if(!authenticated){
+                promptPassword();
+            } else {
+                await uploadRestrictionEnzyme(selectionName.value, rsInput.value);
+            }
         }
     } catch(e){
         console.log(`Error: ${e}`);
@@ -98,8 +102,33 @@ window.uploadGenome = async function uploadGenome(name, genomeToUpload){
 window.uploadRestrictionEnzyme = async function uploadRestrictionEnzyme(name, restrictionSite){
     uploadError.style.innerHTML = "";
     uploadError.style.display = "none";
+    uploadProgressDiv.style.display = "block";
+    passwordPromptBlock.style.display = "none";
 
+    try{
 
+        console.log("uploading to firestore");
+        var docRef = doc(getFirestore(), 'restriction_enzymes', DOC_NAME)
+        var docSnap = await getDoc(docRef);
+        
+        if(docSnap.exists()){
+            let data = docSnap.data();
+            data["restriction_enzymes"].push({'name': name, 'restrictionSite': restrictionSite, 'id': `${Date.now()}${name}${restrictionSite}`});
+            await setDoc(doc(getFirestore(), 'restriction_enzymes', DOC_NAME), data);
+        } else {
+            await setDoc(doc(getFirestore(), 'restriction_enzymes', DOC_NAME), {'restriction_enzymes': [{'name': name, 'restriction_site': restrictionSite, 'id': `${Date.now()}${name}${restrictionSite}`}]});
+        }
+
+        console.log("file uploaded")
+        uploadProgressDiv.style.display = "none";
+        uploadButton.style.display = "inline-block";
+    } catch(e){
+        uploadProgressDiv.style.display = "none";
+        uploadButton.style.display = "inline-block";
+        uploadError.innerHTML = `${e}`;
+        uploadError.style.display = "block";
+        console.log('upload failed');
+    }
 
 
 

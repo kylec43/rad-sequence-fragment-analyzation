@@ -9,8 +9,19 @@ app.set('views', './view');
 
 exports.httpReq = functions.https.onRequest(app);
 
-app.get('/', auth, (req, res) => {
-    return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user});
+app.get('/', auth, async (req, res) => {
+    let restriction_enzymes = [];
+    let genomes = [];
+    if(req.user === null){
+        console.log("NULL");
+    } else {
+        console.log("Signed In");
+        restriction_enzymes = await FirebaseController.getRestrictionEnzymes(req.user);
+        genomes = await FirebaseController.getGenomes(req.user);
+    }
+    console.log(restriction_enzymes);
+    console.log(genomes);
+    return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user, 'restriction_enzymes': restriction_enzymes, 'genomes': genomes});
 });
 
 

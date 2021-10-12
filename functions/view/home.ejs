@@ -26,13 +26,19 @@
 
                     <h4 style="font-weight: bold;">Genome</h4>
                     <div>
-                        <select class="myDropDown" name="genome" id="genome">
+                        <select class="myDropDown" onchange="onSelectGenome(this);" name="genome" id="genome">
+                            <% for(let i = 0; i < genomes.length; i++) { %>
+                                <option value="<%= genomes[i]['fileName'] %>"><%= genomes[i]["name"] %></option>
+                            <% } %>
                         </select>
                     </div>
 
                     <h4 style="font-weight: bold;">Restriction Enzyme</h4>
                     <div>
-                        <select class="myDropDown" name="enzyme" id="enzyme">
+                        <select class="myDropDown" onchange="onSelectEnzyme(this);" name="enzyme" id="enzyme">
+                        <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
+                            <option value="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
+                        <% } %>
                         </select>
                     </div>
 
@@ -45,17 +51,33 @@
                     <% } %>
                     <input name="submit" class="post-btn" type="submit" style="font-weight: bold;" value="Get Analysis" />
                 </div>
+
+                <input style="display: none;" name="selectedGenome" id="selectedGenome" value="<%= genomes.length > 0 ? genomes[0]['fileName'] : '' %>">
+                <input style="display: none;" name="selectedEnzyme" id="selectedEnzyme" value="<%= restriction_enzymes.length > 0 ? restriction_enzymes[0]['id'] : '' %>">
             </form>
         </div>
         
 
 
         <script>
+            var selectedGenome = document.getElementById('selectedGenome');
+            var selectedEnzyme = document.getElementById('selectedEnzyme');
+
             function updateToFixed(){
                 let value = parseFloat(document.getElementById("probability").value);
                 if(!isNaN(value) && value >= 0.01 && value <= 1.00){
                     document.getElementById("probability").value = value.toFixed(2);
                 }
+            }
+
+            function onSelectEnzyme(sel){
+                selectedEnzyme.value = sel.options[sel.selectedIndex].value;
+                console.log(selectedEnzyme.value);
+            }
+
+            function onSelectGenome(sel){
+                selectedGenome.value = sel.options[sel.selectedIndex].value;
+                console.log(selectedGenome.value);
             }
         </script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

@@ -39,7 +39,6 @@
                 <br>
                 <label id="genomeFileLabel" for="genomeFileInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold;">Genome File:</label>
                 <input id="genomeFileInput" type="file">
-                <br>
                 <label id="rsLabel" for="rsInput" style="display: inline-block; width: 150px; margin-top: 20px; font-weight: bold; display:none;">Restriction Site:</label>
                 <input id="rsInput" name="rsInput" style="width: 300px; display: none;" type="text">
                 <br>
@@ -72,7 +71,7 @@
                     <input id="passwordInput" type="password" style="width: 300px;">
                     <li id="authError" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
                     <br>
-                    <input type="button" id="continueButton" class="post-btn" style="font-weight: bold" value="Continue" onclick="signInUploadGenome();">
+                    <input type="button" id="continueButton" class="post-btn" style="font-weight: bold" value="Continue" onclick="signInUpload();">
                 </div>
             </form>
         </div>
@@ -115,11 +114,15 @@
             }
 
 
-            async function signInUploadGenome(){
+            async function signInUpload(){
                 try{
                     await signIn(userEmail, passwordInput.value); 
                     authenticated = true;
-                    await uploadGenome(selectionName.value, genomeFile);
+                    if(selectType == "Genome"){
+                        await uploadGenome(selectionName.value, genomeFile);
+                    } else {
+                        await uploadRestrictionEnzyme(selectionName.value, rsInput.value);
+                    }
                 } catch(e){
                     console.log(`Error: ${e}`);
                 }

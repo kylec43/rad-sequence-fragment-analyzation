@@ -175,8 +175,50 @@ async function uploadRestrictionEnzyme(req, res){
     let name = req.body.name;
     let restrictionSite = req.body.rsInput;
     console.log(`${name} ${restrictionSite}`);
-
+    
     return res.render(Pages.HOME_PAGE, {error: false, errorMessage: "", user: req.user});
+}
+
+async function getRestrictionEnzymes(user){
+    var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'restriction_enzymes', user.uid);
+    var docSnap = await FirebaseFirestore.getDoc(docRef);
+    if(docSnap.exists()){
+        let enzymes = docSnap.data()["restriction_enzymes"];
+        console.log(JSON.stringify(enzymes));
+        for(let i = 1; i < enzymes.length; i++){
+            let j = i-1;
+            let value = enzymes[i];
+            while(j >= 0 && enzymes[j]["name"].toLowerCase() > value["name"].toLowerCase()){
+                enzymes[j+1] = enzymes[j];
+                j--;
+            }
+
+            enzymes[j+1] = value;
+        }
+        return enzymes;
+    } else {
+        return [];
+    }
+}
+
+async function getGenomes(user){
+    var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'genomes', user.uid);
+    var docSnap = await FirebaseFirestore.getDoc(docRef);
+    if(docSnap.exists()){
+        let genomes = docSnap.data()["genomes"];
+        for(let i = 1; i < genomes.length; i++){
+            let j = i-1;
+            let value = genomes[i];
+            while(j >= 0 && genomes[j]["name"].toLowerCase() > value["name"].toLowerCase()){
+                genomes[j+1] = genomes[j];
+                j--;
+            }
+            genomes[j+1] = value;
+        }
+        return genomes;
+    } else {
+        return [];
+    }
 }
 
 module.exports = {
@@ -190,4 +232,6 @@ module.exports = {
     sendPasswordResetLink,
     uploadGenome,
     uploadRestrictionEnzyme,
+    getRestrictionEnzymes,
+    getGenomes,
 };
