@@ -26,7 +26,7 @@
                 <div style="text-align:center">
                     <h3 style="font-weight: bold;">Upload</h3>
                 </div>
-                <li id="uploadError" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
+                <li id="error" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
                 <label style="display: inline-block; width: 150px; margin-top: 30px; font-weight: bold;" for="selectType">Upload Type: </label>
                 <select id="selectType" name="selectType" value="Genome" style="width: 300px" onchange="onTypeChange()">
                     <option>Genome</option>
@@ -66,13 +66,6 @@
                 <div style="text-align: center;">
                     <input type="button" id="uploadButton" class="post-btn" style="font-weight: bold" value="Upload" onclick="uploadSelection();">
                 </div>
-                <div id="passwordPromptBlock" style="text-align: center; display: none;">
-                    <label id="passwordLabel" for="passwordInput" style="display: block; margin-top: 20px; font-weight: bold;">Enter your password to continue:</label>
-                    <input id="passwordInput" type="password" style="width: 300px;">
-                    <li id="authError" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
-                    <br>
-                    <input type="button" id="continueButton" class="post-btn" style="font-weight: bold" value="Continue" onclick="signInUpload();">
-                </div>
             </form>
         </div>
 
@@ -86,16 +79,11 @@
             var uploadProgressDiv = document.getElementById("uploadProgressDiv");
             var progressBar = document.getElementById('progressBar');
             var uploadButton = document.getElementById('uploadButton');
-            var continueButton = document.getElementById('continueButton');
-            var passwordInput = document.getElementById('passwordInput');
-            var passwordLabel = document.getElementById('passwordLabel');
-            var passwordPromptBlock = document.getElementById('passwordPromptBlock');
-            var userEmail = "<%= user.email%>";
             var GENOME_FOLDER = "genomes/" + '<%= user.uid%>' + "/"
             var DOC_NAME = '<%= user.uid%>';
-            var authError = document.getElementById('authError');
-            var uploadError = document.getElementById('uploadError');
+            var error = document.getElementById('error');
             var authenticated = false;
+            var token = "<%= userToken %>"
 
             function onTypeChange(){
                 let value = selectType.value;
@@ -110,21 +98,6 @@
                     rsInput.style.display = "inline-block";
                     genomeFileLabel.style.display = "none";
                     genomeFileInput.style.display = "none";
-                }
-            }
-
-
-            async function signInUpload(){
-                try{
-                    await signIn(userEmail, passwordInput.value); 
-                    authenticated = true;
-                    if(selectType.value === "Genome"){
-                        await uploadGenome(selectionName.value, genomeFile);
-                    } else {
-                        await uploadRestrictionEnzyme(selectionName.value, rsInput.value);
-                    }
-                } catch(e){
-                    console.log(`Error: ${e}`);
                 }
             }
 

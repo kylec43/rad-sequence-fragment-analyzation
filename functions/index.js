@@ -72,8 +72,18 @@ app.post('/register', authAndRedirectHome, (req, res) => {
 
 
 
-app.get('/upload', authAndRedirectLogIn, (req, res) => {
-    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user});
+app.get('/upload', authAndRedirectLogIn, async (req, res) => {
+    let signedUrl = "";
+    let filePath = "";
+    try{
+        let temp = await FirebaseController.generateV4UploadSignedUrl(req.user);
+        signedUrl = temp["signedUrl"];
+        filePath = temp["filePath"];
+    } catch(e){
+        console.log(`${e}`);
+    }
+    console.log(`${req.token}`);
+    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user, signedUrl, filePath, userToken: req.token});
 });
 
 
@@ -118,6 +128,7 @@ async function auth(req, res, next)
     req.user = await FirebaseController.getCurrentUser();
     console.log('begin');
     if(req.user){
+        req.token = await FirebaseController.generateToken(req.user);
         console.log(req.user.email);
     }    
     console.log('end');
@@ -130,6 +141,7 @@ async function authAndRedirectLogIn(req, res, next)
     req.user = await FirebaseController.getCurrentUser();
     
     if(req.user){
+        req.token = await FirebaseController.generateToken(req.user);
         return next();
     } else {
         console.log(req.user);
@@ -143,6 +155,7 @@ async function authAndRedirectHome(req, res, next){
     req.user = await FirebaseController.getCurrentUser();
     
     if(req.user){
+        req.token = await FirebaseController.generateToken(req.user);
         res.redirect('/');
     } else {
         return next();

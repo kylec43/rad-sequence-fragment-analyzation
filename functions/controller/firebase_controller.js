@@ -5,10 +5,12 @@ const FirebaseAuth = require("firebase/auth");
 //initialize firebase admin
 var FirebaseAdmin = require('firebase-admin');
 var FirebaseFirestore = require('firebase/firestore');
+var FirebaseStorage = require('firebase/storage');
 
 var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
 FirebaseAdmin.initializeApp({
-    credential: FirebaseAdmin.credential.cert(serviceAccount)
+    credential: FirebaseAdmin.credential.cert(serviceAccount),
+    storageBucket: "rcsa-rad-sequencing.appspot.com",
 });
 
 //initialize firebase app
@@ -164,46 +166,100 @@ async function userSignedIn(){
 
 
 async function getRestrictionEnzymes(user){
-    var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'restriction_enzymes', user.uid);
-    var docSnap = await FirebaseFirestore.getDoc(docRef);
-    if(docSnap.exists()){
-        let enzymes = docSnap.data()["restriction_enzymes"];
 
-        for(let i = 1; i < enzymes.length; i++){
-            let j = i-1;
-            let value = enzymes[i];
-            while(j >= 0 && enzymes[j]["name"].toLowerCase() > value["name"].toLowerCase()){
-                enzymes[j+1] = enzymes[j];
-                j--;
+    try {
+        var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'restriction_enzymes', user.uid);
+        var docSnap = await FirebaseFirestore.getDoc(docRef);
+        if(docSnap.exists()){
+            let enzymes = docSnap.data()["restriction_enzymes"];
+
+            for(let i = 1; i < enzymes.length; i++){
+                let j = i-1;
+                let value = enzymes[i];
+                while(j >= 0 && enzymes[j]["name"].toLowerCase() > value["name"].toLowerCase()){
+                    enzymes[j+1] = enzymes[j];
+                    j--;
+                }
+
+                enzymes[j+1] = value;
             }
-
-            enzymes[j+1] = value;
+            return enzymes;
+        } else {
+            return [];
         }
-        return enzymes;
-    } else {
-        return [];
+
+    } catch(e) {
+        console.log(`Error getting enzymes ${e}`);
     }
+
+    return [];
 }
 
 async function getGenomes(user){
-    var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'genomes', user.uid);
-    var docSnap = await FirebaseFirestore.getDoc(docRef);
-    if(docSnap.exists()){
-        let genomes = docSnap.data()["genomes"];
-        for(let i = 1; i < genomes.length; i++){
-            let j = i-1;
-            let value = genomes[i];
-            while(j >= 0 && genomes[j]["name"].toLowerCase() > value["name"].toLowerCase()){
-                genomes[j+1] = genomes[j];
-                j--;
+
+    try {
+        var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'genomes', user.uid);
+        var docSnap = await FirebaseFirestore.getDoc(docRef);
+        if(docSnap.exists()){
+            let genomes = docSnap.data()["genomes"];
+            for(let i = 1; i < genomes.length; i++){
+                let j = i-1;
+                let value = genomes[i];
+                while(j >= 0 && genomes[j]["name"].toLowerCase() > value["name"].toLowerCase()){
+                    genomes[j+1] = genomes[j];
+                    j--;
+                }
+                genomes[j+1] = value;
             }
-            genomes[j+1] = value;
+            return genomes;
+        } else {
+            return [];
         }
-        return genomes;
-    } else {
-        return [];
+    } catch(e) {
+        console.log(`Error getting genomes ${e}`);
     }
+
+    return [];
 }
+
+
+async function generateV4UploadSignedUrl(user) {
+
+    // These options will allow temporary uploading of the file with outgoing
+    // Content-Type: application/octet-stream header.
+    const options = {
+        version: 'v4',
+        action: 'write',
+        expires: Date.now() + 1500 * 60 * 1000, // 15 minutes
+        contentType: 'application/octet-stream',
+    };
+    let filePath = `genomes/${user.uid}/${Date.now()}`;
+    var [url] = await FirebaseAdmin.storage().bucket().file(`${filePath}`).getSignedUrl(options);
+  
+    console.log('Generated PUT signed URL:');
+    console.log(url);
+    console.log('You can use this URL with any user agent, for example:');
+    console.log(
+      "curl -X PUT -H 'Content-Type: application/octet-stream' " +
+        `--upload-file my-file '${url}'`
+    );
+
+    return {signedUrl: url, filePath};
+}
+
+
+async function generateToken(user){
+    let token = null;
+    await FirebaseAdmin.auth().createCustomToken(user.uid).then((customToken) => {
+                    console.log(`TOKEN CREATED! ${customToken}`);
+                    token = customToken;
+                })
+                .catch((error) => {
+                    console.log('Error creating custom token:', error);
+                });
+    return token;
+}
+  
 
 module.exports = {
     registerUser,
@@ -216,4 +272,6 @@ module.exports = {
     sendPasswordResetLink,
     getRestrictionEnzymes,
     getGenomes,
+    generateV4UploadSignedUrl,
+    generateToken,
 };

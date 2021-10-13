@@ -1,53 +1,44 @@
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-storage.js";
-import { getFirestore, collection, addDoc, setDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
-
-
-window.promptPassword = async function promptPassword(){
-    passwordPromptBlock.style.display = "block";
-    uploadButton.style.display = "none";
-}
+import { getFirestore, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
 window.uploadSelection = async function(){
     try{
-        uploadError.style.display = "none";
-        uploadError.innerHTML = "";
+        error.style.display = "none";
+        error.innerHTML = "";
+        uploadButton.style.display = "none";
+        uploadProgressDiv.style.display = "block";
+
+        if(!authenticated){
+            await signIn(token);
+            authenticated = true;
+        }
+
+
+        console.log("BEGIN");
 
         if(selectType.value == "Genome"){
-            if(!authenticated){
-                promptPassword();
-            } else {
-                await uploadGenome(selectionName.value, genomeFile);
-            }
+            await uploadGenome(selectionName.value, genomeFile);
         } else {
-            if(!authenticated){
-                promptPassword();
-            } else {
-                await uploadRestrictionEnzyme(selectionName.value, rsInput.value);
-            }
+            await uploadRestrictionEnzyme(selectionName.value, rsInput.value);
         }
     } catch(e){
         console.log(`Error: ${e}`);
-        uploadError.style.display = "block";
-        uploadError.innerHTML = `${e}`;
+        error.style.display = "block";
+        error.innerHTML = `${e}`;
     }
+
 }
 
 window.uploadGenome = async function uploadGenome(name, genomeToUpload){
-    
-    uploadError.style.innerHTML = "";
-    uploadError.style.display = "none";
 
     //Get genomeFile text
     console.log("getting file name")
-    const fileName = Date.now() + genomeToUpload.name; // unique name
-
     console.log("get reference in storage");
-    const fileRef = ref(getStorage(), GENOME_FOLDER + fileName);
+    const fileName = Date.now();
+    const fileRef = await ref(getStorage(), `${GENOME_FOLDER}/${fileName}`);
     
     console.log("uploading file")
-    uploadProgressDiv.style.display = "block";
-    passwordPromptBlock.style.display = "none";
-    let uploadTask = uploadBytesResumable(fileRef, genomeFile);
+    let uploadTask = uploadBytesResumable(fileRef, genomeToUpload);
 
 
     uploadTask.on('state_changed', (snapshot) => {
@@ -57,10 +48,11 @@ window.uploadGenome = async function uploadGenome(name, genomeToUpload){
     progressBar.style.width = `${progress}%`;
 
   }, (e) => {
-    uploadProgressDiv.style.display = "none";
+    console.log('Firebase Storage Upload Fail');
     uploadButton.style.display = "inline-block";
-    uploadError.innerHTML = `${e}`;
-    uploadError.style.display = "block";
+    uploadProgressDiv.style.display = "none";
+    error.style.display = "block";
+    error.innerHTML = `${e}`;
   }, 
   async () => {
 
@@ -84,14 +76,14 @@ window.uploadGenome = async function uploadGenome(name, genomeToUpload){
         }
 
         console.log("file uploaded")
-        uploadProgressDiv.style.display = "none";
         uploadButton.style.display = "inline-block";
+        uploadProgressDiv.style.display = "none";
     } catch(e){
-        uploadProgressDiv.style.display = "none";
-        uploadButton.style.display = "inline-block";
-        uploadError.innerHTML = `${e}`;
-        uploadError.style.display = "block";
         console.log('upload failed');
+        error.style.display = "block";
+        error.innerHTML = `${e}`;
+        uploadButton.style.display = "inline-block";
+        uploadProgressDiv.style.display = "none";
     }
   }
 );
@@ -100,10 +92,6 @@ window.uploadGenome = async function uploadGenome(name, genomeToUpload){
 }
 
 window.uploadRestrictionEnzyme = async function uploadRestrictionEnzyme(name, restrictionSite){
-    uploadError.style.innerHTML = "";
-    uploadError.style.display = "none";
-    uploadProgressDiv.style.display = "block";
-    passwordPromptBlock.style.display = "none";
 
     try{
 
@@ -120,14 +108,15 @@ window.uploadRestrictionEnzyme = async function uploadRestrictionEnzyme(name, re
         }
 
         console.log("file uploaded")
-        uploadProgressDiv.style.display = "none";
         uploadButton.style.display = "inline-block";
+        uploadProgressDiv.style.display = "none";
+        
     } catch(e){
-        uploadProgressDiv.style.display = "none";
-        uploadButton.style.display = "inline-block";
-        uploadError.innerHTML = `${e}`;
-        uploadError.style.display = "block";
         console.log('upload failed');
+        error.style.display = "block";
+        error.innerHTML = `${e}`;
+        uploadButton.style.display = "inline-block";
+        uploadProgressDiv.style.display = "none";
     }
 
 
@@ -141,7 +130,4 @@ genomeFileInput.addEventListener('change', e => {
     window.genomeFile = e.target.files[0];
     console.log('file upload', e.target.files[0]);
 });
-
-//document.getElementById('uploadButton').addEventListener("click", uploadSelection);
-
 
