@@ -82,8 +82,11 @@
             var GENOME_FOLDER = "genomes/" + '<%= user.uid%>' + "/"
             var DOC_NAME = '<%= user.uid%>';
             var error = document.getElementById('error');
-            var authenticated = false;
             var token = "<%= userToken %>"
+
+            window.onload = async ()=>{
+                await signIn(token);
+            };
 
             function onTypeChange(){
                 let value = selectType.value;

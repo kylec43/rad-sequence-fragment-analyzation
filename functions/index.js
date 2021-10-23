@@ -20,7 +20,7 @@ app.get('/', auth, async (req, res) => {
         genomes = await FirebaseController.getGenomes(req.user);
     }
 
-    return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user, 'restriction_enzymes': restriction_enzymes, 'genomes': genomes});
+    return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user, restriction_enzymes, genomes, userToken: req.token});
 });
 
 
@@ -73,17 +73,7 @@ app.post('/register', authAndRedirectHome, (req, res) => {
 
 
 app.get('/upload', authAndRedirectLogIn, async (req, res) => {
-    let signedUrl = "";
-    let filePath = "";
-    try{
-        let temp = await FirebaseController.generateV4UploadSignedUrl(req.user);
-        signedUrl = temp["signedUrl"];
-        filePath = temp["filePath"];
-    } catch(e){
-        console.log(`${e}`);
-    }
-    console.log(`${req.token}`);
-    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user, signedUrl, filePath, userToken: req.token});
+    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user, userToken: req.token});
 });
 
 

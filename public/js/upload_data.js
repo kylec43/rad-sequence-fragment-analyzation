@@ -8,12 +8,6 @@ window.uploadSelection = async function(){
         uploadButton.style.display = "none";
         uploadProgressDiv.style.display = "block";
 
-        if(!authenticated){
-            await signIn(token);
-            authenticated = true;
-        }
-
-
         console.log("BEGIN");
 
         if(selectType.value == "Genome"){
@@ -104,7 +98,7 @@ window.uploadRestrictionEnzyme = async function uploadRestrictionEnzyme(name, re
             data["restriction_enzymes"].push({'name': name, 'restrictionSite': restrictionSite, 'id': `${Date.now()}${name}${restrictionSite}`});
             await setDoc(doc(getFirestore(), 'restriction_enzymes', DOC_NAME), data);
         } else {
-            await setDoc(doc(getFirestore(), 'restriction_enzymes', DOC_NAME), {'restriction_enzymes': [{'name': name, 'restriction_site': restrictionSite, 'id': `${Date.now()}${name}${restrictionSite}`}]});
+            await setDoc(doc(getFirestore(), 'restriction_enzymes', DOC_NAME), {'restriction_enzymes': [{'name': name, 'restrictionSite': restrictionSite, 'id': `${Date.now()}${name}${restrictionSite}`}]});
         }
 
         console.log("file uploaded")

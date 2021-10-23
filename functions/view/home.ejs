@@ -10,6 +10,7 @@
 
         <!--My Css-->
         <link rel="stylesheet" type="text/css" href="css/form.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
 
         <title>RAD-Seq</title>
 
@@ -19,28 +20,68 @@
 
         <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
 
-        <div style="text-align: center;">
-            <form action="/results" class="myForm" method="post">
-                <div style="text-align:center">
-                    <h1 style="margin-bottom: 40px; font-weight: bold;">RAD-Seq Fragment Analysis</h1>
+        <script type="module" src="js/init_firebase.js"></script>
 
+        <div style="text-align: center;">
+            <form action="/results" class="myForm" style="text-align: center;" method="post">
+                <h1 style="margin-bottom: 40px; font-weight: bold;">RAD-Seq Fragment Analysis</h1>
+                <li id="error" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
+                <div style="display:inline-block;">
                     <h4 style="font-weight: bold;">Genome</h4>
                     <div>
                         <select class="myDropDown" onchange="onSelectGenome(this);" name="genome" id="genome">
                             <% for(let i = 0; i < genomes.length; i++) { %>
-                                <option value="<%= genomes[i]['fileName'] %>"><%= genomes[i]["name"] %></option>
+                                <option id="<%= genomes[i]['fileName'] %>"><%= genomes[i]["name"] %></option>
                             <% } %>
                         </select>
                     </div>
+                    <div style="text-align: left;">
+                        <button class="myButton" type="button" data-toggle="collapse" data-target="#genomeCollapse" aria-expanded="false" aria-controls="genomeCollapse">
+                            Properties
+                        </button>
+                    </div>
+
+                    <div class="collapse" id="genomeCollapse">
+                        <div class="card card-body">
+                            <label style="margin-top: 20px; font-weight: bold;" for="genomeName">Name</label>
+                            <input style="width: 300px" id="genomeName" name="genomeName" type="text" value="<%= genomes.length > 0  ? genomes[0]['name'] : '' %>"> 
+                            <div style="margin-top: 20px;">
+                                <button class="btn btn-success" style="width: 120px; display: inline-block; margin-right: 20px;">Update</button>
+                                <button class="btn btn-danger" style="width: 120px; display: inline-block;">Delete</button>
+                            </div>               
+                        </div>
+                    </div>
+                    <br>
+                    <div style="margin-bottom: 20px;"></div>
 
                     <h4 style="font-weight: bold;">Restriction Enzyme</h4>
                     <div>
-                        <select class="myDropDown" onchange="onSelectEnzyme(this);" name="enzyme" id="enzyme">
+                        <select class="myDropDown" onchange="onSelectEnzyme(this);" name="enzymeSelect" id="enzymeSelect">
                         <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
-                            <option value="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
+                            <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
                         <% } %>
                         </select>
                     </div>
+                    <div style="text-align: left;">
+                        <button class="myButton" type="button" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="false" aria-controls="enzymeCollapse">
+                            Properties
+                        </button>
+                    </div>
+
+                    <div class="collapse" id="enzymeCollapse">
+                        <div class="card card-body">
+                            <label style="margin-top: 20px; font-weight: bold;" for="enzymeName">Name</label>
+                            <input style="width: 300px" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
+                            <label style="margin-top: 20px; font-weight: bold;" for="enzymeSite">Restriction Site</label>
+                            <input style="width: 300px" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
+                            <div style="margin-top: 20px;">
+                                <button class="btn btn-success" type="button" style="width: 120px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()">Update</button>
+                                <button class="btn btn-danger" type="button" style="width: 120px; display: inline-block;" onclick="deleteRestrictionEnzyme()">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <br> 
+                    <div style="margin-bottom: 20px;"></div>
 
                     <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
                     <div>
@@ -62,7 +103,23 @@
         <script>
             var selectedGenome = document.getElementById('selectedGenome');
             var selectedEnzyme = document.getElementById('selectedEnzyme');
+            var enzymeName = document.getElementById('enzymeName');
+            var enzymeSite = document.getElementById('enzymeSite');
+            var enzymeSelect = document.getElementById('enzymeSelect');
+            var genomeName = document.getElementById('genomeName');
+            var error = document.getElementById('error');
+            var token = "<%= userToken %>"
+            var DOC_NAME = "<%= user !== null ? user.uid : ''%>";
+            var genomes = [];
+            var restriction_enzymes = [];
+            genomes = <%- JSON.stringify(genomes) %>;
+            restriction_enzymes = <%- JSON.stringify(restriction_enzymes) %>;
 
+
+            window.onload = async ()=>{
+                await signIn(token);
+            };
+        
             function updateToFixed(){
                 let value = parseFloat(document.getElementById("probability").value);
                 if(!isNaN(value) && value >= 0.01 && value <= 1.00){
@@ -71,17 +128,24 @@
             }
 
             function onSelectEnzyme(sel){
-                selectedEnzyme.value = sel.options[sel.selectedIndex].value;
+                console.log(sel.selectedIndex);
+                selectedEnzyme.value = restriction_enzymes[sel.selectedIndex].id;
+                enzymeName.value = restriction_enzymes[sel.selectedIndex].name;
+                enzymeSite.value = restriction_enzymes[sel.selectedIndex].restrictionSite;
                 console.log(selectedEnzyme.value);
             }
 
             function onSelectGenome(sel){
-                selectedGenome.value = sel.options[sel.selectedIndex].value;
+                console.log(sel.selectedIndex);
+                selectedGenome.value = genomes[sel.selectedIndex].fileName;
+                genomeName.value = genomes[sel.selectedIndex].name;
                 console.log(selectedGenome.value);
             }
         </script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+        <script type="module" src="js/update_data.js"></script>  
+        <script type="module" src="js/firebase_auth.js"></script>  
     </body>
 
 
