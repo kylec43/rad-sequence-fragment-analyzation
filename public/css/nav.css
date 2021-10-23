@@ -4,41 +4,27 @@ collapse{
 
 
 nav{
-    height: 60px;
     box-shadow: 0 0 13px 3px rgba(0,0,0,.5);
     width: 100%;
-    z-index: 10;
 }
 
 .navButton{
-    display:inline-block;
-    text-align: center;
-    line-height: 50px;
-    width: 120px;
-    height: 50px;
-    background: linear-gradient(#6da5a3, #395f5d);
-    text-shadow: black 0 1px 0;
-    border-radius: 6px;
-    border: 1px solid #253737;
-    color:white;
+    border-radius: 10px;
     font-weight: bold;
-    margin-left: 10px;
-    z-index: 10;
-
+    font-size: 1.3rem;
+    display: inline-block;
+    margin-top: 5px;
 }
 
 .navButton:hover {
     border: 1px solid #253737;
-    text-shadow: black 0 1px 0;
-    background: linear-gradient(#77b2b0, #416b68);
-    color: #fff;
+    background: lightgray;
  }
 
-.navButton:active {
-    margin-top:1px;
-    text-shadow: #333333 0 -1px 0;
-    border: 1px solid #253737;
-    background: linear-gradient(#416b68, #6da5a3);
-    color: #fff;
-    box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
-}
+ .navButton:active{
+    background: linear-gradient(#77b2b0, #416b68);
+ }
+
+ .borderless{
+     border: none;
+ }
