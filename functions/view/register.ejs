@@ -14,7 +14,7 @@
         <title>RAD-Seq</title>
     </head>
 
-    <body style="background-color: rgba(210,210,210,1);">
+    <body>
         <%- include ('partials/nav.ejs', {page: 'register'}, user) %>
 
         <div style="text-align: center;">
@@ -28,7 +28,7 @@
                     <input type="email" class="form-control" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Address" style="margin-top: 20px; width: 400px;" required>
                     <input type="password" class="form-control" name="password" id="password" placeholder="Password" minlength="6" style="margin-top: 20px; width: 400px;" required>
                     <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" minlength="6" placeholder="Confirm Password" style="margin-top: 20px; width: 400px;" required>
-                    <input name="submit" class="post-btn" type="submit" value="Register" style="margin-top: 25px; font-weight: bold;"/>
+                    <input name="submit" class="form-button" type="submit" value="Register" style="margin-top: 25px; font-weight: bold;"/>
                 </div>
             </form>
         </div>

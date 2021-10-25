@@ -3,9 +3,10 @@ collapse{
 }
 
 
-nav{
+.navbar{
     box-shadow: 0 0 13px 3px rgba(0,0,0,.5);
-    width: 100%;
+    padding-left: 1rem;
+    padding-right: 2rem;
 }
 
 .navButton{
@@ -13,18 +14,44 @@ nav{
     font-weight: bold;
     font-size: 1.3rem;
     display: inline-block;
-    margin-top: 5px;
+    border: 2px solid transparent;
 }
 
 .navButton:hover {
-    border: 1px solid #253737;
-    background: lightgray;
+    border: 2px solid rgba(255,255,255,.5);
+    background: linear-gradient(#77b2b0, #416b68);
  }
 
  .navButton:active{
-    background: linear-gradient(#77b2b0, #416b68);
+    background: linear-gradient(#416b68, #6da5a3);
  }
 
  .borderless{
      border: none;
+ }
+
+ #myAccountButton{
+    text-decoration: none; 
+    color: rgba(255,255,255,.5);
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.3rem;
+    display: inline-block;
+    text-decoration: none; 
+ }
+
+ #myAccountButton:hover{
+    background: linear-gradient(#77b2b0, #416b68);
+    border: 2px solid rgba(255,255,255,.5);
+ }
+
+
+
+ #myAccountButton:active{
+    background: linear-gradient(#416b68, #6da5a3);
+ }
+
+ #myAccountButton:focus{
+     border: 2px solid #6da5a3;
+     box-shadow: none;
  }

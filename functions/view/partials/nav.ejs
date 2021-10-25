@@ -7,7 +7,7 @@
   <div id="lg" class="visible-lg"></div>
 </div>
 
-<nav class="navbar fixed-top navbar-expand-lg bg-light navbar-light" style = "position:fixed; top: 0px; background:rgb(226, 226, 226);" onclick="">
+<nav class="navbar fixed-top navbar-expand-lg bg-dark navbar-dark" onclick="">
     <button class="navbar-toggler" id="togglerButton" type="button" data-toggle="collapse" data-target="#navbarNav" onchange="changeNavButtonStyle()">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -28,14 +28,14 @@
               <a class="nav-link navButton" style="padding: 8px;" id="registerButton" href='/register'>Register</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link navButton" style="padding: 8px; margin-right: 30px;" id="loginButton" href='/login'>Log In</a>
+              <a class="nav-link navButton" style="padding: 8px;" id="loginButton" href='/login'>Log In</a>
             </li>
         </ul>
       <% } %>
     </div>
     <% if(user) { %>
         <div class="btn-group">
-          <button type="button" class="btn btn-link dropdown-toggle navButton" id="myAccountButton" style="text-decoration: none; margin-right: 30px; color: black; border: 1px solid black;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-link dropdown-toggle" id="myAccountButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             My Account
           </button>
           <div class="dropdown-menu">
@@ -45,19 +45,20 @@
           </div>
         </div> 
     <% } %>
-
-    <script>
-      
-      var homeButton = document.getElementById('homeButton');
-      var togglerButton = document.getElementById('togglerButton');
-      var navbarNav = document.getElementById('navbarNav');
-
-      <% if (user) { %>
-        var uploadButton = document.getElementById('uploadButton');
-        var myAccountButton = document.getElementById('myAccountButton');
-      <% }  else { %>
-        var registerButton = document.getElementById('registerButton');
-        var loginButton = document.getElementById('loginButton');
-      <% } %>
-    </script>
 </nav>
+
+
+<script>
+
+  var homeButton = document.getElementById('homeButton');
+  var togglerButton = document.getElementById('togglerButton');
+  var navbarNav = document.getElementById('navbarNav');
+
+  <% if (user) { %>
+    var uploadButton = document.getElementById('uploadButton');
+    var myAccountButton = document.getElementById('myAccountButton');
+  <% }  else { %>
+    var registerButton = document.getElementById('registerButton');
+    var loginButton = document.getElementById('loginButton');
+  <% } %>
+</script>

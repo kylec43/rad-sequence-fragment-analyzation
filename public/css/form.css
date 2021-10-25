@@ -1,26 +1,26 @@
 body {
-	background-size: cover;
     padding-top:100px;
+    background-color: rgba(210,210,210,1);
 }
 
 .myForm{
     text-align: left;
     margin-top: 50px;
+    padding: 50px;
     display: inline-block;
-    width: auto;
-    height: auto;
-    padding:30px;
     border: 1px solid rgb(200, 200, 200);
-    border-radius: 10px;
-    background-clip: padding-box;
+    border-radius: 60px;
     background: rgb(240, 240, 240);
     box-shadow: 0 0 18px 3px rgba(0,0,0,.5);
     overflow: hidden; 
+    margin-bottom: 100px;
 }
 
-.post-btn {
-	width: 138px;
-	height: 44px;
+.form-button {
+    min-width: 138px;
+    min-height: 44px;
+	width: auto;
+	height: auto;
     border: 1px solid #253737;
     background: linear-gradient(#6da5a3, #416b68);
     border-radius: 6px;
@@ -30,7 +30,7 @@ body {
     margin-top: 30px;
 }
 
-.post-btn:hover {
+.form-button:hover {
     border: 1px solid #253737;
     text-shadow: #333333 0 1px 0;
     background: linear-gradient(#77b2b0, #416b68);
@@ -39,7 +39,7 @@ body {
 
  }
 
-.post-btn:active {
+.form-button:active {
     margin-top:1px;
     text-shadow: #333333 0 -1px 0;
     border: 1px solid #253737;
@@ -61,4 +61,9 @@ body {
 .myNumberInput
 {
     margin-bottom: 20px;
+}
+
+.card-header{
+    padding-top: 2px;
+    padding-bottom: 2px;
 }

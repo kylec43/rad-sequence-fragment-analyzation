@@ -14,12 +14,20 @@
 
         <title>RAD-Seq</title>
 
+        <style>
+            .properties-button:focus{
+                box-shadow: none;
+            }
+        </style>
+
     </head>
 
-    <body style="background-color: rgba(210,210,210,1);">
+    <body>
 
 
         <script type="module" src="js/init_firebase.js"></script>
+
+        <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
 
         <div style="text-align: center;">
             <form action="/results" class="myForm" style="text-align: center;" method="post">
@@ -34,19 +42,21 @@
                             <% } %>
                         </select>
                     </div>
-                    <div style="text-align: left;">
-                        <button class="myButton" type="button" data-toggle="collapse" data-target="#genomeCollapse" aria-expanded="false" aria-controls="genomeCollapse">
-                            Properties
-                        </button>
+                    <div class="card-header" style="text-align: left;" data-toggle="collapse" data-target="#genomeCollapse" aria-expanded="true" aria-controls="genomeCollapse">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link properties-button" type="button" data-toggle="collapse" data-target="#genomeCollapse" aria-expanded="true" aria-controls="genomeCollapse">
+                                Properties
+                            </button>
+                        </h5>
                     </div>
 
-                    <div class="collapse" id="genomeCollapse">
-                        <div class="card card-body">
-                            <label style="margin-top: 20px; font-weight: bold;" for="genomeName">Name</label>
-                            <input style="width: 300px" id="genomeName" name="genomeName" type="text" value="<%= genomes.length > 0  ? genomes[0]['name'] : '' %>"> 
+                    <div class="collapse" style="position: absolute; width: 300px" id="genomeCollapse">
+                        <div class="card card-body" style="padding-top: 0px">
+                            <label style="margin-top: 10px; font-weight: bold;" for="genomeName">Name</label>
+                            <input style="width: 100%" id="genomeName" name="genomeName" type="text" value="<%= genomes.length > 0  ? genomes[0]['name'] : '' %>"> 
                             <div style="margin-top: 20px;">
-                                <button class="btn btn-success" style="width: 120px; display: inline-block; margin-right: 20px;">Update</button>
-                                <button class="btn btn-danger" style="width: 120px; display: inline-block;">Delete</button>
+                                <button class="btn btn-success" style="width: 100px; display: inline-block; margin-right: 20px;">Update</button>
+                                <button class="btn btn-danger" style="width: 100px; display: inline-block;">Delete</button>
                             </div>               
                         </div>
                     </div>
@@ -61,21 +71,23 @@
                         <% } %>
                         </select>
                     </div>
-                    <div style="text-align: left;">
-                        <button class="myButton" type="button" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="false" aria-controls="enzymeCollapse">
-                            Properties
-                        </button>
+                    <div class="card-header" style="text-align: left;" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link properties-button" type="button" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
+                                Properties
+                            </button>
+                        </h5>
                     </div>
 
-                    <div class="collapse" id="enzymeCollapse">
-                        <div class="card card-body">
-                            <label style="margin-top: 20px; font-weight: bold;" for="enzymeName">Name</label>
-                            <input style="width: 300px" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
+                    <div class="collapse" style="position: absolute; width: 300px;" id="enzymeCollapse">
+                        <div class="card card-body" style="padding-top:0px;">
+                            <label style="margin-top: 10px; font-weight: bold;" for="enzymeName">Name</label>
+                            <input style="width: 100%" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
                             <label style="margin-top: 20px; font-weight: bold;" for="enzymeSite">Restriction Site</label>
-                            <input style="width: 300px" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
+                            <input style="width: 100%" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
                             <div style="margin-top: 20px;">
-                                <button class="btn btn-success" type="button" style="width: 120px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()">Update</button>
-                                <button class="btn btn-danger" type="button" style="width: 120px; display: inline-block;" onclick="deleteRestrictionEnzyme()">Delete</button>
+                                <button class="btn btn-success" type="button" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()">Update</button>
+                                <button class="btn btn-danger" type="button" style="width: 100px; display: inline-block;" onclick="deleteRestrictionEnzyme()">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -89,7 +101,7 @@
                     <% if(error){ %>
                         <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
                     <% } %>
-                    <input name="submit" class="post-btn" type="submit" style="font-weight: bold;" value="Get Analysis" />
+                    <input name="submit" class="form-button" type="submit" style="font-weight: bold;" value="Get Analysis" />
                 </div>
 
                 <input style="display: none;" name="selectedGenome" id="selectedGenome" value="<%= genomes.length > 0 ? genomes[0]['fileName'] : '' %>">
@@ -142,8 +154,6 @@
                 console.log(selectedGenome.value);
             }
         </script>
-
-        <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
