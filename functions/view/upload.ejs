@@ -43,28 +43,27 @@
                 <input id="rsInput" name="rsInput" style="width: 300px; display: none;" type="text">
                 <br>
 
-                <div id="uploadProgressDiv" style="display: none;">
-                    <div class="progress" style="margin-top: 20px;">
-                        <div
-                        id="progressBar"
-                        class="progress-bar"
-                        role="progressbar"
-                        style="width: 0%;"
-                        aria-valuenow="0"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        ></div>
-                    </div>
-                    <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
-                        <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Uploading</h6>
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
+                
+                <div class="progress" style="margin-top: 20px; display: none;" id="uploadProgressDiv">
+                    <div
+                    id="progress_bar"
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width: 0%;"
+                    aria-valuenow="50"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    ></div>
+                </div>
+                <div id="uploadingDiv" style="display: none; align-items: center; justify-content: center; margin-top: 30px;">
+                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Uploading</h5>
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only"></span>
                     </div>
                 </div>
 
                 <div style="text-align: center;">
-                    <input type="button" id="uploadButton" class="form-button" style="font-weight: bold" value="Upload" onclick="uploadSelection();">
+                    <input type="button" class="form-button" id="upload_button" style="font-weight: bold;" value="Upload" onclick="uploadSelection();">
                 </div>
             </form>
         </div>
@@ -77,8 +76,9 @@
             var genomeFileInput = document.getElementById("genomeFileInput");
             var selectionName = document.getElementById("selectionName");
             var uploadProgressDiv = document.getElementById("uploadProgressDiv");
-            var progressBar = document.getElementById('progressBar');
-            var uploadButton = document.getElementById('uploadButton');
+            var uploadingDiv = document.getElementById("uploadingDiv");
+            var progressBar = document.getElementById('progress_bar');
+            var uploadButton = document.getElementById('upload_button');
             var GENOME_FOLDER = "genomes/" + '<%= user.uid%>' + "/"
             var DOC_NAME = '<%= user.uid%>';
             var error = document.getElementById('error');

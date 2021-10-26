@@ -36,7 +36,7 @@
                 <div style="display:inline-block;">
                     <h4 style="font-weight: bold;">Genome</h4>
                     <div>
-                        <select class="myDropDown" onchange="onSelectGenome(this);" name="genome" id="genome">
+                        <select class="myDropDown" onchange="onSelectGenome(this);" name="genomeSelect" id="genomeSelect">
                             <% for(let i = 0; i < genomes.length; i++) { %>
                                 <option id="<%= genomes[i]['fileName'] %>"><%= genomes[i]["name"] %></option>
                             <% } %>
@@ -54,9 +54,25 @@
                         <div class="card card-body" style="padding-top: 0px">
                             <label style="margin-top: 10px; font-weight: bold;" for="genomeName">Name</label>
                             <input style="width: 100%" id="genomeName" name="genomeName" type="text" value="<%= genomes.length > 0  ? genomes[0]['name'] : '' %>"> 
-                            <div style="margin-top: 20px;">
-                                <button class="btn btn-success" style="width: 100px; display: inline-block; margin-right: 20px;">Update</button>
-                                <button class="btn btn-danger" style="width: 100px; display: inline-block;">Delete</button>
+                            <div style="margin-top: 20px;" id="genomePropertiesButtonsDiv">
+                                <button class="btn btn-success" type="button" id="genomeUpdateButton" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateGenome()" <%= genomes.length === 0 ? 'disabled' : ''%>>Update</button>
+                                <button class="btn btn-danger" type="button" id="genomeDeleteButton" style="width: 100px; display: inline-block;" onclick="deleteGenome()" <%= genomes.length === 0 ? 'disabled' : ''%>>Delete</button>
+                            </div>
+                            <div id="updateGenomeProgressDiv" style="display: none">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
+                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Updating</h5>
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="deleteGenomeProgressDiv" style="display: none">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
+                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Deleting</h5>
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
                             </div>               
                         </div>
                     </div>
@@ -85,9 +101,25 @@
                             <input style="width: 100%" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
                             <label style="margin-top: 20px; font-weight: bold;" for="enzymeSite">Restriction Site</label>
                             <input style="width: 100%" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
-                            <div style="margin-top: 20px;">
-                                <button class="btn btn-success" type="button" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()">Update</button>
-                                <button class="btn btn-danger" type="button" style="width: 100px; display: inline-block;" onclick="deleteRestrictionEnzyme()">Delete</button>
+                            <div style="margin-top: 20px;" id="enzymePropertiesButtonsDiv">
+                                <button class="btn btn-success" id="enzymeUpdateButton" type="button" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()" <%= restriction_enzymes.length === 0 ? 'disabled' : ''%>>Update</button>
+                                <button class="btn btn-danger" id="enzymeDeleteButton" type="button" style="width: 100px; display: inline-block;" onclick="deleteRestrictionEnzyme()" <%= restriction_enzymes.length === 0 ? 'disabled' : ''%>>Delete</button>
+                            </div>
+                            <div id="updateEnzymeProgressDiv" style="display: none">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
+                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Updating</h5>
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="deleteEnzymeProgressDiv" style="display: none">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
+                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Deleting</h5>
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -118,9 +150,18 @@
             var enzymeSite = document.getElementById('enzymeSite');
             var enzymeSelect = document.getElementById('enzymeSelect');
             var genomeName = document.getElementById('genomeName');
+            var enzymePropertiesButtonsDiv = document.getElementById('enzymePropertiesButtonsDiv');
+            var deleteGenomeProgressDiv = document.getElementById('deleteGenomeProgressDiv');
+            var genomePropertiesButtonsDiv = document.getElementById('genomePropertiesButtonsDiv');
+            var enzymeUpdateButton = document.getElementById('enzymeUpdateButton');
+            var enzymeDeleteButton = document.getElementById('enzymeDeleteButton');
+            var genomeUpdateButton = document.getElementById('genomeUpdateButton');
+            var genomeDeleteButton = document.getElementById('genomeDeleteButton');
             var error = document.getElementById('error');
             var token = "<%= userToken %>"
             var DOC_NAME = "<%= user !== null ? user.uid : ''%>";
+            var GENOME_FOLDER = "<%= user !== null ? 'genomes/' + user.uid + '/' : '' %>";
+
             var genomes = [];
             var restriction_enzymes = [];
             genomes = <%- JSON.stringify(genomes) %>;

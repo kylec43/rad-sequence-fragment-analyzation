@@ -2,8 +2,6 @@ import { getAuth, signInWithCustomToken} from "https://www.gstatic.com/firebasej
 
 window.signIn = async function signIn(token){
     //sign in with token
-    error.innerHTML = "";
-    error.style.display = "none";
     console.log("signing in");
 
     await signInWithCustomToken(getAuth(), `${token}`).then((userCredential) => {
@@ -13,9 +11,6 @@ window.signIn = async function signIn(token){
     })
     .catch((e) => {
         console.log(`Sign in fail! ${error}`);
-        error.style.display = "block";
-        error.innerHTML = `${e}`;
-        throw e;
         // ...
     });
 }
