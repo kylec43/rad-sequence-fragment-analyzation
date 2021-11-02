@@ -31,7 +31,7 @@ body {
 .rad-form{
     width: 40%;
     min-width: 500px;
-    max-width: 700px;
+    max-width: 600px;
     height: auto;
     margin: 200px auto;
     padding: 50px;
@@ -108,7 +108,7 @@ body {
 
 .rad-form-input-label{
     display: inline-block; 
-    width: 40%; 
+    width: 35%; 
     margin-top: 20px; 
     font-weight: bold;
 }
