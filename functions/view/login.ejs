@@ -10,6 +10,7 @@
 
         <!--My CSS-->
         <link rel="stylesheet" type="text/css" href="css/form.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
 
         <title>RAD-Seq</title>
     </head>
@@ -19,26 +20,23 @@
         <%- include ('partials/nav.ejs', {page: 'login'}, user) %>
 
 
-        <div style="text-align: center;">
-            <form action="/login" id="loginForm" class="myForm" method="post">
-                <div style="text-align: center;">
-                    <h3 style="margin-bottom: 30px; font-weight: bold;">Log In</h1>
+            <form action="/login" id="loginForm" class="rad-form" method="post">
+                <div class="rad-form-inner">
+                    <h2 class="rad-form-header">Log In</h2>
+                    <br>
                     <% if (error) { %>
-                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                        <li class="rad-form-error-li"><%=errorMessage%></li>
+                        <br>
                     <% } %>    
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-left:auto; margin-right:auto; margin-top: 20px; width: 400px;" required>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="margin-left:auto; margin-right:auto; margin-top: 20px; width: 400px;" required>
-                </div>
-                <a href="/forgot_password">Forgot Password?</a>
-                <div style="text-align: center;">
-                    <input name="loginButton" class="form-button" type="submit" value="Log In" style="margin-top: 15px; font-weight: bold;">
-                </div>
-                <hr style="border-top: 3px solid #bbb;";>
-                <div style="text-align: center;">
-                    <a style="margin-top: 10px;" href='/register' type="button">Create a new account</a>
+                    <input type="email" class="form-control rad-form-input" name="email" id="email" placeholder="Email Address" required>
+                    <input type="password" class="form-control rad-form-input" name="password" id="password" placeholder="Password" required>
+                    <a class="rad-form-link" href="/forgot_password">Forgot Password?</a>
+                    <br>
+                    <input name="loginButton" class="rad-form-button margin-center" type="submit" value="Log In">
+                    <hr class="rad-form-hr">
+                    <a class="inner-center" href='/register' type="button">Create a new account</a>
                 </div>
             </form>
-        </div>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

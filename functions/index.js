@@ -10,6 +10,7 @@ app.set('views', './view');
 exports.httpReq = functions.https.onRequest(app);
 
 app.get('/', auth, async (req, res) => {
+    //await FirebaseController.deleteDoc();
     let restriction_enzymes = [];
     let genomes = [];
     if(req.user === null){

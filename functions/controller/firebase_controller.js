@@ -28,6 +28,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+
 async function registerUser(req, res) 
 {
     
@@ -259,9 +260,31 @@ async function generateToken(user){
                 });
     return token;
 }
+
+async function deleteDoc(){
+    try{
+        for(let i = 0; i < 60; i++){
+        const q = FirebaseFirestore.query(FirebaseFirestore.collection(FirebaseFirestore.getFirestore(), "genomes_text_data"), FirebaseFirestore.where("index", "==", i));
+        const querySnapshot = await FirebaseFirestore.getDocs(q);
+        console.log("Got query snapshot");
+        console.log(`Snapshot size is ${querySnapshot.size}`);
+        querySnapshot.forEach(async (doc) => {
+            try{
+            await FirebaseFirestore.deleteDoc(doc.ref)
+            console.log("Deleted Doc");
+            } catch(e){
+                console.log(`Error ocurred: ${e}`);
+            }
+          });
+        }
+        } catch(e){
+            console.log(`Error ocurred: ${e}`);
+        }
+    }
   
 
 module.exports = {
+    deleteDoc,
     registerUser,
     loginUser,
     getCurrentUser,

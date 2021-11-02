@@ -10,6 +10,7 @@
 
         <!--My CSS-->
         <link rel="stylesheet" type="text/css" href="css/form.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
 
         <title>RAD-Seq</title>
     </head>
@@ -17,21 +18,21 @@
     <body>
         <%- include ('partials/nav.ejs', {page: 'register'}, user) %>
 
-        <div style="text-align: center;">
-            <form action="/register" class="myForm" method="post">
-                <div style="text-align:center">
-                    <h3 style="margin-bottom: 30px; font-weight: bold;">Register</h1>
-                    <% if (error) { %>
-                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                    <% } %>    
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" style="margin-top: 20px; width: 400px;" required>
-                    <input type="email" class="form-control" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Address" style="margin-top: 20px; width: 400px;" required>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" minlength="6" style="margin-top: 20px; width: 400px;" required>
-                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" minlength="6" placeholder="Confirm Password" style="margin-top: 20px; width: 400px;" required>
-                    <input name="submit" class="form-button" type="submit" value="Register" style="margin-top: 25px; font-weight: bold;"/>
-                </div>
-            </form>
-        </div>
+        <form action="/register" class="rad-form" method="post">
+            <div class="rad-form-inner">
+                <h2 class="rad-form-header">Register</h2>
+                <br>
+                <% if (error) { %>
+                    <li class="rad-form-error-li"><%=errorMessage%></li>
+                    <br>
+                <% } %>    
+                <input type="email" class="form-control rad-form-input" name="email" id="email" placeholder="Email Address" required>
+                <input type="email" class="form-control rad-form-input" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Address" required>
+                <input type="password" class="form-control rad-form-input" name="password" id="password" placeholder="Password" minlength="6" required>
+                <input type="password" class="form-control rad-form-input" name="confirmPassword" id="confirmPassword" minlength="6" placeholder="Confirm Password" required>
+                <button class="rad-form-button margin-center">Register</button>
+            </div>
+        </form>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

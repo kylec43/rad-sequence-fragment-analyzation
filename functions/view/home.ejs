@@ -29,65 +29,20 @@
 
         <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
 
-        <div style="text-align: center;">
-            <form action="/results" class="myForm" style="text-align: center;" method="post">
-                <h1 style="margin-bottom: 40px; font-weight: bold;">RAD-Seq Fragment Analysis</h1>
-                <li id="error" style="text-align:center; font-weight: bold; color: red; display: none;"></li>
-                <div style="display:inline-block;">
-                    <h4 style="font-weight: bold;">Genome</h4>
-                    <div>
-                        <select class="myDropDown" onchange="onSelectGenome(this);" name="genomeSelect" id="genomeSelect">
-                            <% for(let i = 0; i < genomes.length; i++) { %>
-                                <option id="<%= genomes[i]['fileName'] %>"><%= genomes[i]["name"] %></option>
-                            <% } %>
-                        </select>
-                    </div>
-                    <div class="card-header" style="text-align: left;" data-toggle="collapse" data-target="#genomeCollapse" aria-expanded="true" aria-controls="genomeCollapse">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link properties-button" type="button" data-toggle="collapse" data-target="#genomeCollapse" aria-expanded="true" aria-controls="genomeCollapse">
-                                Properties
-                            </button>
-                        </h5>
-                    </div>
+        <form action="/results" class="rad-form" method="post">
+            <div class="rad-form-inner">
+                <h2 class="rad-form-header">RAD-Seq Fragment Analysis</h2><br>
+                <li id="error" class="rad-form-error-li" style="display: none;"></li>               
 
-                    <div class="collapse" style="position: absolute; width: 300px" id="genomeCollapse">
-                        <div class="card card-body" style="padding-top: 0px">
-                            <label style="margin-top: 10px; font-weight: bold;" for="genomeName">Name</label>
-                            <input style="width: 100%" id="genomeName" name="genomeName" type="text" value="<%= genomes.length > 0  ? genomes[0]['name'] : '' %>"> 
-                            <div style="margin-top: 20px;" id="genomePropertiesButtonsDiv">
-                                <button class="btn btn-success" type="button" id="genomeUpdateButton" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateGenome()" <%= genomes.length === 0 ? 'disabled' : ''%>>Update</button>
-                                <button class="btn btn-danger" type="button" id="genomeDeleteButton" style="width: 100px; display: inline-block;" onclick="deleteGenome()" <%= genomes.length === 0 ? 'disabled' : ''%>>Delete</button>
-                            </div>
-                            <div id="updateGenomeProgressDiv" style="display: none">
-                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
-                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Updating</h5>
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="deleteGenomeProgressDiv" style="display: none">
-                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
-                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Deleting</h5>
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only"></span>
-                                    </div>
-                                </div>
-                            </div>               
-                        </div>
-                    </div>
-                    <br>
-                    <div style="margin-bottom: 20px;"></div>
+                <h5 class="rad-form-header">Restriction Enzyme</h5>
+                <select class="rad-form-dropdown margin-center" onchange="onSelectEnzyme(this);" name="enzymeSelect" id="enzymeSelect">
+                    <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
+                        <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
+                    <% } %>
+                </select>
 
-                    <h4 style="font-weight: bold;">Restriction Enzyme</h4>
-                    <div>
-                        <select class="myDropDown" onchange="onSelectEnzyme(this);" name="enzymeSelect" id="enzymeSelect">
-                        <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
-                            <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
-                        <% } %>
-                        </select>
-                    </div>
-                    <div class="card-header" style="text-align: left;" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
+                <div class="rad-properties-block margin-center">
+                    <div class="card-header" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
                         <h5 class="mb-0">
                             <button class="btn btn-link properties-button" type="button" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
                                 Properties
@@ -95,12 +50,13 @@
                         </h5>
                     </div>
 
-                    <div class="collapse" style="position: absolute; width: 300px;" id="enzymeCollapse">
-                        <div class="card card-body" style="padding-top:0px;">
-                            <label style="margin-top: 10px; font-weight: bold;" for="enzymeName">Name</label>
-                            <input style="width: 100%" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
-                            <label style="margin-top: 20px; font-weight: bold;" for="enzymeSite">Restriction Site</label>
-                            <input style="width: 100%" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
+                    <div class="collapse" class="rad-properties-inner" id="enzymeCollapse">
+                        <div class="card card-body" style="padding-top: 0px;">
+                            <h6 class="rad-form-header">Name</h6>
+                            <input class="rad-properties-input" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
+       
+                            <h6 class="rad-form-header" for="enzymeSite">Restriction Site</h6>
+                            <input class="rad-properties-input" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
                             <div style="margin-top: 20px;" id="enzymePropertiesButtonsDiv">
                                 <button class="btn btn-success" id="enzymeUpdateButton" type="button" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()" <%= restriction_enzymes.length === 0 ? 'disabled' : ''%>>Update</button>
                                 <button class="btn btn-danger" id="enzymeDeleteButton" type="button" style="width: 100px; display: inline-block;" onclick="deleteRestrictionEnzyme()" <%= restriction_enzymes.length === 0 ? 'disabled' : ''%>>Delete</button>
@@ -123,23 +79,23 @@
                             </div>
                         </div>
                     </div>
-                    <br> 
-                    <div style="margin-bottom: 20px;"></div>
-
-                    <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
-                    <div>
-                        <input type="number" name="probability" id="probability" step="0.01" class="myNumberInput" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
-                    </div>
-                    <% if(error){ %>
-                        <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
-                    <% } %>
-                    <input name="submit" class="form-button" type="submit" style="font-weight: bold;" value="Get Analysis" />
                 </div>
+                <br> 
+                <div style="margin-bottom: 20px;"></div>
+
+                <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
+                <div>
+                    <input type="number" name="probability" id="probability" step="0.01" class="myNumberInput" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                </div>
+                <% if(error){ %>
+                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                <% } %>
+                <input name="submit" class="form-button" type="submit" style="font-weight: bold;" value="Get Analysis" />
 
                 <input style="display: none;" name="selectedGenome" id="selectedGenome" value="<%= genomes.length > 0 ? genomes[0]['fileName'] : '' %>">
                 <input style="display: none;" name="selectedEnzyme" id="selectedEnzyme" value="<%= restriction_enzymes.length > 0 ? restriction_enzymes[0]['id'] : '' %>">
-            </form>
-        </div>
+            </div>
+        </form>
         
 
 

@@ -1,3 +1,143 @@
+/* Global selectors */
+body {
+    background-color: rgba(210,210,210,1);
+}
+
+
+/* Aligning Tools */
+.margin-center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inner-center{
+    display: block;
+    text-align: center;
+}
+
+
+/* Form Classes */
+
+.rad-form-header{
+    text-align: center;
+    font-weight: bold;
+}
+
+.rad-form{
+    width: 40%;
+    min-width: 400px;
+    max-width: 600px;
+    height: auto;
+    margin: 200px auto;
+    padding: 50px;
+    display: block;
+    text-align: center;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 60px;
+    background: rgb(240, 240, 240);
+    box-shadow: 0 0 18px 3px rgba(0,0,0,.5);
+    overflow: hidden; 
+}
+
+
+.rad-form-button {
+    font-weight: bold;
+    min-width: 138px;
+    min-height: 44px;
+	width: auto;
+	height: auto;
+    border: 1px solid #253737;
+    background: linear-gradient(#6da5a3, #416b68);
+    border-radius: 6px;
+    box-shadow: rgba(255,255,255,0.1) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
+    text-shadow: #333333 0 1px 0;
+    color: #e1e1e1;
+    margin-top: 30px;
+}
+
+.rad-form-button:hover {
+    border: 1px solid #253737;
+    text-shadow: #333333 0 1px 0;
+    background: linear-gradient(#77b2b0, #416b68);
+    color: #fff;
+ }
+
+.rad-form-button:active {
+    text-shadow: #333333 0 -1px 0;
+    border: 1px solid #253737;
+    background: linear-gradient(#416b68, #6da5a3);
+    color: #fff;
+    box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
+}
+
+.rad-form-input{
+    margin-top: 15px;
+    width: 100%; 
+}
+
+.rad-form-input-inline{
+    margin-top: 15px;
+    width: 62%;
+}
+
+.rad-form-dropdown{
+    width: 60%;
+}
+
+.rad-form-inner{
+    text-align: left;
+    width: auto;
+}
+
+
+.rad-form-error-li{
+    text-align:center; 
+    font-weight: bold; 
+    color: red;
+}
+
+.rad-form-hr{
+    border-top: 3px solid #bbb;
+    width: 100%;
+}
+
+.rad-form-input-label{
+    display: inline-block; 
+    width: 37%; 
+    margin-top: 20px; 
+    font-weight: bold;
+}
+
+.rad-upload{
+    align-items: center; 
+    justify-content: center; 
+    margin-top: 30px;
+}
+
+.rad-upload-label{
+    display: inline; 
+    margin-right: 10px; 
+    font-weight: bold;
+}
+
+.rad-properties-block{
+    width: 60%;
+}
+
+.rad-properties-inner{
+    position: absolute; 
+    width: 60%;
+}
+
+.rad-properties-input{
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* rad classes end */
+
+
 .myButton{
     display:inline-block;
     width: 100px;
