@@ -11,6 +11,10 @@ body {
     margin-right: auto;
 }
 
+.margin-left{
+    margin-left: auto;
+}
+
 .inner-center{
     display: block;
     text-align: center;
@@ -26,8 +30,8 @@ body {
 
 .rad-form{
     width: 40%;
-    min-width: 400px;
-    max-width: 600px;
+    min-width: 500px;
+    max-width: 700px;
     height: auto;
     margin: 200px auto;
     padding: 50px;
@@ -78,7 +82,7 @@ body {
 
 .rad-form-input-inline{
     margin-top: 15px;
-    width: 62%;
+    width: 55%;
 }
 
 .rad-form-dropdown{
@@ -104,7 +108,7 @@ body {
 
 .rad-form-input-label{
     display: inline-block; 
-    width: 37%; 
+    width: 40%; 
     margin-top: 20px; 
     font-weight: bold;
 }
@@ -119,20 +123,6 @@ body {
     display: inline; 
     margin-right: 10px; 
     font-weight: bold;
-}
-
-.rad-properties-block{
-    width: 60%;
-}
-
-.rad-properties-inner{
-    position: absolute; 
-    width: 60%;
-}
-
-.rad-properties-input{
-    width: 100%;
-    margin-bottom: 15px;
 }
 
 /* rad classes end */

@@ -31,69 +31,30 @@
 
         <form action="/results" class="rad-form" method="post">
             <div class="rad-form-inner">
-                <h2 class="rad-form-header">RAD-Seq Fragment Analysis</h2><br>
+                <h1 class="rad-form-header">RAD-Seq Fragment Analysis</h1>
+                <br>
                 <li id="error" class="rad-form-error-li" style="display: none;"></li>               
 
-                <h5 class="rad-form-header">Restriction Enzyme</h5>
-                <select class="rad-form-dropdown margin-center" onchange="onSelectEnzyme(this);" name="enzymeSelect" id="enzymeSelect">
+                <label class="rad-form-input-label" for="enzyme_select">Restriction Enzyme:</label>
+                <select class="rad-form-input-inline" onchange="onSelectEnzyme(this);" name="enzyme_select" id="enzyme_select">
                     <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
                         <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
                     <% } %>
                 </select>
+                <label class="rad-form-input-label" for="enzyme_site">Restriction Site:</label>
+                <input class="rad-form-input-inline" id="enzyme_site" name="enzyme_site" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>" disabled>
 
-                <div class="rad-properties-block margin-center">
-                    <div class="card-header" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link properties-button" type="button" data-toggle="collapse" data-target="#enzymeCollapse" aria-expanded="true" aria-controls="enzymeCollapse">
-                                Properties
-                            </button>
-                        </h5>
-                    </div>
+                <label class="rad-form-input-label" for="genome_file">Genome File:</label>
+                <input class="rad-form-input-inline" type="file" id="genome_file">
 
-                    <div class="collapse" class="rad-properties-inner" id="enzymeCollapse">
-                        <div class="card card-body" style="padding-top: 0px;">
-                            <h6 class="rad-form-header">Name</h6>
-                            <input class="rad-properties-input" id="enzymeName" name="enzymeName" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['name'] : '' %>">
-       
-                            <h6 class="rad-form-header" for="enzymeSite">Restriction Site</h6>
-                            <input class="rad-properties-input" id="enzymeSite" name="enzymeSite" type="text" value="<%= restriction_enzymes.length > 0  ? restriction_enzymes[0]['restrictionSite'] : '' %>">
-                            <div style="margin-top: 20px;" id="enzymePropertiesButtonsDiv">
-                                <button class="btn btn-success" id="enzymeUpdateButton" type="button" style="width: 100px; display: inline-block; margin-right: 20px;" onclick="updateRestrictionEnzyme()" <%= restriction_enzymes.length === 0 ? 'disabled' : ''%>>Update</button>
-                                <button class="btn btn-danger" id="enzymeDeleteButton" type="button" style="width: 100px; display: inline-block;" onclick="deleteRestrictionEnzyme()" <%= restriction_enzymes.length === 0 ? 'disabled' : ''%>>Delete</button>
-                            </div>
-                            <div id="updateEnzymeProgressDiv" style="display: none">
-                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
-                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Updating</h5>
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="deleteEnzymeProgressDiv" style="display: none">
-                                <div style="display: flex; align-items: center; justify-content: center; margin-top: 15px;">
-                                    <h5 style="display: inline; margin-right: 10px; font-weight: bold;">Deleting</h5>
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br> 
-                <div style="margin-bottom: 20px;"></div>
-
-                <h4 style="font-weight: bold; display: inline;">Slice Probability</h4><label>(0.01 - 1.00)</label>
-                <div>
-                    <input type="number" name="probability" id="probability" step="0.01" class="myNumberInput" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
-                </div>
+                
+                <label class="rad-form-input-label">Slice Probability</label>
+                <input class="rad-form-input-inline" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                
                 <% if(error){ %>
-                    <li style="text-align:center; font-weight: bold; color: red;"><%=errorMessage%></li>
+                    <li class="rad-form-error-li"><%=errorMessage%></li>
                 <% } %>
-                <input name="submit" class="form-button" type="submit" style="font-weight: bold;" value="Get Analysis" />
-
-                <input style="display: none;" name="selectedGenome" id="selectedGenome" value="<%= genomes.length > 0 ? genomes[0]['fileName'] : '' %>">
-                <input style="display: none;" name="selectedEnzyme" id="selectedEnzyme" value="<%= restriction_enzymes.length > 0 ? restriction_enzymes[0]['id'] : '' %>">
+                <button class="rad-form-button margin-center">Get Analysis</button>
             </div>
         </form>
         
