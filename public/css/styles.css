@@ -28,13 +28,19 @@ body {
     font-weight: bold;
 }
 
+
+.rad-form-footer-card{
+    text-align: center;
+    background: rgb(240, 240, 240);
+    overflow: hidden; 
+}
+
 .rad-form{
     width: 40%;
     min-width: 500px;
     max-width: 600px;
     height: auto;
-    margin: 200px auto;
-    padding: 50px;
+    margin: 150px auto 20px;
     display: block;
     text-align: center;
     border: 1px solid rgb(200, 200, 200);
@@ -45,6 +51,7 @@ body {
 }
 
 
+
 .rad-form-button {
     font-weight: bold;
     min-width: 138px;
@@ -53,7 +60,7 @@ body {
 	height: auto;
     border: 1px solid #253737;
     background: linear-gradient(#6da5a3, #416b68);
-    border-radius: 6px;
+    border-radius: 15px;
     box-shadow: rgba(255,255,255,0.1) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
     text-shadow: #333333 0 1px 0;
     color: #e1e1e1;
@@ -90,6 +97,7 @@ body {
 }
 
 .rad-form-inner{
+    padding: 50px;
     text-align: left;
     width: auto;
 }
@@ -125,33 +133,61 @@ body {
     font-weight: bold;
 }
 
-/* rad classes end */
+/* navbar styles */
 
-
-.myButton{
-    display:inline-block;
-    width: 100px;
-    height: 40px;
-    background: linear-gradient(#6da5a3, #395f5d);
-    text-shadow: black 0 1px 0;
-    border-radius: 6px;
-    border: 1px solid #253737;
-    color:white;
-    font-weight: bold;
+.navbar{
+    box-shadow: 0 0 13px 3px rgba(0,0,0,.5);
+    padding-left: 1rem;
+    padding-right: 2rem;
 }
 
-.myButton:hover {
-    border: 1px solid #253737;
-    text-shadow: black 0 1px 0;
+.nav-button{
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: inline-block;
+    border: 2px solid transparent;
+}
+
+.nav-button:hover {
+    border: 2px solid rgba(255,255,255,.5);
     background: linear-gradient(#77b2b0, #416b68);
-    color: #fff;
  }
 
-.myButton:active {
-    margin-top:1px;
-    text-shadow: #333333 0 -1px 0;
-    border: 1px solid #253737;
+ .nav-button:active{
     background: linear-gradient(#416b68, #6da5a3);
-    color: #fff;
-    box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
-}
+ }
+
+ .borderless{
+     border: none;
+ }
+
+ .nav-dropdown-button{
+    text-decoration: none; 
+    color: rgba(255,255,255,.5);
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.3rem;
+    display: inline-block;
+    text-decoration: none; 
+ }
+
+ .nav-dropdown-button:hover{
+    background: linear-gradient(#77b2b0, #416b68);
+    border: 2px solid rgba(255,255,255,.5);
+    color: white;
+    text-decoration: none;
+ }
+
+
+
+ .nav-dropdown-button:active{
+    background: linear-gradient(#416b68, #6da5a3);
+    text-decoration: none;
+ }
+
+ .nav-dropdown-button:focus{
+     border: 2px solid #6da5a3;
+     box-shadow: none;
+     text-decoration: none;
+ }
