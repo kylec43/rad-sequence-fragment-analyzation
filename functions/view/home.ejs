@@ -21,46 +21,66 @@
 
         <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
 
-            <form action="/results" class="rad-form" method="post">
-                <div class="rad-form-inner">
-                    <h1 class="rad-form-header">RAD-Seq Fragment Analysis</h1>
-                    <br>
-                    <li id="error" class="rad-form-error-li" style="display: none;"></li>               
-
-                    <label class="rad-form-input-label" for="enzyme_select">Restriction Enzyme:</label>
-                    <select class="rad-form-input-inline" onchange="onSelectEnzyme(this);" name="enzyme_select" id="enzyme_select">
-                        <option>&lt&ltcustom&gt&gt</option>
-                        <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
-                            <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
-                        <% } %>
-                    </select>
-                    <label class="rad-form-input-label" for="enzyme_site">Restriction Site:</label>
-                    <input class="rad-form-input-inline" id="enzyme_site" name="enzyme_site" type="text">
-
-                    <label class="rad-form-input-label" for="genome_file">Genome File:</label>
-                    <input class="rad-form-input-inline" type="file" id="genome_file">
-
-                    
-                    <label class="rad-form-input-label">Slice Probability</label>
-                    <input class="rad-form-input-inline" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
-                    
-                    <% if(error){ %>
-                        <li class="rad-form-error-li"><%=errorMessage%></li>
-                    <% } %>
-                    <button class="rad-form-button margin-center">Get Analysis</button>
-                </div>
-                <% if (!user) { %>
-                    <div class="card rad-form-footer-card">
-                        <div class="card-header">
-                            <h5>Create an account to upload your own restriction enzymes!</h5>
-                        </div>
-                        <div class="card-body">
-                            <h5>Sign up <span><a href="/register">here</a></span></h5>
+        <div class="card rad-card margin-center">
+            <div class="rad-card-header">
+                <h3 class="card-title rad-form-header">RAD-Seq Fragment Analysis</h3>
+            </div>
+            <hr>
+            <div class="card-body rad-card-body">
+                <p id="error" class="rad-error-message text-center" style="display: none;"></p>               
+                <form>
+                    <div class="form-group">
+                        <label for="enzyme_select">Restriction Enzyme:</label>
+                        <div class="input-group">
+                            <select class="form-control" onchange="onSelectEnzyme(this);" name="enzyme_select" id="enzyme_select">
+                                <option>&lt&ltcustom&gt&gt</option>
+                                <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
+                                    <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
+                                <% } %>
+                            </select>
                         </div>
                     </div>
-                <% } %>
-            </form>
+                    <hr>
+                    <div class="form-group">
+                        <label for="enzyme_site">Restriction Site:</label>
+                        <div class="input-group">
+                            <input class="form-control" id="enzyme_site" name="enzyme_site" type="text">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="genome_file">Genome File:</label>
+                        <div class="input-group">
+                            <input type="file" id="genome_file">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="probability">Slice Probability</label>
+                        <div class="input-group">
+                            <input class="form-control" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <button class="rad-form-button margin-center">Get Analysis</button>
+                    </div>
+                </form>
+            </div>
+            <% if (!user) { %>
+                <div class="card rad-card-footer">
+                    <div class="card-header">
+                        <h5>Create an account to upload your own restriction enzymes!</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5>Sign up <span><a href="/register">here</a></span></h5>
+                    </div>
+                </div>
+            <% } %>
         </div>
+
+
+
         
 
 

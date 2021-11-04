@@ -21,36 +21,51 @@
 
         <%- include ('partials/nav.ejs', {page: 'upload'}, user) %>
 
-        <form class="rad-form" method="POST">
-            <div class="rad-form-inner">
-                <h2 class="rad-form-header">Upload</h2>
-                <br>
 
-                <li id="error" class="rad-form-error-li" style="display: none;"></li>
-
-                <label class="rad-form-input-label" for="select_type">Upload Type: </label>
-                <select class="rad-form-input-inline" id="select_type">
-                    <option>Restriction Enzyme</option>
-                </select>
-                <br>
-
-                <label class="rad-form-input-label" for="enzyme_name">Name:</label>
-                <input class="rad-form-input-inline" id="enzyme_name" name="enzyme_name" type="text">
-                <br>
-                <label class="rad-form-input-label" for="restriction_site">Restriction Site:</label>
-                <input class="rad-form-input-inline" id="restriction_site" name="restriction_site" type="text">
-                <br>
-
-                <div class="rad-upload" style="display: none;" id="rad_upload_block">
-                    <h5 class="rad-upload-label">Uploading</h5>
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only"></span>
-                    </div>
-                </div>
-
-                <button class="rad-form-button margin-center" type="button" id="upload_button" onclick="uploadEnzyme();">Upload</button>
+        <div class="card rad-card margin-center">
+            <div class="rad-card-header">
+                <h3 class="card-title rad-form-header">Upload</h3>
             </div>
-        </form>
+            <hr>
+            <div class="card-body rad-card-body">
+                <p id="error" class="rad-error-message text-center" style="display: none;"></p>               
+                <form>
+                    <div class="form-group">
+                        <label for="select_type">Upload Type: </label>
+                        <div class="input-group">
+                            <select class="form-control" id="select_type">
+                                <option>Restriction Enzyme</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="enzyme_name">Name:</label>
+                        <div class="input-group">
+                            <input class="form-control" id="enzyme_name" name="enzyme_name" type="text">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="restriction_site">Restriction Site:</label>
+                        <div class="input-group">
+                            <input class="form-control" id="restriction_site" name="restriction_site" type="text">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="rad-upload" style="display: none;" id="rad_upload_block">
+                        <h5 class="rad-upload-label">Uploading</h5>
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+    
+                    <div class="form-group">
+                        <button class="rad-form-button margin-center" type="button" id="upload_button" onclick="uploadEnzyme();">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <script>
             /* Input Elements */

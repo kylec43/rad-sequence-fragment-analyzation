@@ -21,7 +21,7 @@ app.get('/', auth, async (req, res) => {
         genomes = await FirebaseController.getGenomes(req.user);
     }
 
-    return res.render(Pages.HOME_PAGE, {error: false, errorMessage:"", user: req.user, restriction_enzymes, genomes, userToken: req.token});
+    return res.render(Pages.HOME_PAGE, {error: false, errorMessage: null, user: req.user, restriction_enzymes, genomes, userToken: req.token});
 });
 
 
@@ -46,16 +46,16 @@ app.post('/results', auth, async (req, res) => {
     let result = 0;    
     
     //post results
-    return res.render(Pages.RESULTS_PAGE, {error:false, errorMessage:"", result: result, user: req.user});
+    return res.render(Pages.RESULTS_PAGE, {errorMessage: null, result: result, user: req.user});
 });
 
 
 app.get('/login', authAndRedirectHome, (req, res) => {
-    return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage:"", user: req.user});
+    return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: null, user: req.user});
 });
 
-app.post('/login', authAndRedirectHome, (req, res) => {
-    return FirebaseController.loginUser(req, res);
+app.post('/login', authAndRedirectHome, async (req, res) => {
+    return await FirebaseController.loginUser(req, res);
 })
 
 
@@ -63,23 +63,23 @@ app.post('/login', authAndRedirectHome, (req, res) => {
 
 
 app.get('/register', authAndRedirectHome, (req, res) => {
-    return res.render(Pages.REGISTER_PAGE, {error:false, errorMessage:"", user: req.user});
+    return res.render(Pages.REGISTER_PAGE, {errorMessage: null, user: req.user});
 });
 
-app.post('/register', authAndRedirectHome, (req, res) => {
-    return FirebaseController.registerUser(req, res);
+app.post('/register', authAndRedirectHome, async (req, res) => {
+    return await FirebaseController.registerUser(req, res);
 });
 
 
 
 
 app.get('/upload', authAndRedirectLogIn, async (req, res) => {
-    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage:"", user: req.user, userToken: req.token});
+    return res.render(Pages.UPLOAD_PAGE, {error:false, errorMessage: null, user: req.user, userToken: req.token});
 });
 
 
 app.get('/change_email', authAndRedirectLogIn, async (req, res) => {
-    return res.render(Pages.CHANGE_EMAIL_PAGE, {error:false, errorMessage: "", user: req.user});
+    return res.render(Pages.CHANGE_EMAIL_PAGE, {error:false, errorMessage: null, user: req.user, successMessage: null});
 });
 
 app.post('/change_email', authAndRedirectLogIn, async (req, res) => {
@@ -88,7 +88,7 @@ app.post('/change_email', authAndRedirectLogIn, async (req, res) => {
 
 
 app.get('/change_password', authAndRedirectLogIn, async (req, res) => {
-    return res.render(Pages.CHANGE_PASSWORD_PAGE, {error:false, errorMessage: "", user: req.user});
+    return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: null, user: req.user, successMessage: null});
 });
 
 app.post('/change_password', authAndRedirectLogIn, async (req, res) => {
@@ -97,7 +97,7 @@ app.post('/change_password', authAndRedirectLogIn, async (req, res) => {
 
 
 app.get('/forgot_password', auth, async (req, res) => {
-    return res.render(Pages.FORGOT_PASSWORD_PAGE, {error:false, errorMessage: "", user: req.user});
+    return res.render(Pages.FORGOT_PASSWORD_PAGE, {error:false, errorMessage: null, user: req.user});
 });
 
 app.post('/forgot_password', auth, async (req, res) => {

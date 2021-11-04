@@ -8,6 +8,9 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
+        <!--Font awesome CSS-->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
         <!--My CSS-->
         <link rel="stylesheet" type="text/css" href="css/styles.css">
 
@@ -18,23 +21,46 @@
 
         <%- include ('partials/nav.ejs', {page: 'login'}, user) %>
 
-
-            <form action="/login" id="loginForm" class="rad-form" method="post">
-                <div class="rad-form-inner">
-                    <h2 class="rad-form-header">Log In</h2>
+        <div class="card rad-card margin-center">
+            <div class="rad-card-header">
+                <h3 class="card-title rad-form-header">Log In</h3>
+            </div>
+            <hr>
+            <div class="card-body rad-card-body">
+                <% if (errorMessage !== null) { %>
+                    <p id="error" class="rad-error-message text-center"><%- errorMessage %></p>               
                     <br>
-                    <% if (error) { %>
-                        <li class="rad-form-error-li"><%=errorMessage%></li>
-                        <br>
-                    <% } %>    
-                    <input type="email" class="form-control rad-form-input" name="email" id="email" placeholder="Email Address" required>
-                    <input type="password" class="form-control rad-form-input" name="password" id="password" placeholder="Password" required>
-                    <button class="btn-lg rad-form-button margin-center">Log In</button>
-                    <hr class="rad-form-hr">
-                    <a class="inner-center" href="/forgot_password">Forgot Password?</a>
-                    <a class="inner-center" href='/register' type="button">Create a new account</a>
-                </div>
-            </form>
+                <% } %>
+                <% if (successMessage !== null) { %>
+                    <p class="text-center rad-success-message"><%= successMessage %></p>
+                    <br>
+                <% } %>
+                <form action="/login" method="post">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input class="form-control" name="email" placeholder="Email" type="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input class="form-control" name="password" placeholder="Password" type="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="rad-form-button margin-center">Login</button>
+                        <hr>
+                        <a class="inner-center" href="/forgot_password">Forgot password?</a>
+                        <p class="inner-center">New user? Sign up <span><a href="/register">here</a></span></p>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

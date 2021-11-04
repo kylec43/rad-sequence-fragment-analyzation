@@ -3,6 +3,15 @@ body {
     background-color: rgba(210,210,210,1);
 }
 
+label{
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.form-control:focus{
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(48, 197, 83, 0.25);
+}
 
 /* Aligning Tools */
 .margin-center{
@@ -20,6 +29,10 @@ body {
     text-align: center;
 }
 
+.display-block{
+    display: block;
+}
+
 
 /* Form Classes */
 
@@ -29,10 +42,12 @@ body {
 }
 
 
-.rad-form-footer-card{
+.rad-card-footer{
     text-align: center;
     background: rgb(240, 240, 240);
     overflow: hidden; 
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 .rad-form{
@@ -48,6 +63,20 @@ body {
     background: rgb(240, 240, 240);
     box-shadow: 0 0 18px 3px rgba(0,0,0,.5);
     overflow: hidden; 
+}
+
+.rad-card{
+    width: 40%; 
+    min-width: 400px; 
+    max-width: 600px; 
+    margin-top: 150px;
+    border-radius: 20px;
+    background: rgb(240, 240, 240);
+    box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.2);
+}
+
+.rad-card-body{
+    padding: 30px;
 }
 
 
@@ -97,9 +126,13 @@ body {
 }
 
 .rad-form-inner{
-    padding: 50px;
+    padding: 30px 50px 50px;
     text-align: left;
     width: auto;
+}
+
+.rad-card-header{
+    padding: 20px 20px 0px;
 }
 
 
@@ -107,6 +140,16 @@ body {
     text-align:center; 
     font-weight: bold; 
     color: red;
+}
+
+.rad-error-message{
+    color: red;
+    font-weight: bold;
+}
+
+.rad-success-message{
+    color: green;
+    font-weight: bold;
 }
 
 .rad-form-hr{

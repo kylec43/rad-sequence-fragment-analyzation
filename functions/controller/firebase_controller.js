@@ -37,27 +37,30 @@ async function registerUser(req, res)
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
 
-    
+    let errorMessage = "";
     try {
-        let errorMessage = "";
         if(email !== confirmEmail){
             error = true;
-            errorMessage += "• Email and Confirmation Email do not match";
+            errorMessage += "Email and Confirmation Email do not match";
         }
         if(password !== confirmPassword){
-            errorMessage += errorMessage.length > 0 ? "\n" : "";
-            errorMessage += "• Password and Confirmation Password do not match"
+            errorMessage += errorMessage.length > 0 ? "<br>" : "";
+            errorMessage += "Password and Confirmation Password do not match"
+        } else if (password.length < 6) {
+            errorMessage += errorMessage.length > 0 ? "<br>" : "";
+            errorMessage += "Password length is too short. 6 characters minimum";
         }
 
         if(errorMessage.length > 0){
-            throw new Error(errorMessage);
+            return res.render(Pages.REGISTER_PAGE, {errorMessage, user: req.user});
         } else {
-            req.user = await FirebaseAuth.createUserWithEmailAndPassword(FirebaseAuth.getAuth(), email, password);
-            return await loginUser(req, res);
+            await FirebaseAuth.createUserWithEmailAndPassword(FirebaseAuth.getAuth(), email, password);
+            await FirebaseAuth.signOut(FirebaseAuth.getAuth());
+            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: "Registration Successful! Please Sign In", user: req.user})
         }
 
     } catch (e) {
-        return res.render(Pages.REGISTER_PAGE, {error: true, errorMessage: e, user: req.user});
+        return res.render(Pages.REGISTER_PAGE, {errorMessage: `${e}`, user: req.user});
     }
 
 }
@@ -72,19 +75,19 @@ async function changeEmail(req, res)
         let errorMessage = "";
         if(newEmail !== confirmNewEmail){
             error = true;
-            errorMessage += "• Email and Confirmation Email do not match";
+            errorMessage += "Email and Confirmation Email do not match";
         }
 
         if(errorMessage.length > 0){
-            throw new Error(errorMessage);
+            return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage, user: req.user, successMessage: null});
         } else {
             
             await FirebaseAuth.updateEmail(FirebaseAuth.getAuth().currentUser, newEmail);
-            return res.render(Pages.CHANGE_EMAIL_SUCCESS_PAGE, {error:false, errorMessage: "", user: req.user});
+            return res.render(Pages.CHANGE_EMAIL_PAGE, {error:false, errorMessage: null, user: req.user, successMessage: "Email successfully changed!"});
         }
 
     } catch (e) {
-        return res.render(Pages.CHANGE_EMAIL_PAGE, {error: true, errorMessage: e, user: req.user});
+        return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
     }
 
 }
@@ -94,9 +97,9 @@ async function sendPasswordResetLink(req, res)
 {
     const email = req.body.email;
     await FirebaseAuth.sendPasswordResetEmail(FirebaseAuth.getAuth(), email).then(()=>{
-        return res.render(Pages.FORGOT_PASSWORD_LINK_SENT_PAGE, {error: false, errorMessage: "", user: req.user});
+        return res.render(Pages.LOGIN_PAGE, {error: false, errorMessage: null, user: req.user, successMessage: "Password reset link sent!"});
     }).catch(e => {
-        return res.render(Pages.FORGOT_PASSWORD_PAGE, {error: true, errorMessage: e, user: req.user});
+        return res.render(Pages.FORGOT_PASSWORD_PAGE, {error: true, errorMessage: `${e}`, user: req.user, successMessage: null});
     });
 }
 
@@ -111,19 +114,19 @@ async function changePassword(req, res)
         let errorMessage = "";
         if(newPassword !== confirmNewPassword){
             error = true;
-            errorMessage += "• New password and New password confirmation do not match";
+            errorMessage += "New password and New password confirmation do not match";
         }
 
         if(errorMessage.length > 0){
-            throw new Error(errorMessage);
+            return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage, user: req.user, successMessage: null});
         } else {
             
             await FirebaseAuth.updatePassword(FirebaseAuth.getAuth().currentUser, newPassword);
-            return res.render(Pages.CHANGE_PASSWORD_SUCCESS_PAGE, {error:false, errorMessage: "", user: req.user});
+            return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: null, user: req.user, successMessage: "Password successfully changed!"});
         }
 
     } catch (e) {
-        return res.render(Pages.CHANGE_PASSWORD_PAGE, {error: true, errorMessage: e, user: req.user});
+        return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
     }
 
 }
@@ -137,7 +140,7 @@ async function loginUser(req, res){
         return res.redirect('/');
     })
     .catch((e) => {
-        return res.render(Pages.LOGIN_PAGE, {error: true, errorMessage: e, user: req.user});
+        return res.render(Pages.LOGIN_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
     });
     
 }
@@ -149,7 +152,7 @@ async function logoutUser(req, res){
         return res.redirect('/login');
     })
     .catch((e) => {
-        return res.render(Pages.LOGIN_PAGE, {error: true, errorMessage: e, user: req.user});
+        return res.render(Pages.LOGIN_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
     });
     
 }

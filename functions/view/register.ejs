@@ -8,6 +8,9 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
+        <!--Font awesome CSS-->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
         <!--My CSS-->
         <link rel="stylesheet" type="text/css" href="css/styles.css">
 
@@ -17,21 +20,57 @@
     <body>
         <%- include ('partials/nav.ejs', {page: 'register'}, user) %>
 
-        <form action="/register" class="rad-form" method="post">
-            <div class="rad-form-inner">
-                <h2 class="rad-form-header">Register</h2>
-                <br>
-                <% if (error) { %>
-                    <li class="rad-form-error-li"><%=errorMessage%></li>
-                    <br>
-                <% } %>    
-                <input type="email" class="form-control rad-form-input" name="email" id="email" placeholder="Email Address" required>
-                <input type="email" class="form-control rad-form-input" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Address" required>
-                <input type="password" class="form-control rad-form-input" name="password" id="password" placeholder="Password" minlength="6" required>
-                <input type="password" class="form-control rad-form-input" name="confirmPassword" id="confirmPassword" minlength="6" placeholder="Confirm Password" required>
-                <button class="btn-lg rad-form-button margin-center">Register</button>
+        <div class="card rad-card margin-center">
+            <div class="rad-card-header">
+                <h3 class="card-title rad-form-header">Registration</h3>
             </div>
-        </form>
+            <hr>
+            <div class="card-body rad-card-body">
+                <% if (errorMessage !== null) { %>
+                    <p id="error" class="rad-error-message text-center"><%- errorMessage %></p>               
+                    <br>
+                <% } %>
+                <form action="/register" method="post">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input class="form-control" name="email" placeholder="Email" type="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input class="form-control" name="confirmEmail" placeholder="Confirm email" type="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input class="form-control" name="password" placeholder="Password" type="password" minlength="6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input class="form-control" name="confirmPassword" placeholder="Confirm password" type="password" minlength="6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="rad-form-button margin-center">Register</button>
+                        <hr>
+                        <p class="inner-center">Already registered? sign in <span><a href="/login">here</a></span></p>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
