@@ -8,11 +8,6 @@ label{
     font-size: 1rem;
 }
 
-.form-control:focus{
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.2rem rgba(48, 197, 83, 0.25);
-}
-
 /* Aligning Tools */
 .margin-center{
     display: block;
@@ -50,26 +45,11 @@ label{
     border-bottom-right-radius: 20px;
 }
 
-.rad-form{
-    width: 40%;
-    min-width: 500px;
-    max-width: 600px;
-    height: auto;
-    margin: 150px auto 20px;
-    display: block;
-    text-align: center;
-    border: 1px solid rgb(200, 200, 200);
-    border-radius: 60px;
-    background: rgb(240, 240, 240);
-    box-shadow: 0 0 18px 3px rgba(0,0,0,.5);
-    overflow: hidden; 
-}
-
 .rad-card{
     width: 40%; 
     min-width: 400px; 
     max-width: 600px; 
-    margin-top: 150px;
+    margin-top: 130px;
     border-radius: 20px;
     background: rgb(240, 240, 240);
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.2);
@@ -111,26 +91,6 @@ label{
     box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
 }
 
-.rad-form-input{
-    margin-top: 15px;
-    width: 100%; 
-}
-
-.rad-form-input-inline{
-    margin-top: 15px;
-    width: 55%;
-}
-
-.rad-form-dropdown{
-    width: 60%;
-}
-
-.rad-form-inner{
-    padding: 30px 50px 50px;
-    text-align: left;
-    width: auto;
-}
-
 .rad-card-header{
     padding: 20px 20px 0px;
 }
@@ -149,18 +109,6 @@ label{
 
 .rad-success-message{
     color: green;
-    font-weight: bold;
-}
-
-.rad-form-hr{
-    border-top: 3px solid #bbb;
-    width: 100%;
-}
-
-.rad-form-input-label{
-    display: inline-block; 
-    width: 35%; 
-    margin-top: 20px; 
     font-weight: bold;
 }
 
@@ -233,3 +181,11 @@ label{
      box-shadow: none;
      text-decoration: none;
  }
+
+
+
+ /* Bootstrap classes */
+ .form-control:focus{
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(48, 197, 83, 0.25);
+}
