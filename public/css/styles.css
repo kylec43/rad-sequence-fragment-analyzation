@@ -112,15 +112,16 @@ label{
     font-weight: bold;
 }
 
-.rad-upload{
+.rad-load-block{
+    display: flex;
     align-items: center; 
     justify-content: center; 
     margin-top: 30px;
 }
 
-.rad-upload-label{
+.rad-load-label{
     display: inline; 
-    margin-right: 10px; 
+    margin-right: 15px; 
     font-weight: bold;
 }
 

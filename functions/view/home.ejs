@@ -62,8 +62,14 @@
                         </div>
                     </div>
                     <hr>
+                    <div class="rad-load-block" style="display: none;" id="rad_analyze_block">
+                        <h5 class="rad-load-label">Analyzing</h5>
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
                     <div class="form-group">
-                        <button class="rad-form-button margin-center">Get Analysis</button>
+                        <button class="rad-form-button margin-center" type="button" onclick="performAnalysis()" id="analysis_button">Get Analysis</button>
                     </div>
                 </form>
             </div>
@@ -89,9 +95,12 @@
             var enzymeSelect = document.getElementById('enzyme_select');
             var enzymeSite = document.getElementById('enzyme_site');
             var probability = document.getElementById('probability');
+            var genomeFileInput = document.getElementById('genome_file');
 
             /* HTML elements*/
             var error = document.getElementById('error');
+            var radAnalyzeBlock = document.getElementById('rad_analyze_block');
+            var analysisButton = document.getElementById('analysis_button');
 
             /*Server data*/
             var token = "<%= userToken %>"
@@ -104,7 +113,8 @@
                     await FirebaseController.signIn(token);
                 };
             <% } %>
-        
+
+            
             function updateToFixed(){
                 let value = parseFloat(probability.value);
                 if(!isNaN(value) && value >= 0.01 && value <= 1.00){
@@ -124,11 +134,31 @@
                 }
             }
 
+            
+            async function performAnalysis(){
+                radAnalyzeBlock.style.display = "flex";
+                analysisButton.style.display = "none";
+                console.log("Start")
+                try{
+                    console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
+                    await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value);
+                } catch(e) {
+
+                }
+
+                radAnalyzeBlock.style.display = "none";
+                analysisButton.style.display = "block";
+                console.log("Finish");
+        
+            }
+
         </script>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-        <script type="module" src="js/firebase_controller.js"></script>  
+        <script type="module" src="js/firebase_controller.js"></script>
+        <script type="module" src="js/rad_analysis.js"></script>  
+ 
     </body>
 
 
