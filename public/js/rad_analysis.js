@@ -28,6 +28,8 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, pro
     {
         return async function()
         {
+            var date1 = new Date();
+
             /*Get file text content */
             console.log("Reading contents...")
             var contents = reader.result;
@@ -86,6 +88,12 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, pro
             console.log(`The Actual restriction site count was: ${actualSiteCount}`);
             console.log(`The Fragment count was: ${fragmentCount}`);
             console.log("Finish");
+
+            var date2 = new Date();
+            var elapsedTime = date2-date1;
+            elapsedTime = elapsedTime/1000
+            console.log(`Elapsed time: ${elapsedTime} seconds`);
+
 
             await new Promise(resolve => setTimeout(resolve, 1500));
 
