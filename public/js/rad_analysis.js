@@ -1,3 +1,5 @@
+//Analysis is done here
+
 window.radAnalyze = async function(genomeFile, restrictionSite, probability, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
 
     /* Hide these elements in the beginning, store their display history for the end */
