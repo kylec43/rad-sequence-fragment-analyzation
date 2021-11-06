@@ -1,4 +1,4 @@
-//Analysis is done here
+//Analysis is done here.
 
 window.radAnalyze = async function(genomeFile, restrictionSite, probability, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
 
