@@ -43,7 +43,19 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, pro
             console.log(`Position is ${position}, Contents length is ${contents.length}`);
             var lastPercentage = 0;
 
+            
             /*Get the totalSiteCount and actualSiteCount in this loop */
+            var fragmentSizes = {
+                '0': 0,
+                '1': 0,
+                '2': 0,
+                '3': 0,
+                '4': 0,
+                '5': 0,
+                '6': 0,
+            };
+            var lastSliceIndex = 0;
+            var sliceOffset = restrictionSite.length/2;
             while(position !== -1 && position < contents.length){
 
                 //Find position of next site
@@ -58,6 +70,25 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, pro
                     let randomNumber = Math.floor((Math.random() * 100) + 1);
                     if(randomNumber <= probability){
                         actualSiteCount++;
+
+                        let fragmentSize = position+sliceOffset - lastSliceIndex;
+                        if(fragmentSize >= 0 && fragmentSize <= 100){
+                            fragmentSizes['0']++;
+                        } else if (fragmentSize >= 101 && fragmentSize <= 200) {
+                            fragmentSizes['1']++;
+                        } else if (fragmentSize >= 201 && fragmentSize <= 300) {
+                            fragmentSizes['2']++;
+                        } else if (fragmentSize >= 301 && fragmentSize <= 400) {
+                            fragmentSizes['3']++;
+                        } else if (fragmentSize >= 401 && fragmentSize <= 500) {
+                            fragmentSizes['4']++;
+                        } else if (fragmentSize >= 501 && fragmentSize <= 1000) {
+                            fragmentSizes['5']++;
+                        } else if (fragmentSize >= 1001) {
+                            fragmentSizes['6']++;
+                        }
+
+                        lastSliceIndex = position+sliceOffset;
                     }
 
                     //Set the new position to read the file from
@@ -76,6 +107,23 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, pro
                 }
             }
 
+            let fragmentSize = contents.length - lastSliceIndex;
+            if(fragmentSize >= 0 && fragmentSize <= 100){
+                fragmentSizes['0']++;
+            } else if (fragmentSize >= 101 && fragmentSize <= 200) {
+                fragmentSizes['1']++;
+            } else if (fragmentSize >= 201 && fragmentSize <= 300) {
+                fragmentSizes['2']++;
+            } else if (fragmentSize >= 301 && fragmentSize <= 400) {
+                fragmentSizes['3']++;
+            } else if (fragmentSize >= 401 && fragmentSize <= 500) {
+                fragmentSizes['4']++;
+            } else if (fragmentSize >= 501 && fragmentSizes <= 1000) {
+                fragmentSizes['5']++;
+            } else if (fragmentSize >= 1001) {
+                fragmentSizes['6']++;
+            }
+
             //Fragment count will be n + 1 where n is the actualSiteCount
             fragmentCount = actualSiteCount + 1;
 
@@ -88,6 +136,21 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, pro
             console.log(`The Actual restriction site count was: ${actualSiteCount}`);
             console.log(`The Fragment count was: ${fragmentCount}`);
             console.log("Finish");
+
+            document.getElementById('total_rs_count').innerHTML = `${totalSiteCount}`;
+            document.getElementById('expected_rs_slice_count').innerHTML = `${expectedSiteCount}`;
+            document.getElementById('actual_rs_slice_count').innerHTML = `${actualSiteCount}`;
+            document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
+
+            document.getElementById('zero').innerHTML = `${fragmentSizes['0']}`;
+            document.getElementById('one').innerHTML = `${fragmentSizes['1']}`;
+            document.getElementById('two').innerHTML = `${fragmentSizes['2']}`;
+            document.getElementById('three').innerHTML = `${fragmentSizes['3']}`;
+            document.getElementById('four').innerHTML = `${fragmentSizes['4']}`;
+            document.getElementById('five').innerHTML = `${fragmentSizes['5']}`;
+            document.getElementById('six').innerHTML = `${fragmentSizes['6']}`;
+
+
 
             var date2 = new Date();
             var elapsedTime = date2-date1;

@@ -4,96 +4,158 @@
     <head>
         
         <meta charset="utf-8">
-        
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-
-        <!--My Css-->
-        <link rel="stylesheet" type="text/css" href="css/styles.css">
-
         <title>RAD-Seq</title>
+        <%- include('partials/css.ejs') %>
     </head>
 
     <body>
+        <%- include ('partials/nav.ejs', {page: 'home', user}) %>
 
+        <div class="row">
 
-        <script type="module" src="js/init_firebase.js"></script>
-
-        <%- include ('partials/nav.ejs', {page: 'home'}, user) %>
-
-        <div class="card rad-card margin-center">
-            <div class="rad-card-header">
-                <h3 class="card-title rad-form-header">RAD-Seq Fragment Analysis</h3>
-            </div>
-            <hr>
-            <div class="card-body rad-card-body">
-                <p id="error" class="rad-error-message text-center" style="display: none;"></p>               
-                <form>
-                    <div class="form-group">
-                        <label for="enzyme_select">Restriction Enzyme:</label>
-                        <div class="input-group">
-                            <select class="form-control" onchange="onSelectEnzyme(this);" name="enzyme_select" id="enzyme_select">
-                                <option>&lt&ltcustom&gt&gt</option>
-                                <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
-                                    <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
-                                <% } %>
-                            </select>
-                        </div>
+            <div class="col-lg-6">
+                <div class="card rad-card margin-center" id="analysis_card" style="width: 80%;">
+                    <div class="rad-card-header">
+                        <h3 class="card-title rad-form-header">RAD-Seq Fragment Analysis</h3>
                     </div>
                     <hr>
-                    <div class="form-group">
-                        <label for="enzyme_site">Restriction Site:</label>
-                        <div class="input-group">
-                            <input class="form-control" id="enzyme_site" name="enzyme_site" type="text">
+                    <div class="card-body rad-card-body">
+                        <p id="error" class="rad-error-message text-center" style="display: none;"></p>               
+                        <form>
+                            <div class="form-group">
+                                <label for="enzyme_select">Restriction Enzyme:</label>
+                                <div class="input-group">
+                                    <select class="form-control" onchange="onSelectEnzyme(this);" name="enzyme_select" id="enzyme_select">
+                                        <option>&lt&ltcustom&gt&gt</option>
+                                        <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
+                                            <option id="<%= restriction_enzymes[i]['id'] %>"><%= restriction_enzymes[i]["name"] %></option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label for="enzyme_site">Restriction Site:</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="enzyme_site" name="enzyme_site" type="text">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label for="genome_file">Genome File:</label>
+                                <div class="input-group">
+                                    <input type="file" id="genome_file">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
+                                <label for="probability">Slice Probability</label>
+                                <div class="input-group">
+                                    <input class="form-control" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="progress" style="display: none" id="progress_bar_block">
+                                <div
+                                id="progress_bar"
+                                class="progress-bar"
+                                role="progressbar"
+                                style="width: 0%;"
+                                ></div>
+                            </div>
+                            <div class="rad-load-block" style="display: none;" id="rad_analyze_block">
+                                <h5 class="rad-load-label">Analyzing</h5>
+                                <div class="spinner-border" role="status">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button class="rad-form-button margin-center" type="button" onclick="performAnalysis()" id="analysis_button">Get Analysis</button>
+                            </div>
+                        </form>
+                    </div>
+                    <% if (!user) { %>
+                        <div class="card rad-card-footer">
+                            <div class="card-header">
+                                <h5>Create an account to upload your own restriction enzymes!</h5>
+                            </div>
+                            <div class="card-body">
+                                <h5>Sign up <span><a href="/register">here</a></span></h5>
+                            </div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label for="genome_file">Genome File:</label>
-                        <div class="input-group">
-                            <input type="file" id="genome_file">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label for="probability">Slice Probability</label>
-                        <div class="input-group">
-                            <input class="form-control" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="progress" style="display: none" id="progress_bar_block">
-                        <div
-                        id="progress_bar"
-                        class="progress-bar"
-                        role="progressbar"
-                        style="width: 0%;"
-                        ></div>
-                    </div>
-                    <div class="rad-load-block" style="display: none;" id="rad_analyze_block">
-                        <h5 class="rad-load-label">Analyzing</h5>
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button class="rad-form-button margin-center" type="button" onclick="performAnalysis()" id="analysis_button">Get Analysis</button>
-                    </div>
-                </form>
-            </div>
-            <% if (!user) { %>
-                <div class="card rad-card-footer">
-                    <div class="card-header">
-                        <h5>Create an account to upload your own restriction enzymes!</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5>Sign up <span><a href="/register">here</a></span></h5>
-                    </div>
+                    <% } %>
                 </div>
-            <% } %>
+            </div>
+            <div class="col-lg-6 inner-center">
+
+                <style>
+                    table, th, td {
+                        border:1px solid black;
+                        }
+                    th{
+                        padding: 10px;
+                        text-align: center;
+                    }
+
+                    td{
+                        padding: 10px;
+                        text-align: center;
+                    }
+
+                    table{
+                        width: 100%;
+                    }
+
+                    .table-div{
+                        padding-left: 50px;
+                        padding-right: 50px;
+                    }
+                </style>
+
+                <div style="margin: 100px 0px 100px;" class="table-div">
+                    <table>
+                        <tr>
+                            <th>Total RS Count</th>
+                            <th>Expected RS Slice Count</th>
+                            <th>Actual RS Slice Count</th>
+                            <th>Fragment Count</th>
+                        </tr>
+                        <tr>
+                            <td id="total_rs_count">0</td>
+                            <td id="expected_rs_slice_count">0</td>
+                            <td id="actual_rs_slice_count">0</td>
+                            <td id="fragment_count">0</td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="margin: 0px 0px 200px;" class="table-div">
+                    <table>
+                        <tr>
+                            <th colspan="7">Fragment Sizes</th>
+                        </tr>
+                        <tr>
+                            <th>0-100</th>
+                            <th>101-200</th>
+                            <th>201-300</th>
+                            <th>301-400</th>
+                            <th>401-500</th>
+                            <th>501-1000</th>
+                            <th>1000-Infinity</th>
+                        </tr>
+                        <tr>
+                            <td id="zero">0</td>
+                            <td id="one">0</td>
+                            <td id="two">0</td>
+                            <td id="three">0</td>
+                            <td id="four">0</td>
+                            <td id="five">0</td>
+                            <td id="six">0</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
         </div>
-
-
 
         
 
@@ -157,14 +219,9 @@
                     console.log(`Error: ${e}`);
                 }
             }
-
         </script>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-        <script type="module" src="js/firebase_controller.js"></script>
-        <script type="module" src="js/rad_analysis.js"></script>  
- 
+        <%- include('partials/scripts.ejs') %>
     </body>
 
 
