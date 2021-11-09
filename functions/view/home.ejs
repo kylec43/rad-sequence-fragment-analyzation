@@ -21,7 +21,7 @@
                     <hr>
                     <div class="card-body rad-card-body">
                         <p id="error" class="rad-error-message text-center" style="display: none;"></p>               
-                        <form>
+                        <form id="analysis_form" name="analysis_form" action="/" method="post">
                             <div class="form-group">
                                 <label for="enzyme_select">Restriction Enzyme:</label>
                                 <div class="input-group">
@@ -37,21 +37,21 @@
                             <div class="form-group">
                                 <label for="enzyme_site">Restriction Site:</label>
                                 <div class="input-group">
-                                    <input class="form-control" id="enzyme_site" name="enzyme_site" type="text">
+                                    <input class="form-control" id="enzyme_site" name="enzyme_site" type="text" minlength="2" maxlength="8" required>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label for="genome_file">Genome File:</label>
                                 <div class="input-group">
-                                    <input type="file" id="genome_file">
+                                    <input type="file" id="genome_file" required>
                                 </div>
                             </div>
                             <hr>
                             <div class="form-group">
                                 <label for="probability">Slice Probability</label>
                                 <div class="input-group">
-                                    <input class="form-control" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()">
+                                    <input class="form-control" type="number" name="probability" id="probability" step="0.01" value="0.95" min="0.01" max="1.00" onchange="updateToFixed()" required>
                                 </div>
                             </div>
                             <hr>
@@ -208,16 +208,21 @@
 
             
             async function performAnalysis(){
-                progressBarBlock.style.display = "flex";
-                radAnalyzeBlock.style.display = "flex";
-                progressBar.style.width = "0%";
-                console.log("Start")
-                try{
-                    console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
-                    await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
-                } catch(e) {
-                    console.log(`Error: ${e}`);
-                }
+
+                var $analysisForm = $('#analysis_form');
+                if ($analysisForm[0].checkValidity()){
+                    progressBarBlock.style.display = "flex";
+                    radAnalyzeBlock.style.display = "flex";
+                    progressBar.style.width = "0%";
+                    console.log("Start")
+                    try{
+                        console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
+                        await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
+                    } catch(e) {
+                        console.log(`Error: ${e}`);
+                    }
+                } else {
+                    $analysisForm[0].reportValidity()                }
             }
         </script>
 
