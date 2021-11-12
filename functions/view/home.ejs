@@ -112,7 +112,7 @@
                     }
                 </style>
 
-                <div style="margin: 100px 0px 100px;" class="table-div">
+                <div style="margin: 100px 0px 0px;" class="table-div">
                     <table>
                         <tr>
                             <th>Total RS Count</th>
@@ -128,32 +128,35 @@
                         </tr>
                     </table>
                 </div>
-                <div style="margin: 0px 0px 200px;" class="table-div">
-                    <table>
-                        <tr>
-                            <th colspan="7">Fragment Sizes</th>
-                        </tr>
-                        <tr>
-                            <th>0-100</th>
-                            <th>101-200</th>
-                            <th>201-300</th>
-                            <th>301-400</th>
-                            <th>401-500</th>
-                            <th>501-1000</th>
-                            <th>1000-Infinity</th>
-                        </tr>
-                        <tr>
-                            <td id="zero">0</td>
-                            <td id="one">0</td>
-                            <td id="two">0</td>
-                            <td id="three">0</td>
-                            <td id="four">0</td>
-                            <td id="five">0</td>
-                            <td id="six">0</td>
-                        </tr>
-                    </table>
-                </div>
 
+                <style>
+                    .container-fluid .row {
+                        border:1px solid black;
+                    }
+
+                    .col .row{
+                        padding: 10px;
+                    }
+
+                    .row h4 {
+                        padding: 5px;
+                    }
+
+                    .col h4, h5 {
+                        font-weight: bold;
+                    }
+
+                </style>
+
+                <div style="margin: 20px; padding: 50px;">
+                    <div class="container-fluid" id="fragment_size_container">
+                        <div class="row">
+                            <div class="col">
+                                <h4>Fragment Sizes</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -217,7 +220,7 @@
                     console.log("Start")
                     try{
                         console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
-                        await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
+                        await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, 20, 72, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
                     } catch(e) {
                         console.log(`Error: ${e}`);
                     }

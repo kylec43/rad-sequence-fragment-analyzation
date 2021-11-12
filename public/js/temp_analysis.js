@@ -116,41 +116,51 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
 
 
             //Generate Fragment Size Table
-           let fragmentSizeContainer = document.getElementById('fragment_size_container');
-           fragmentSizeContainer.innerHTML = 
-           `
-            <div class="row">
-                <div class="col">
-                    <h4>Fragment Sizes</h4>
-                </div>
-            </div>
-            <div class="row" id="fragment_size_row">
-            </div>
-           `
-           let fragmentSizeRow = document.getElementById('fragment_size_row');
-
-           //Add header and size for each fragment size
-           for(let i = 0; i < fragmentSizes.length; i++){
-            fragmentSizeRow.innerHTML += `
-                <div class="col col-lg-3 col-md-4 col-sm-6">
-                    <div class="row inner-center">
-                        <h5>${i*distributionSize}-${i === fragmentSizes.length-1 ? "Infinity" : (i+1)*distributionSize-1}</h5>
-                    </div>
-                    <div class="row inner-center">
-                        <p>${fragmentSizes[i]}</p>
-                    </div>
-                </div>
+            let fragmentSizeTable = document.getElementById('fragment_size_table');
+            fragmentSizeTable.innerHTML = 
             `
+            <tr>
+                <th colspan="5">Fragment Sizes</th>
+            </tr>
+            `
+            let multiplier = 5;
+            for(let i = 0; i < distributionCount/5; i++){
+                fragmentSizeTable.innerHTML += 
+                `
+                <tr>
+                    <th>${(i*multiplier+0)*distributionSize}-${(i*multiplier+1)*distributionSize-1}</th>
+                    <th>${(i*multiplier+1)*distributionSize}-${(i*multiplier+2)*distributionSize-1}</th>
+                    <th>${(i*multiplier+2)*distributionSize}-${(i*multiplier+3)*distributionSize-1}</th>
+                    <th>${(i*multiplier+3)*distributionSize}-${(i*multiplier+4)*distributionSize-1}</th>
+                    <th>${(i*multiplier+4)*distributionSize}-${(i*multiplier+5)*distributionSize-1}</th>
+                </tr>
+                <tr>
+                    <td>${i*multiplier+0 < fragmentSizes.length ? fragmentSizes[i*multiplier+0] : 0}</td>
+                    <td>${i*multiplier+1 < fragmentSizes.length ? fragmentSizes[i*multiplier+1] : 0}</td>
+                    <td>${i*multiplier+2 < fragmentSizes.length ? fragmentSizes[i*multiplier+2] : 0}</td>
+                    <td>${i*multiplier+3 < fragmentSizes.length ? fragmentSizes[i*multiplier+3] : 0}</td>
+                    <td>${i*multiplier+4 < fragmentSizes.length ? fragmentSizes[i*multiplier+4] : 0}</td>
+                </tr>   
+                `
+            }
 
-           }
+            /*
+            document.getElementById('zero').innerHTML = `${fragmentSizes[0]}`;
+            document.getElementById('one').innerHTML = `${fragmentSizes[1]}`;
+            document.getElementById('two').innerHTML = `${fragmentSizes[2]}`;
+            document.getElementById('three').innerHTML = `${fragmentSizes[3]}`;
+            document.getElementById('four').innerHTML = `${fragmentSizes[4]}`;
+            document.getElementById('five').innerHTML = `${fragmentSizes[5]}`;
+            document.getElementById('six').innerHTML = `${fragmentSizes[6]}`;
+            */
+
 
             var date2 = new Date();
             var elapsedTime = date2-date1;
             elapsedTime = elapsedTime/1000
             console.log(`Elapsed time: ${elapsedTime} seconds`);
 
-            
-            //let progress bar catch up
+
             await new Promise(resolve => setTimeout(resolve, 1500));
 
             /* Display the elements hidden in the beginning */
