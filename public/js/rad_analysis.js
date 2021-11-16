@@ -1,6 +1,6 @@
 //Analysis is done here.
 
-window.radAnalyze = async function(genomeFile, restrictionSite, probability, distributionSize, distributionCount, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
+window.radAnalyze = async function(genomeFile, restrictionSite, probability, distributionSize, distributionCount, fragmentChart = null, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
 
     /* Hide these elements in the beginning, store their display history for the end */
     var displayHistory = [];
@@ -115,33 +115,53 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
 
 
-            //Generate Fragment Size Table
-           let fragmentSizeContainer = document.getElementById('fragment_size_container');
-           fragmentSizeContainer.innerHTML = 
-           `
-            <div class="row">
-                <div class="col">
-                    <h4>Fragment Sizes</h4>
-                </div>
-            </div>
-            <div class="row" id="fragment_size_row">
-            </div>
-           `
-           let fragmentSizeRow = document.getElementById('fragment_size_row');
+           //Generate chart
+           if(fragmentChart !== null){
+            let chartLabels = [];
+            let chartData = [];
+            for(let i = 0; i < fragmentSizes.length; i++){
+                chartLabels.push(`${i*distributionSize}${i === fragmentSizes.length-1 ? "+" : "-" + ((i+1)*distributionSize-1).toString()}`);
+                chartData.push(`${fragmentSizes[i]}`);
+            }
 
-           //Add header and size for each fragment size
-           for(let i = 0; i < fragmentSizes.length; i++){
-            fragmentSizeRow.innerHTML += `
-                <div class="col col-lg-3 col-md-4 col-sm-6">
-                    <div class="row inner-center">
-                        <h5>${i*distributionSize}-${i === fragmentSizes.length-1 ? "Infinity" : (i+1)*distributionSize-1}</h5>
-                    </div>
-                    <div class="row inner-center">
-                        <p>${fragmentSizes[i]}</p>
-                    </div>
-                </div>
-            `
-
+            if(fragmentChartObject !== null) {
+                console.log("Destroyed");
+                fragmentChartObject.destroy();
+            }
+            fragmentChartObject = new Chart(fragmentChart, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Fragment Sizes',
+                        data: chartData,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Fragment Length"
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: "Fragment Count"
+                            }
+                        }
+                    }
+                }
+            });
            }
 
             var date2 = new Date();
