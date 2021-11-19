@@ -125,6 +125,10 @@ label{
     font-weight: bold;
 }
 
+.rad-data-container{
+    margin: 130px 0px 0px;
+}
+
 /* navbar styles */
 
 .navbar{

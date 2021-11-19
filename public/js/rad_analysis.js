@@ -128,6 +128,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             document.getElementById('expected_rs_slice_count').innerHTML = `${expectedSiteCount}`;
             document.getElementById('actual_rs_slice_count').innerHTML = `${actualSiteCount}`;
             document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
+            document.getElementById('fragment_range_count').innerHTML = `${rangeSiteCount+1}`;
             document.getElementById('fragment_percentage').innerHTML = `${(((rangeSiteCount+1)/fragmentCount)*100).toFixed(2)}%`;
 
 
