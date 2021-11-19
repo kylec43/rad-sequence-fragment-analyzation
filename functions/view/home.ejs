@@ -242,7 +242,11 @@
                     try{
                         let lengthDistributionNumber = parseInt(lengthDistribution.value);
                         let rangeMinNumber = parseInt(rangeMin.value);
-                        let rangeMaxNumber = parseInt(rangeMax.value)
+                        let rangeMaxNumber = parseInt(rangeMax.value);
+                        if(rangeMaxNumber < rangeMinNumber){
+                            rangeMax.value = `${rangeMinNumber}`;
+                            rangeMaxNumber = rangeMinNumber;
+                        }
 
                         console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
                         await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, lengthDistributionNumber, rangeMinNumber, rangeMaxNumber, fragmentChart, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
