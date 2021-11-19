@@ -1,6 +1,6 @@
 //Analysis is done here.
 
-window.radAnalyze = async function(genomeFile, restrictionSite, probability, distributionSize, distributionCount, fragmentChart = null, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
+window.radAnalyze = async function(genomeFile, restrictionSite, probability, distributionSize, rangeMin, rangeMax, fragmentChart = null, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
 
     /* Hide these elements in the beginning, store their display history for the end */
     var displayHistory = [];
@@ -40,11 +40,13 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             var totalSiteCount = 0;
             var expectedSiteCount = 0;
             var actualSiteCount = 0;
+            var rangeSiteCount = 0;
             console.log(`Position is ${position}, Contents length is ${contents.length}`);
             var lastPercentage = 0;
 
             
             /*Get the totalSiteCount and actualSiteCount in this loop */
+            let distributionCount = Math.ceil((rangeMax-rangeMin)/distributionSize) + 2
             var fragmentSizes = Array(distributionCount).fill(0)
             var lastSliceIndex = 0;
             var sliceOffset = restrictionSite.length/2;
@@ -64,11 +66,18 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                         actualSiteCount++;
 
                         let fragmentSize = position+sliceOffset - lastSliceIndex;
-                        let index = Math.floor(fragmentSize/distributionSize);
-                        if(index >= fragmentSizes.length){
-                            index = fragmentSizes.length-1;
+                        if(fragmentSize >= rangeMin && fragmentSize < rangeMax){
+                            let index = Math.floor((fragmentSize-rangeMin)/distributionSize) + 1
+                            if(index >= fragmentSizes.length){
+                                index = fragmentSizes.length-1;
+                            }
+                            fragmentSizes[index]++;
+                            rangeSiteCount++;
+                        } else if (fragmentSize < rangeMin){
+                            fragmentSizes[0]++;
+                        } else {
+                            fragmentSizes[fragmentSizes.length-1]++;
                         }
-                        fragmentSizes[index]++;
 
                         lastSliceIndex = position+sliceOffset;
                     }
@@ -90,11 +99,17 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             }
 
             let fragmentSize = contents.length - lastSliceIndex;
-            let index = Math.floor(fragmentSize/distributionSize)
-            if(index >= fragmentSizes.length){
-                index = fragmentSizes.length-1;
+            if(fragmentSize >= rangeMin && fragmentSize < rangeMax){
+                let index = Math.floor((fragmentSize-rangeMin)/distributionSize) + 1
+                if(index >= fragmentSizes.length){
+                    index = fragmentSizes.length-1;
+                }
+                fragmentSizes[index]++;
+            } else if (fragmentSize < rangeMin){
+                fragmentSizes[0]++;
+            } else {
+                fragmentSizes[fragmentSizes.length-1]++;
             }
-            fragmentSizes[index]++
 
             //Fragment count will be n + 1 where n is the actualSiteCount
             fragmentCount = actualSiteCount + 1;
@@ -113,16 +128,24 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             document.getElementById('expected_rs_slice_count').innerHTML = `${expectedSiteCount}`;
             document.getElementById('actual_rs_slice_count').innerHTML = `${actualSiteCount}`;
             document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
+            document.getElementById('fragment_percentage').innerHTML = `${(((rangeSiteCount+1)/fragmentCount)*100).toFixed(2)}%`;
+
 
 
            //Generate chart
            if(fragmentChart !== null){
             let chartLabels = [];
             let chartData = [];
-            for(let i = 0; i < fragmentSizes.length; i++){
-                chartLabels.push(`${i*distributionSize}${i === fragmentSizes.length-1 ? "+" : "-" + ((i+1)*distributionSize-1).toString()}`);
+            if(rangeMin > 1){
+                chartLabels.push(`<${rangeMin}`);
+                chartData.push(`${fragmentSizes[0]}`);
+            }
+            for(let i = 1; i < fragmentSizes.length-1; i++){
+                chartLabels.push(`${rangeMin + (i-1)*distributionSize}-${(rangeMin + i*distributionSize-1) >= rangeMax ? rangeMax-1 : rangeMin + i*distributionSize-1}`);
                 chartData.push(`${fragmentSizes[i]}`);
             }
+            chartLabels.push(`${rangeMax-1}<`);
+            chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
 
             if(fragmentChartObject !== null) {
                 console.log("Destroyed");
