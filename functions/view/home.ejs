@@ -72,9 +72,17 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
-                                        <label for="distribution_count">Distribution Count</label>
+                                        <label for="range_min">Range Minimum</label>
                                         <div class="input-group">
-                                            <input class="form-control" type="number" name="distribution_count" id="distribution_count" step="1" value="20" min="1" required>
+                                            <input class="form-control" type="number" name="range_min" id="range_min" step="1" value="0" min="1" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="range_min">Range Maximum</label>
+                                        <div class="input-group">
+                                            <input class="form-control" type="number" name="range_max" id="range_max" step="1" value="1000" min="1" required>
                                         </div>
                                     </div>
                                 </div>
@@ -125,6 +133,10 @@
                         padding-left: 50px;
                         padding-right: 50px;
                     }
+
+                    td i{
+                        font-size: 1.5rem;
+                    }
                 </style>
 
                 <div style="margin: 100px 0px 0px;" class="table-div">
@@ -134,12 +146,21 @@
                             <th>Expected RS Slice Count</th>
                             <th>Actual RS Slice Count</th>
                             <th>Fragment Count</th>
+                            <th>Fragment Range Percentage</th>
                         </tr>
                         <tr>
                             <td id="total_rs_count">0</td>
                             <td id="expected_rs_slice_count">0</td>
                             <td id="actual_rs_slice_count">0</td>
                             <td id="fragment_count">0</td>
+                            <td id="fragment_percentage">0%</td>
+                        </tr>
+                        <tr style="font-size: 10px;">
+                            <td><i class="fas fa-info-circle" title="Total RS Count = Number of Restriction Sites inside Genome File"></i></td>
+                            <td><i class="fas fa-info-circle" title="Expected RS Slice Count = Total RS Count * Probability"></i></td>
+                            <td><i class="fas fa-info-circle" title="Actual RS Slice Count = Slicing based off of probability"></i></td>
+                            <td><i class="fas fa-info-circle" title="Fragment Count = Actual RS Slice Count + 1"></i></td>
+                            <td><i class="fas fa-info-circle" title="Fragment Percentage = (Fragments in Range/Fragment Count) * 100"></i></td>
                         </tr>
                     </table>
                 </div>
@@ -160,7 +181,9 @@
             var enzymeSite = document.getElementById('enzyme_site');
             var probability = document.getElementById('probability');
             var lengthDistribution = document.getElementById('length_distribution');
-            var distributionCount = document.getElementById('distribution_count');
+            var rangeMin = document.getElementById('range_min');
+            var rangeMax = document.getElementById('range_max');
+
             var genomeFileInput = document.getElementById('genome_file');
 
             /* HTML elements*/
@@ -218,10 +241,11 @@
                     console.log("Start")
                     try{
                         let lengthDistributionNumber = parseInt(lengthDistribution.value);
-                        let distributionCountNumber = parseInt(distributionCount.value);
+                        let rangeMinNumber = parseInt(rangeMin.value);
+                        let rangeMaxNumber = parseInt(rangeMax.value)
 
                         console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
-                        await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, lengthDistributionNumber, distributionCountNumber, fragmentChart, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
+                        await radAnalyze(genomeFileInput.files[0], enzymeSite.value, probability.value, lengthDistributionNumber, rangeMinNumber, rangeMaxNumber, fragmentChart, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
                     } catch(e) {
                         console.log(`Error: ${e}`);
                     }
