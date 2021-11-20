@@ -40,7 +40,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             var totalSiteCount = 0;
             var expectedSiteCount = 0;
             var actualSiteCount = 0;
-            var rangeSiteCount = 0;
+            var fragmentRangeCount = 0;
             console.log(`Position is ${position}, Contents length is ${contents.length}`);
             var lastPercentage = 0;
 
@@ -77,7 +77,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                                 index = fragmentSizes.length-1;
                             }
                             fragmentSizes[index]++;
-                            rangeSiteCount++;
+                            fragmentRangeCount++;
                         } else if (fragmentSize < rangeMin){
                             fragmentSizes[0]++;
                         } else {
@@ -110,6 +110,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                     index = fragmentSizes.length-1;
                 }
                 fragmentSizes[index]++;
+                fragmentRangeCount++;
             } else if (fragmentSize < rangeMin){
                 fragmentSizes[0]++;
             } else {
@@ -133,10 +134,10 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             document.getElementById('expected_rs_slice_count').innerHTML = `${expectedSiteCount}`;
             document.getElementById('actual_rs_slice_count').innerHTML = `${actualSiteCount}`;
             document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
-            document.getElementById('fragment_range_count').innerHTML = rangeSiteCount !== 0 ? `${rangeSiteCount+1}` : `0`;
+            document.getElementById('fragment_range_count').innerHTML = `${fragmentRangeCount}`;
 
             var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
-            document.getElementById('fragment_percentage').innerHTML = `${(((rangeSiteCount+1)/fragmentCount)*100).toString().match(re)[0]}%`;
+            document.getElementById('fragment_percentage').innerHTML = `${(((fragmentRangeCount)/fragmentCount)*100).toString().match(re)[0]}%`;
 
 
 
