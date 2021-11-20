@@ -59,7 +59,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
 
                 //Find position of next site
                 position = contents.indexOf(restrictionSite, position);
-                console.log(`Found at position ${position}`);
+
                 //If site is -1, it does not exist in the rest of the file, 
                 //Otherwise add to the totalSiteCount and actualSiteCount here
                 if(position !== -1){
