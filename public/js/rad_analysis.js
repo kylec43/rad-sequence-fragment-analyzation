@@ -132,7 +132,9 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             document.getElementById('actual_rs_slice_count').innerHTML = `${actualSiteCount}`;
             document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
             document.getElementById('fragment_range_count').innerHTML = rangeSiteCount !== 0 ? `${rangeSiteCount+1}` : `0`;
-            document.getElementById('fragment_percentage').innerHTML = `${(((rangeSiteCount+1)/fragmentCount)*100).toFixed(2)}%`;
+
+            var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
+            document.getElementById('fragment_percentage').innerHTML = `${(((rangeSiteCount+1)/fragmentCount)*100).toString().match(re)[0]}%`;
 
 
 
