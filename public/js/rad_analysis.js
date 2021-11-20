@@ -47,7 +47,8 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             
             /*Get the totalSiteCount and actualSiteCount in this loop */
             let distributionCount = Math.ceil((rangeMax-rangeMin)/distributionSize) + 2
-            if(rangeMax%distributionSize == 1 || distributionCount === 2){
+            let remainder = rangeMax%distributionSize;
+            if(remainder === rangeMin || remainder === 0 || distributionCount === 2){
                 distributionCount += 1
             }
             var fragmentSizes = Array(distributionCount).fill(0)
