@@ -142,12 +142,14 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
            if(fragmentChart !== null){
             let chartLabels = [];
             let chartData = [];
+
             if(displayOutliers){
                 if(rangeMin > 1){
                     chartLabels.push(`<${rangeMin}`);
                     chartData.push(`${fragmentSizes[0]}`);
                 }
             }
+            
             for(let i = 1; i < fragmentSizes.length-1; i++){
                 let min = `${rangeMin + (i-1)*distributionSize}`;
                 let max = `${(rangeMin + i*distributionSize-1) > rangeMax ? rangeMax : rangeMin + i*distributionSize-1}`;
@@ -155,10 +157,12 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                 chartLabels.push(range);
                 chartData.push(`${fragmentSizes[i]}`);
             }
+
             if(displayOutliers){
                 chartLabels.push(`${rangeMax}<`);
                 chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
             }
+            
 
             if(fragmentChartObject !== null) {
                 console.log("Destroyed");
