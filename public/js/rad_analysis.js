@@ -211,7 +211,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
 
             
             //let progress bar catch up
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             /* Display the elements hidden in the beginning */
             for(let i = 0; i < hideElementsBeginning.length; i++){
