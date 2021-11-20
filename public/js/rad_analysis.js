@@ -175,7 +175,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                 data: {
                     labels: chartLabels,
                     datasets: [{
-                        label: 'Fragment Sizes',
+                        label: 'Fragments',
                         data: chartData,
                         backgroundColor: [
                             'rgba(54, 162, 235, 0.2)',
