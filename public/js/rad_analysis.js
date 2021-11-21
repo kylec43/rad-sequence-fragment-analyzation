@@ -32,7 +32,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
 
             /*Get file text content */
             console.log("Reading contents...")
-            var contents = reader.result.replace(/[\r\n]+/gm, "");
+            var contents = reader.result.replace(/(\r\n|\n|\r)/gm, "");
             console.log(`Result size is ${contents.length}`);
 
             console.log(`Finding Restriction Site Count: ${restrictionSite}`)
