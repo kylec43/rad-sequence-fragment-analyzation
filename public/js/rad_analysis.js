@@ -32,7 +32,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
 
             /*Get file text content */
             console.log("Reading contents...")
-            var contents = reader.result;
+            var contents = reader.result.replace(/[\r\n]+/gm, "");
             console.log(`Result size is ${contents.length}`);
 
             console.log(`Finding Restriction Site Count: ${restrictionSite}`)
@@ -71,11 +71,13 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                         actualSiteCount++;
 
                         let fragmentSize = position+sliceOffset - lastSliceIndex;
+
                         if(fragmentSize >= rangeMin && fragmentSize <= rangeMax){
                             let index = Math.floor((fragmentSize-rangeMin)/distributionSize) + 1
                             if(index >= fragmentSizes.length){
                                 index = fragmentSizes.length-1;
                             }
+
                             fragmentSizes[index]++;
                             fragmentRangeCount++;
                         } else if (fragmentSize < rangeMin){
@@ -103,12 +105,14 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                 }
             }
 
-            let fragmentSize = contents.length - (lastSliceIndex+sliceOffset);
+            let fragmentSize = contents.length - lastSliceIndex;
+            console.log(`Fragment length is ${fragmentSize}`);
             if(fragmentSize >= rangeMin && fragmentSize <= rangeMax){
                 let index = Math.floor((fragmentSize-rangeMin)/distributionSize) + 1
                 if(index >= fragmentSizes.length){
                     index = fragmentSizes.length-1;
                 }
+                console.log(`Index is ${index}`);
                 fragmentSizes[index]++;
                 fragmentRangeCount++;
             } else if (fragmentSize < rangeMin){
