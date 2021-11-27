@@ -1,18 +1,40 @@
 //Analysis is done here.
 
-window.radAnalyze = async function(genomeFile, restrictionSite, probability, distributionSize, rangeMin, rangeMax, displayOutliers, fragmentChart = null, progressBar = null, hideElementsBeginning = [], hideElementsEnd = []){
+/* Chart Object */
+var fragmentChartObject = null;
+
+window.radAnalyze = async function(config){
+
+
+    /* Get from config*/
+    let genomeFile = config.genomeFile;
+    let restrictionSite = config.restrictionSite;
+    let probability = Math.floor(config.probability*100);
+    let lengthDistribution = config.lengthDistribution;
+    let rangeMin = config.rangeMin;
+    let rangeMax = config.rangeMax;
+    let includeOutliers = config.includeOutliers;
+    let fragmentDataContainer = config.fragmentDataContainer;
+    let fragmentChart = config.fragmentChart;
+    let progressBar = config.progressBar;
+    let hideThenShow = config.hideThenShow;
+    let showThenHide = config.showThenHide;
+
+    /*Initialize initial values */
+
+    if(progressBar){
+        progressBar.style.width = "0%";
+    }
+
+    fragmentDataContainer.innerHTML = ``;
+    
 
     /* Hide these elements in the beginning, store their display history for the end */
     var displayHistory = [];
-    for(let i = 0; i < hideElementsBeginning.length; i++){
-        displayHistory.push(hideElementsBeginning[i].style.display);
-        hideElementsBeginning[i].style.display = "none"
+    for(let i = 0; i < hideThenShow.length; i++){
+        displayHistory.push(hideThenShow[i].style.display);
+        hideThenShow[i].style.display = "none"
     }
-
-    /* Get the probability as a decimal float, convert the probability to an integer percentage as well*/
-    var probabilityDecimal = parseFloat(probability)
-    probability = probabilityDecimal * 100;
-    probability = Math.floor(probability);
 
     console.log(`File size is: ${genomeFile.size} bytes`);
     console.log(`Restriction Site is: ${restrictionSite}`);
@@ -45,16 +67,19 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             var lastPercentage = 0;
 
             
-            /*Get the totalSiteCount and actualSiteCount in this loop */
-            let distributionCount = Math.ceil((rangeMax-rangeMin)/distributionSize) + 2
-            let remainder = (rangeMax-rangeMin)%distributionSize;
+            /* Get the amount of distributions */
+            let distributionCount = Math.ceil((rangeMax-rangeMin)/lengthDistribution) + 2
+            let remainder = (rangeMax-rangeMin)%lengthDistribution;
             if(remainder === 0){
-                console.log("Added 1");
                 distributionCount += 1
             }
+
+            /* Create an array to put the amount of fragments for each distribution */
             var fragmentSizes = Array(distributionCount).fill(0)
             var lastSliceIndex = 0;
             var sliceOffset = restrictionSite.length/2;
+
+            /*Get the totalSiteCount, actualSiteCount, and fragment sizes in this loop */
             while(position !== -1 && position < contents.length){
 
                 //Find position of next site
@@ -73,7 +98,7 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                         let fragmentSize = position+sliceOffset - lastSliceIndex;
 
                         if(fragmentSize >= rangeMin && fragmentSize <= rangeMax){
-                            let index = Math.floor((fragmentSize-rangeMin)/distributionSize) + 1
+                            let index = Math.floor((fragmentSize-rangeMin)/lengthDistribution) + 1
                             if(index >= fragmentSizes.length){
                                 index = fragmentSizes.length-1;
                             }
@@ -105,10 +130,10 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                 }
             }
 
+            /* Add last fragment */
             let fragmentSize = contents.length - lastSliceIndex;
-            console.log(`Fragment length is ${fragmentSize}`);
             if(fragmentSize >= rangeMin && fragmentSize <= rangeMax){
-                let index = Math.floor((fragmentSize-rangeMin)/distributionSize) + 1
+                let index = Math.floor((fragmentSize-rangeMin)/lengthDistribution) + 1
                 if(index >= fragmentSizes.length){
                     index = fragmentSizes.length-1;
                 }
@@ -121,36 +146,61 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
                 fragmentSizes[fragmentSizes.length-1]++;
             }
 
+
+            /* Get fragment count and expected site count */
+
             //Fragment count will be n + 1 where n is the actualSiteCount
             fragmentCount = actualSiteCount + 1;
 
             //expectedSiteCount will be totalSiteCount * probability decimal rounded down. I.E. e.g. 10 * 0.95 = 9 expected sites
-            expectedSiteCount = Math.floor(totalSiteCount * probabilityDecimal)
+            expectedSiteCount = Math.floor(totalSiteCount * (probability/100))
 
-            /*Print results to console*/
-            console.log(`The Total restriction site count was: ${totalSiteCount}`);
-            console.log(`The Expected restriction site count was: ${expectedSiteCount}`);
-            console.log(`The Actual restriction site count was: ${actualSiteCount}`);
-            console.log(`The Fragment count was: ${fragmentCount}`);
-            console.log("Finish");
 
-            document.getElementById('total_rs_count').innerHTML = `${totalSiteCount}`;
-            document.getElementById('expected_rs_slice_count').innerHTML = `${expectedSiteCount}`;
-            document.getElementById('actual_rs_slice_count').innerHTML = `${actualSiteCount}`;
-            document.getElementById('fragment_count').innerHTML = `${fragmentCount}`;
-            document.getElementById('fragment_range_count').innerHTML = `${fragmentRangeCount}`;
-
+            /* Display data tables */
             var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
-            document.getElementById('fragment_percentage').innerHTML = `${(((fragmentRangeCount)/fragmentCount)*100).toString().match(re)[0]}%`;
+            fragmentDataContainer.innerHTML = `
+            <div class="row">
+                <div class="col">
+                    <table class="rad-data-table">
+                        <tr>
+                            <th class="rad-th" title="Total RS Count = Number of Restriction Sites inside Genome File">Total RS Count</th>
+                            <th class="rad-th" title="Expected RS Slice Count = Total RS Count * Probability">Expected RS Slice Count</th>
+                            <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
+                        </tr>
+                        <tr>
+                            <td class="rad-td" id="total_rs_count" title="Total RS Count = Number of Restriction Sites inside Genome File">${totalSiteCount}</td>
+                            <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${expectedSiteCount}</td>
+                            <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${actualSiteCount}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <hr>
+            <div class="row margin-top-md">
+                <div class="col">
+                    <table class="rad-data-table">
+                        <tr>
+                            <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
+                            <th class="rad-th" title="Fragment Range Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
+                            <th class="rad-th" title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
+                        </tr>
+                        <tr>
+                            <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${fragmentCount}</td>
+                            <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${fragmentRangeCount}</td>
+                            <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((fragmentRangeCount)/fragmentCount)*100).toString().match(re)[0]}%</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            `;
 
 
-
-           //Generate chart
+           /*Generate chart*/
            if(fragmentChart !== null){
             let chartLabels = [];
             let chartData = [];
 
-            if(displayOutliers){
+            if(includeOutliers){
                 if(rangeMin > 1){
                     chartLabels.push(`<${rangeMin}`);
                     chartData.push(`${fragmentSizes[0]}`);
@@ -158,14 +208,14 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             }
             
             for(let i = 1; i < fragmentSizes.length-1; i++){
-                let min = `${rangeMin + (i-1)*distributionSize}`;
-                let max = `${(rangeMin + i*distributionSize-1) > rangeMax ? rangeMax : rangeMin + i*distributionSize-1}`;
+                let min = `${rangeMin + (i-1)*lengthDistribution}`;
+                let max = `${(rangeMin + i*lengthDistribution-1) > rangeMax ? rangeMax : rangeMin + i*lengthDistribution-1}`;
                 let range = min === max ? min : `${min}-${max}`;
                 chartLabels.push(range);
                 chartData.push(`${fragmentSizes[i]}`);
             }
 
-            if(displayOutliers){
+            if(includeOutliers){
                 chartLabels.push(`${rangeMax}<`);
                 chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
             }
@@ -221,13 +271,13 @@ window.radAnalyze = async function(genomeFile, restrictionSite, probability, dis
             await new Promise(resolve => setTimeout(resolve, 500));
 
             /* Display the elements hidden in the beginning */
-            for(let i = 0; i < hideElementsBeginning.length; i++){
-                hideElementsBeginning[i].style.display = displayHistory[i];
+            for(let i = 0; i < hideThenShow.length; i++){
+                hideThenShow[i].style.display = displayHistory[i];
             }
 
             /*Hide elements specified at the end*/
-            for(let i = 0; i < hideElementsEnd.length; i++){
-                hideElementsEnd[i].style.display = "none";
+            for(let i = 0; i < showThenHide.length; i++){
+                showThenHide[i].style.display = "none";
             }
         }
     })(reader);

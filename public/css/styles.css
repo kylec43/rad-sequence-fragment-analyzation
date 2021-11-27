@@ -8,7 +8,7 @@ label{
     font-size: 1rem;
 }
 
-/* Aligning Tools */
+/* Display, Layout Classes */
 .margin-center{
     display: block;
     margin-left: auto;
@@ -26,6 +26,31 @@ label{
 
 .display-block{
     display: block;
+}
+
+.margin-top-sm{
+    margin-top: 8px;
+}
+
+.margin-top-md{
+    margin-top: 16px;
+}
+
+.margin-top-lg{
+    margin-top: 24px;
+}
+
+.margin-top-xlg{
+    margin-top: 48px;
+}
+
+
+.width-80{
+    width: 80%;
+}
+
+.display-none{
+    display: none;
 }
 
 
@@ -46,8 +71,8 @@ label{
 }
 
 .rad-card{
-    width: 40%; 
-    min-width: 400px; 
+    width: 100%; 
+    min-width: 430px; 
     max-width: 600px; 
     margin-top: 130px;
     border-radius: 20px;
@@ -129,6 +154,41 @@ label{
     margin: 130px 0px 0px;
 }
 
+
+.rad-data-table, .rad-th, .rad-td {
+    border:1px solid black;
+    }
+
+.rad-th{
+    padding: 5px;
+    font-size: 0.95rem;
+    text-align: center;
+    width: 20%;
+}
+
+.rad-td{
+    padding: 5px;
+    text-align: center;
+    width: 20%;
+    font-size: 1rem;
+}
+
+.rad-data-table{
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+}
+
+.rad-outlier-input{
+    width: 1.2rem; 
+    height: 1.2rem; 
+    vertical-align:-0.1rem;
+}
+
+.rad-outlier-label{
+    font-size: 0.9rem;
+}
+
 /* navbar styles */
 
 .navbar{
@@ -193,6 +253,11 @@ label{
  .form-control:focus{
     border-color: #28a745;
     box-shadow: 0 0 0 0.2rem rgba(48, 197, 83, 0.25);
+}
+
+.progress-bar{
+    width: 0%; 
+    transition: none;
 }
 
 /*Chart js classes */

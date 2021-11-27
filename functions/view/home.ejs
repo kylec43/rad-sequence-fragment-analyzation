@@ -15,13 +15,13 @@
         <div class="row">
 
             <div class="col-lg-5">
-                <div class="card rad-card margin-center" id="analysis_card" style="width: 80%;">
+                <div class="card rad-card margin-center" id="analysis_card">
                     <div class="rad-card-header">
                         <h3 class="card-title rad-form-header">RAD-Seq Fragment Analysis</h3>
                     </div>
                     <hr>
                     <div class="card-body rad-card-body">
-                        <p id="error" class="rad-error-message text-center" style="display: none;"></p>               
+                        <p id="error" class="rad-error-message text-center display-none"></p>               
                         <form id="analysis_form" name="analysis_form" action="/" method="post">
                             <div class="container-fluid">
                                 <div class="row">
@@ -43,6 +43,30 @@
                                             <label for="enzyme_site">Restriction Site:</label>
                                             <div class="input-group">
                                                 <input class="form-control" id="enzyme_site" name="enzyme_site" type="text" minlength="2" maxlength="8" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="enzyme_select2">Restriction Enzyme:</label>
+                                            <div class="input-group">
+                                                <select class="form-control" onchange="onSelectEnzyme2(this);" name="enzyme_select2" id="enzyme_select2">
+                                                    <option>&lt&ltnone&gt&gt</option>
+                                                    <option>&lt&ltcustom&gt&gt</option>
+                                                    <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
+                                                        <option id="<%= restriction_enzymes[i]['id'] %>2"><%= restriction_enzymes[i]["name"] %></option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="enzyme_site">Restriction Site:</label>
+                                            <div class="input-group">
+                                                <input class="form-control" id="enzyme_site2" name="enzyme_site2" type="text" minlength="2" maxlength="8" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -96,25 +120,26 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" style="margin-top: 10px;">
+                                <div class="row margin-top-sm">
                                     <div class="col">
-                                        <input id="outlier" name="outlier" type="checkbox" style="width: 1.2rem; height: 1.2rem; vertical-align:-0.1rem;">
-                                        <label for="outlier" style="font-size: 0.9rem;">Include Outlier Data</label>                             
+                                        <input class="rad-outlier-input" id="outlier" name="outlier" type="checkbox">
+                                        <label class="rad-outlier-label" for="outlier">Include Outlier Data</label>                             
                                     </div>
                                 </div>
                                 <hr>
-                                <div class="progress" style="display: none" id="progress_bar_block">
-                                    <div
-                                    id="progress_bar"
-                                    class="progress-bar"
-                                    role="progressbar"
-                                    style="width: 0%; transition: none;"
-                                    ></div>
-                                </div>
-                                <div class="rad-load-block" style="display: none;" id="rad_analyze_block">
-                                    <h5 class="rad-load-label">Analyzing</h5>
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only"></span>
+                                <div class="display-none" id="analysis_loading_block">
+                                    <div class="progress" id="progress_bar_block">
+                                        <div
+                                        id="progress_bar"
+                                        class="progress-bar"
+                                        role="progressbar"
+                                        ></div>
+                                    </div>
+                                    <div class="rad-load-block">
+                                        <h5 class="rad-load-label">Analyzing</h5>
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only"></span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -127,78 +152,9 @@
             </div>
             <div class="col-lg-7 inner-center">
 
-                <style>
-                    table, th, td {
-                        border:1px solid black;
-                        }
-
-                    th{
-                        padding: 5px;
-                        font-size: 0.95rem;
-                        text-align: center;
-                        width: 20%;
-                    }
-
-                    td{
-                        padding: 5px;
-                        text-align: center;
-                        width: 20%;
-                    }
-
-                    table{
-                        width: 100%;
-                        max-width: 700px;
-                        margin: auto;
-                    }
-
-                    .table-div{
-                        padding-left: 50px;
-                        padding-right: 50px;
-                    }
-
-                    td i{
-                        font-size: 1rem;
-                    }
-                </style>
-
-                <div class="container-fluid rad-data-container">
-                    <div class="row">
-                        <div class="col">
-                            <table>
-                                <tr>
-                                    <th title="Total RS Count = Number of Restriction Sites inside Genome File">Total RS Count</th>
-                                    <th title="Expected RS Slice Count = Total RS Count * Probability">Expected RS Slice Count</th>
-                                    <th title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
-                                </tr>
-                                <tr>
-                                    <td id="total_rs_count" title="Total RS Count = Number of Restriction Sites inside Genome File">0</td>
-                                    <td id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">0</td>
-                                    <td id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">0</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row" style="margin-top: 20px;">
-                        <div class="col">
-                            <table>
-                                <tr>
-                                    <th title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
-                                    <th title="Fragment Range Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
-                                    <th title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
-                                </tr>
-                                <tr>
-                                    <td id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">0</td>
-                                    <td id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">0</td>
-                                    <td id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">0%</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+                <div class="container-fluid rad-data-container" id="fragment_data_container">
                 </div>
                 <hr>
-
-
                 <div class="chart-container">
                     <canvas id="fragmentChart" class="chart-canvas"></canvas>
                 </div>
@@ -213,6 +169,7 @@
             /* Inputs */
             var enzymeSelect = document.getElementById('enzyme_select');
             var enzymeSite = document.getElementById('enzyme_site');
+            var enzymeSite2 = document.getElementById('enzyme_site2');
             var probability = document.getElementById('probability');
             var lengthDistribution = document.getElementById('length_distribution');
             var rangeMin = document.getElementById('range_min');
@@ -225,8 +182,10 @@
             var error = document.getElementById('error');
             var radAnalyzeBlock = document.getElementById('rad_analyze_block');
             var analysisButton = document.getElementById('analysis_button');
+            var analysisLoadingBlock = document.getElementById('analysis_loading_block');
             var progressBarBlock = document.getElementById('progress_bar_block');
             var progressBar = document.getElementById('progress_bar');
+            var fragmentDataContainer = document.getElementById('fragment_data_container');
             const fragmentChart = document.getElementById('fragmentChart');
 
 
@@ -235,9 +194,6 @@
             var DOC_NAME = "<%= user !== null ? user.uid : ''%>";
             var restriction_enzymes = [];
             restriction_enzymes = <%- JSON.stringify(restriction_enzymes) %>;
-
-            /* Chart Object */
-            var fragmentChartObject = null;
 
             <% if (user) { %>
                 window.onload = async ()=>{
@@ -265,26 +221,55 @@
                 }
             }
 
+            function onSelectEnzyme2(sel){
+                if(sel.selectedIndex === 0){
+                    enzymeSite2.disabled = true;
+                    enzymeSite2.value = "";
+
+                } else if(sel.selectedIndex === 1){
+                    enzymeSite2.disabled = false;
+                    enzymeSite2.value = "";
+                } else {
+                    enzymeSite2.disabled = true;
+                    enzymeSite2.value = restriction_enzymes[sel.selectedIndex-1].restrictionSite;
+
+                }
+            }
+
             
             async function performAnalysis(){
 
                 var $analysisForm = $('#analysis_form');
                 if ($analysisForm[0].checkValidity()){
-                    progressBarBlock.style.display = "flex";
-                    radAnalyzeBlock.style.display = "flex";
+                    analysisLoadingBlock.style.display = "block";
                     progressBar.style.width = "0%";
                     console.log("Start")
                     try{
                         let lengthDistributionNumber = parseInt(lengthDistribution.value);
                         let rangeMinNumber = parseInt(rangeMin.value);
                         let rangeMaxNumber = parseInt(rangeMax.value);
+                        let probabilityNumber = parseFloat(probability.value);
                         if(rangeMaxNumber < rangeMinNumber){
                             rangeMax.value = `${rangeMinNumber}`;
                             rangeMaxNumber = rangeMinNumber;
                         }
 
                         console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
-                        await radAnalyze(genomeFileInput.files[0], enzymeSite.value.toUpperCase(), probability.value, lengthDistributionNumber, rangeMinNumber, rangeMaxNumber, outlierInput.checked, fragmentChart, progressBar, [analysisButton,], [progressBarBlock, radAnalyzeBlock]);
+                        let radConfig = {
+                            genomeFile: genomeFileInput.files[0],
+                            restrictionSite: enzymeSite.value.toUpperCase(),
+                            probability: probabilityNumber,
+                            lengthDistribution: lengthDistributionNumber,
+                            rangeMin: rangeMinNumber,
+                            rangeMax: rangeMaxNumber,
+                            includeOutliers: outlierInput.checked,
+                            fragmentDataContainer,
+                            fragmentChart,
+                            progressBar,
+                            hideThenShow: [analysisButton,],
+                            showThenHide: [analysisLoadingBlock,]
+                        }
+                        await radAnalyze(radConfig);
                     } catch(e) {
                         console.log(`Error: ${e}`);
                     }
