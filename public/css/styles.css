@@ -1,4 +1,5 @@
 /* Global selectors */
+
 body {
     background-color: rgba(210,210,210,1);
     padding-top: 96px;
@@ -9,7 +10,9 @@ label{
     font-size: 1rem;
 }
 
+
 /* Display, Layout Classes */
+
 .margin-center{
     display: block;
     margin-left: auto;
@@ -18,6 +21,11 @@ label{
 
 .margin-left{
     margin-left: auto;
+}
+
+
+.margin-right{
+    margin-right: auto;
 }
 
 .inner-center{
@@ -59,21 +67,7 @@ label{
 }
 
 
-/* Form Classes */
-
-.rad-form-header{
-    text-align: center;
-    font-weight: bold;
-}
-
-
-.rad-card-footer{
-    text-align: center;
-    background: rgb(240, 240, 240);
-    overflow: hidden; 
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-}
+/* Rad Card styles */
 
 .rad-card{
     width: 100%; 
@@ -84,13 +78,41 @@ label{
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.2);
 }
 
+.rad-card-header{
+    padding: 20px 20px 0px;
+}
+
 .rad-card-body{
     padding: 30px;
 }
 
+.rad-card-footer{
+    text-align: center;
+    background: rgb(240, 240, 240);
+    overflow: hidden; 
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.rad-card-text-header{
+    text-align: center;
+    font-weight: bold;
+}
+
+.rad-card-error-message{
+    color: red;
+    font-weight: bold;
+}
+
+.rad-card-success-message{
+    color: green;
+    font-weight: bold;
+}
 
 
-.rad-form-button {
+/* Rad Components */
+
+.rad-button {
     font-weight: bold;
     min-width: 138px;
     min-height: 44px;
@@ -105,14 +127,14 @@ label{
     margin-top: 30px;
 }
 
-.rad-form-button:hover {
+.rad-button:hover {
     border: 1px solid #253737;
     text-shadow: #333333 0 1px 0;
     background: linear-gradient(#77b2b0, #416b68);
     color: #fff;
  }
 
-.rad-form-button:active {
+.rad-button:active {
     text-shadow: #333333 0 -1px 0;
     border: 1px solid #253737;
     background: linear-gradient(#416b68, #6da5a3);
@@ -120,25 +142,10 @@ label{
     box-shadow: rgba(255,255,255,0) 0 1px 0, inset rgba(255,255,255,0.7) 0 1px 0;
 }
 
-.rad-card-header{
-    padding: 20px 20px 0px;
-}
-
-
-.rad-form-error-li{
-    text-align:center; 
-    font-weight: bold; 
-    color: red;
-}
-
-.rad-error-message{
-    color: red;
-    font-weight: bold;
-}
-
-.rad-success-message{
-    color: green;
-    font-weight: bold;
+.rad-checkbox{
+    width: 1.2rem; 
+    height: 1.2rem; 
+    vertical-align:-0.1rem;
 }
 
 .rad-load-block{
@@ -154,14 +161,15 @@ label{
     font-weight: bold;
 }
 
-.rad-data-container{
+.rad-data-table-container{
     margin: 0px;
 }
 
-
-.rad-data-table, .rad-th, .rad-td {
-    border:1px solid black;
-    }
+.rad-data-table{
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+}
 
 .rad-th{
     padding: 5px;
@@ -177,23 +185,16 @@ label{
     font-size: 1rem;
 }
 
-.rad-data-table{
-    width: 100%;
-    max-width: 700px;
-    margin: auto;
-}
-
-.rad-outlier-input{
-    width: 1.2rem; 
-    height: 1.2rem; 
-    vertical-align:-0.1rem;
+.rad-data-table, .rad-th, .rad-td {
+    border:1px solid black;
 }
 
 .rad-outlier-label{
     font-size: 0.9rem;
 }
 
-/* navbar styles */
+
+/* Navbar styles */
 
 .navbar{
     box-shadow: 0 0 13px 3px rgba(0,0,0,.5);
@@ -238,8 +239,6 @@ label{
     text-decoration: none;
  }
 
-
-
  .nav-dropdown-button:active{
     background: linear-gradient(#416b68, #6da5a3);
     text-decoration: none;
@@ -252,8 +251,8 @@ label{
  }
 
 
-
  /* Bootstrap classes */
+
  .form-control:focus{
     border-color: #28a745;
     box-shadow: 0 0 0 0.2rem rgba(48, 197, 83, 0.25);
@@ -264,7 +263,9 @@ label{
     transition: none;
 }
 
-/*Chart js classes */
+
+/*Chart classes */
+
 .chart-container{
     min-width: 400px;
     min-height: 400px;

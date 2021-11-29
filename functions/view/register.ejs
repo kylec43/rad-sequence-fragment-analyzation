@@ -13,12 +13,12 @@
 
         <div class="card rad-card margin-center margin-top-lg">
             <div class="rad-card-header">
-                <h3 class="card-title rad-form-header">Registration</h3>
+                <h3 class="card-title rad-card-text-header">Registration</h3>
             </div>
             <hr>
             <div class="card-body rad-card-body">
                 <% if (errorMessage !== null) { %>
-                    <p id="error" class="rad-error-message text-center"><%- errorMessage %></p>               
+                    <p id="error" class="rad-card-error-message text-center"><%- errorMessage %></p>               
                     <br>
                 <% } %>
                 <form action="/register" method="post">
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="rad-form-button margin-center">Register</button>
+                        <button class="rad-button margin-center">Register</button>
                         <hr>
                         <p class="inner-center">Already registered? sign in <span><a href="/login">here</a></span></p>
                     </div>
