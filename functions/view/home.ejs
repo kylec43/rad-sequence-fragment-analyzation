@@ -154,11 +154,11 @@
                 <hr style="margin-top: 0px;">
                 <h1 class="inner-center">Results</h1>
                 <hr>
-                <div class="container-fluid rad-data-table-container" id="fragment_data_container">
+                <div class="container-fluid rad-data-table-container" id="fragment_table_container">
                 </div>
                 <hr>
                 <div class="chart-container">
-                    <canvas id="fragmentChart" class="chart-canvas"></canvas>
+                    <canvas id="fragment_chart" class="chart-canvas"></canvas>
                 </div>
             </div>
         </div>
@@ -187,8 +187,8 @@
             var analysisLoadingBlock = document.getElementById('analysis_loading_block');
             var progressBarBlock = document.getElementById('progress_bar_block');
             var progressBar = document.getElementById('progress_bar');
-            var fragmentDataContainer = document.getElementById('fragment_data_container');
-            const fragmentChart = document.getElementById('fragmentChart');
+            var fragmentTableContainer = document.getElementById('fragment_table_container');
+            const fragmentChartCanvas = document.getElementById('fragment_chart');
 
 
             /*Server data*/
@@ -266,8 +266,8 @@
                             rangeMin: rangeMinNumber,
                             rangeMax: rangeMaxNumber,
                             includeOutliers: outlierInput.checked,
-                            fragmentDataContainer,
-                            fragmentChart,
+                            fragmentTableContainer,
+                            fragmentChartCanvas,
                             progressBar,
                             hideThenShow: [analysisButton,],
                             showThenHide: [analysisLoadingBlock,]
