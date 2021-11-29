@@ -151,7 +151,9 @@
                 </div>
             </div>
             <div class="col-lg-7 inner-center">
-
+                <hr style="margin-top: 0px;">
+                <h1 class="inner-center">Results</h1>
+                <hr>
                 <div class="container-fluid rad-data-container" id="fragment_data_container">
                 </div>
                 <hr>
@@ -231,7 +233,7 @@
                     enzymeSite2.value = "";
                 } else {
                     enzymeSite2.disabled = true;
-                    enzymeSite2.value = restriction_enzymes[sel.selectedIndex-1].restrictionSite;
+                    enzymeSite2.value = restriction_enzymes[sel.selectedIndex-2].restrictionSite;
 
                 }
             }
@@ -258,6 +260,7 @@
                         let radConfig = {
                             genomeFile: genomeFileInput.files[0],
                             restrictionSite: enzymeSite.value.toUpperCase(),
+                            restrictionSite2: enzymeSite2.value.toUpperCase(),
                             probability: probabilityNumber,
                             lengthDistribution: lengthDistributionNumber,
                             rangeMin: rangeMinNumber,

@@ -5,7 +5,21 @@ var fragmentChartObject = null;
 
 window.radAnalyze = async function(config){
 
+    if(config.restrictionSite2 !== ""){
+        doubleEnzymeDigest(config);
+    } else {
+        singleEnzymeDigest(config);
+    }
 
+
+}
+
+
+
+async function singleEnzymeDigest(config){
+
+    console.log("Single digest");
+    
     /* Get from config*/
     let genomeFile = config.genomeFile;
     let restrictionSite = config.restrictionSite;
@@ -27,6 +41,10 @@ window.radAnalyze = async function(config){
     }
 
     fragmentDataContainer.innerHTML = ``;
+    if(fragmentChartObject !== null) {
+        console.log("Destroyed");
+        fragmentChartObject.destroy();
+    }
     
 
     /* Hide these elements in the beginning, store their display history for the end */
@@ -195,8 +213,8 @@ window.radAnalyze = async function(config){
             `;
 
 
-           /*Generate chart*/
-           if(fragmentChart !== null){
+            /*Generate chart*/
+            if(fragmentChart !== null){
             let chartLabels = [];
             let chartData = [];
 
@@ -221,10 +239,7 @@ window.radAnalyze = async function(config){
             }
             
 
-            if(fragmentChartObject !== null) {
-                console.log("Destroyed");
-                fragmentChartObject.destroy();
-            }
+
             fragmentChartObject = new Chart(fragmentChart, {
                 type: 'bar',
                 data: {
@@ -259,7 +274,7 @@ window.radAnalyze = async function(config){
                     }
                 }
             });
-           }
+            }
 
             var date2 = new Date();
             var elapsedTime = date2-date1;
@@ -286,4 +301,10 @@ window.radAnalyze = async function(config){
 
     //Read file as text
     reader.readAsText(genomeFile);
+}
+
+
+
+async function doubleEnzymeDigest(){
+    console.log("double digest");
 }

@@ -1,6 +1,7 @@
 /* Global selectors */
 body {
     background-color: rgba(210,210,210,1);
+    padding-top: 96px;
 }
 
 label{
@@ -44,6 +45,10 @@ label{
     margin-top: 48px;
 }
 
+.margin-top-xxlg{
+    margin-top: 96px;
+}
+
 
 .width-80{
     width: 80%;
@@ -74,7 +79,6 @@ label{
     width: 100%; 
     min-width: 430px; 
     max-width: 600px; 
-    margin-top: 130px;
     border-radius: 20px;
     background: rgb(240, 240, 240);
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.2);
@@ -151,7 +155,7 @@ label{
 }
 
 .rad-data-container{
-    margin: 130px 0px 0px;
+    margin: 0px;
 }
 
 
