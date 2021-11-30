@@ -545,7 +545,8 @@ async function singleEnzymeDigest(config){
             var timeStart = new Date();
 
             /*Get file text content, removing all whitespaces, newlines*/
-            var contents = reader.result.replace(/(\r\n|\n|\r)/gm, "");
+            var contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+            console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
 
             
             /* 
