@@ -591,16 +591,16 @@ async function singleEnzymeDigest(config){
                     //Set the new position to read the file from
                     position += config.restrictionSite.length;                    
                     
-                    //Update the progress bar %
-                    let percentage = position/(contents.length)
-                    percentage = percentage*100;
-                    if(config.progressBar !== null){
-                        config.progressBar.style.width = `${percentage}%`;
-                    }
 
-                    //prevent interface from freezing, let progress bar catch up
+
+                    //prevent interface from freezing, update progressBar percent
+                    let percentage = position/(contents.length);
+                    percentage = percentage*100;
                     if(lastPercentage != Math.floor(percentage)){
                         lastPercentage = Math.floor(percentage);
+                        if(config.progressBar !== null){
+                            config.progressBar.style.width = `${percentage}%`;
+                        }
                         await new Promise(resolve => setTimeout(resolve, 1));
                     }
                 } else {
