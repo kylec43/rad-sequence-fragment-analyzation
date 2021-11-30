@@ -243,8 +243,7 @@
 
                 var $analysisForm = $('#analysis_form');
                 if ($analysisForm[0].checkValidity()){
-                    analysisLoadingBlock.style.display = "block";
-                    progressBar.style.width = "0%";
+
                     console.log("Start")
                     try{
                         let lengthDistributionNumber = parseInt(lengthDistribution.value);
@@ -270,8 +269,12 @@
                             fragmentChartCanvas,
                             progressBar,
                             hideThenShow: [analysisButton,],
-                            showThenHide: [analysisLoadingBlock,]
+                            showThenHide: {
+                                elements: [analysisLoadingBlock,],
+                                displays: ["block",]
+                            },
                         }
+
                         await radAnalyze(radConfig);
                     } catch(e) {
                         console.log(`Error: ${e}`);

@@ -320,30 +320,221 @@ function setInitialValues(config){
 }
 
 
+function hideElementsBeginning(config){
+    config.hideThenShowDisplayHistory = [];
+    for(let i = 0; i < config.hideThenShow.length; i++){
+        config.hideThenShowDisplayHistory.push(config.hideThenShow[i].style.display);
+        config.hideThenShow[i].style.display = "none"
+    }
+}
+
+
+function showElementsEnd(config){
+    for(let i = 0; i < config.hideThenShow.length; i++){
+        config.hideThenShow[i].style.display = config.hideThenShowDisplayHistory[i];
+    }
+}
+
+function showElementsBeginning(config){
+    for(let i = 0; i < config.showThenHide.elements.length; i++){
+        config.showThenHide.elements[i].style.display = config.showThenHide.displays[i];
+    }
+}
+
+
+function hideElementsEnd(config){
+    for(let i = 0; i < config.showThenHide.elements.length; i++){
+        config.showThenHide.elements[i].style.display = "none";
+    }
+}
+
+
+/*
+We can get the distribution count by dividing (rangeMax-rangeMin)/lengthDistribution rounded up
+For example: (100-1)/ 2 = 2      1-50    51-100
+Add 2 to the count for outliers.
+
+If the remainder is 0 we need to add one extra distribution count otherwise we will be missing one.
+For example:    (101-1) / 2 = 2. 2 + 1 = 3     1-50  51-100  101-101
+*/
+function getDistributionCount(config){
+    let distributionCount = Math.ceil((config.rangeMax-config.rangeMin)/config.lengthDistribution) + 2
+    let remainder = (config.rangeMax-config.rangeMin)%config.lengthDistribution;
+    if(remainder === 0){
+        distributionCount += 1
+    }
+
+    return distributionCount;
+}
+
+
+/*
+We will get the fragment size and determine if it is within our specified min and max range.
+If it is within our
+*/
+function getFragmentSizes(sliceIndexes, config){
+    
+    /* Get the amount of distributions according to the minimum range, maximum range, and length distribution*/
+    var distributionCount = getDistributionCount(config);
+
+    //fragmentSizes: An array holding the count for each distribution
+    var fragmentSizes = Array(distributionCount).fill(0)
+
+    for(let i = 0; i < sliceIndexes.length-1; i++){
+        let fragmentSize = sliceIndexes[i+1] - sliceIndexes[i];
+        if(fragmentSize >= config.rangeMin && fragmentSize <= config.rangeMax){
+            let index = Math.floor((fragmentSize-config.rangeMin)/config.lengthDistribution) + 1
+            if(index >= fragmentSizes.length){
+                index = fragmentSizes.length-1;
+            }
+
+            fragmentSizes[index]++;
+        } else if (fragmentSize < config.rangeMin){
+            fragmentSizes[0]++;
+        } else {
+            fragmentSizes[fragmentSizes.length-1]++;
+        }
+    }
+
+    return fragmentSizes;
+}
+
+
+/*
+We will get the fragment size and determine if it is within our specified min and max range.
+If it is within our
+*/
+function getFragmentRangeCount(fragmentSizes){
+
+    let fragmentRangeCount = 0;
+    for(let i = 1; i < fragmentSizes.length-1; i++){
+        fragmentRangeCount += fragmentSizes[i];
+    }
+
+    return fragmentRangeCount;
+}
+
+
+function displaySingleEnzymeDigestionData(tableData, config){
+    var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
+    config.fragmentTableContainer.innerHTML = `
+    <div class="row">
+        <div class="col">
+            <table class="rad-data-table">
+                <tr>
+                    <th class="rad-th" title="Total RS Count = Number of Restriction Sites inside Genome File">Total RS Count</th>
+                    <th class="rad-th" title="Expected RS Slice Count = Total RS Count * Probability">Expected RS Slice Count</th>
+                    <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
+                </tr>
+                <tr>
+                    <td class="rad-td" id="total_rs_count" title="Total RS Count = Number of Restriction Sites inside Genome File">${tableData.totalSiteCount}</td>
+                    <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${tableData.expectedSiteCount}</td>
+                    <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${tableData.actualSiteCount}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <hr>
+    <div class="row margin-top-md">
+        <div class="col">
+            <table class="rad-data-table">
+                <tr>
+                    <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
+                    <th class="rad-th" title="Fragment Range Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
+                    <th class="rad-th" title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
+                </tr>
+                <tr>
+                    <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${tableData.fragmentCount}</td>
+                    <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${tableData.fragmentRangeCount}</td>
+                    <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((tableData.fragmentRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    `;
+}
+
+
+function generateChart(fragmentSizes, config){
+    if(config.fragmentChartCanvas !== null){
+        let chartLabels = [];
+        let chartData = [];
+
+        if(config.includeOutliers){
+            if(config.rangeMin > 1){
+                chartLabels.push(`<${config.rangeMin}`);
+                chartData.push(`${fragmentSizes[0]}`);
+            }
+        }
+        
+        for(let i = 1; i < fragmentSizes.length-1; i++){
+            let min = `${config.rangeMin + (i-1)*config.lengthDistribution}`;
+            let max = `${(config.rangeMin + i*config.lengthDistribution-1) > config.rangeMax ? config.rangeMax : config.rangeMin + i*config.lengthDistribution-1}`;
+            let range = min === max ? min : `${min}-${max}`;
+            chartLabels.push(range);
+            chartData.push(`${fragmentSizes[i]}`);
+        }
+
+        if(config.includeOutliers){
+            chartLabels.push(`${config.rangeMax}<`);
+            chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
+        }
+        
+
+
+        fragmentChartObject = new Chart(config.fragmentChartCanvas, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Fragments',
+                    data: chartData,
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Fragment Length"
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Fragment Count"
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+
+
 async function singleEnzymeDigest(config){
 
     console.log("Single digest");
     
 
     /*Set initial values of certain config elements */
-
     setInitialValues(config);
     
 
-    /* Hide these elements in the beginning, store their display history for the end */
-    var displayHistory = [];
-    for(let i = 0; i < config.hideThenShow.length; i++){
-        displayHistory.push(config.hideThenShow[i].style.display);
-        config.hideThenShow[i].style.display = "none"
-    }
-
-    console.log(`File size is: ${config.genomeFile.size} bytes`);
-    console.log(`Restriction Site is: ${config.restrictionSite}`);
-    console.log(`Probability is: ${config.probability}`)
-    console.log("Initializing File Reader")
+    /* Show and Hide elements in the beginning specified in config */
+    showElementsBeginning(config);
+    hideElementsBeginning(config);
 
     var reader = new FileReader();
-    var fragmentCount = 0;
 
     /* run this function on file read */
     console.log("Setting onload");
@@ -351,232 +542,110 @@ async function singleEnzymeDigest(config){
     {
         return async function()
         {
-            var date1 = new Date();
+            var timeStart = new Date();
 
-            /*Get file text content */
-            console.log("Reading contents...")
+            /*Get file text content, removing all whitespaces, newlines*/
             var contents = reader.result.replace(/(\r\n|\n|\r)/gm, "");
-            console.log(`Result size is ${contents.length}`);
 
-            console.log(`Finding Restriction Site Count: ${config.restrictionSite}`)
+            
+            /* 
+            sliceIndexes: Contains all of the actual slice indexes
+            sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
+            position: Contains the current position inside of the genome file
+            totalSiteCount: Contains the total count of restriction sites in the file
+            expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
+            actualSiteCount: Contains the randomized slice count which should approximately be the probability% * total count of restriction sites in the file.
+            fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
+            */
+            var sliceIndexes = [0,];
+            var sliceOffset = config.restrictionSite.length/2;
             var position = 0;
             var totalSiteCount = 0;
             var expectedSiteCount = 0;
             var actualSiteCount = 0;
-            var fragmentRangeCount = 0;
-            console.log(`Position is ${position}, Contents length is ${contents.length}`);
-            var lastPercentage = 0;
-
-            
-            /* Get the amount of distributions */
-            let distributionCount = Math.ceil((config.rangeMax-config.rangeMin)/config.lengthDistribution) + 2
-            let remainder = (config.rangeMax-config.rangeMin)%config.lengthDistribution;
-            if(remainder === 0){
-                distributionCount += 1
-            }
-
-            /* Create an array to put the amount of fragments for each distribution */
-            var fragmentSizes = Array(distributionCount).fill(0)
-            var lastSliceIndex = 0;
-            var sliceOffset = config.restrictionSite.length/2;
-
-            /*Get the totalSiteCount, actualSiteCount, and fragment sizes in this loop */
-            while(position !== -1 && position < contents.length){
+            let lastPercentage = 0;
+            /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
+            while(true){
 
                 //Find position of next site
                 position = contents.indexOf(config.restrictionSite, position);
 
-                //If site is -1, it does not exist in the rest of the file, 
-                //Otherwise add to the totalSiteCount and actualSiteCount here
+                /*
+                If site is -1, it does not exist in the rest of the file.
+                If it is not equal to -1, add 1 to the total site count and run this block of code
+                */
                 if(position !== -1){
                     totalSiteCount++;
 
-                    //Determine if this site was sliced based off of probability
+                    /*
+                    We will determine if this site was sliced based off randomized probability.
+                    If it was add 1 to the actual site count and will add the slice position to sliceIndexes
+                    */
                     let randomNumber = Math.floor((Math.random() * 100) + 1);
                     if(randomNumber <= config.probability){
                         actualSiteCount++;
-
-                        let fragmentSize = position+sliceOffset - lastSliceIndex;
-
-                        if(fragmentSize >= config.rangeMin && fragmentSize <= config.rangeMax){
-                            let index = Math.floor((fragmentSize-config.rangeMin)/config.lengthDistribution) + 1
-                            if(index >= fragmentSizes.length){
-                                index = fragmentSizes.length-1;
-                            }
-
-                            fragmentSizes[index]++;
-                            fragmentRangeCount++;
-                        } else if (fragmentSize < config.rangeMin){
-                            fragmentSizes[0]++;
-                        } else {
-                            fragmentSizes[fragmentSizes.length-1]++;
-                        }
-
-                        lastSliceIndex = position+sliceOffset;
+                        sliceIndexes.push(position+sliceOffset);
                     }
 
                     //Set the new position to read the file from
                     position += config.restrictionSite.length;                    
                     
-                    //Update the progress bar
+                    //Update the progress bar %
+                    let percentage = position/(contents.length)
+                    percentage = percentage*100;
                     if(config.progressBar !== null){
-                        var percentage = position/(contents.length)
-                        percentage = percentage*100;
-                        percentage = Math.floor(percentage);
-                        if(lastPercentage !== percentage){
-                            lastPercentage = percentage;
-                            config.progressBar.style.width = `${percentage}%`;
-                        }
+                        config.progressBar.style.width = `${percentage}%`;
                     }
+
+                    //prevent interface from freezing, let progress bar catch up
+                    if(lastPercentage != Math.floor(percentage)){
+                        lastPercentage = Math.floor(percentage);
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                } else {
+                    break;
                 }
+
             }
 
-            /* Add last fragment */
-            let fragmentSize = contents.length - lastSliceIndex;
-            if(fragmentSize >= config.rangeMin && fragmentSize <= config.rangeMax){
-                let index = Math.floor((fragmentSize-config.rangeMin)/config.lengthDistribution) + 1
-                if(index >= fragmentSizes.length){
-                    index = fragmentSizes.length-1;
-                }
-                console.log(`Index is ${index}`);
-                fragmentSizes[index]++;
-                fragmentRangeCount++;
-            } else if (fragmentSize < config.rangeMin){
-                fragmentSizes[0]++;
-            } else {
-                fragmentSizes[fragmentSizes.length-1]++;
-            }
+            sliceIndexes.push(contents.length);
 
 
-            /* Get fragment count and expected site count */
-
-            //Fragment count will be n + 1 where n is the actualSiteCount
-            fragmentCount = actualSiteCount + 1;
-
-            //expectedSiteCount will be totalSiteCount * probability decimal rounded down. I.E. e.g. 10 * 0.95 = 9 expected sites
-            expectedSiteCount = Math.floor(totalSiteCount * (config.probability/100))
+            /* 
+            fragmentSizes: Contains the count for each distribution
+            fragmentCount: n + 1 where n is the actualSiteCount
+            expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
+            fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
+            */
+            var fragmentSizes = getFragmentSizes(sliceIndexes, config);
+            var fragmentCount = actualSiteCount + 1;
+            var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/100));
+            var fragmentRangeCount = getFragmentRangeCount(fragmentSizes);
 
 
             /* Display data tables */
-            var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
-            config.fragmentTableContainer.innerHTML = `
-            <div class="row">
-                <div class="col">
-                    <table class="rad-data-table">
-                        <tr>
-                            <th class="rad-th" title="Total RS Count = Number of Restriction Sites inside Genome File">Total RS Count</th>
-                            <th class="rad-th" title="Expected RS Slice Count = Total RS Count * Probability">Expected RS Slice Count</th>
-                            <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
-                        </tr>
-                        <tr>
-                            <td class="rad-td" id="total_rs_count" title="Total RS Count = Number of Restriction Sites inside Genome File">${totalSiteCount}</td>
-                            <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${expectedSiteCount}</td>
-                            <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${actualSiteCount}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <hr>
-            <div class="row margin-top-md">
-                <div class="col">
-                    <table class="rad-data-table">
-                        <tr>
-                            <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
-                            <th class="rad-th" title="Fragment Range Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
-                            <th class="rad-th" title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
-                        </tr>
-                        <tr>
-                            <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${fragmentCount}</td>
-                            <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${fragmentRangeCount}</td>
-                            <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((fragmentRangeCount)/fragmentCount)*100).toString().match(re)[0]}%</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            `;
+            var tableData = {
+                totalSiteCount,
+                expectedSiteCount,
+                actualSiteCount,
+                fragmentCount,
+                fragmentRangeCount,
+            };
+            displaySingleEnzymeDigestionData(tableData, config)
 
 
             /*Generate chart*/
-            if(config.fragmentChartCanvas !== null){
-            let chartLabels = [];
-            let chartData = [];
+            generateChart(fragmentSizes, config);
 
-            if(config.includeOutliers){
-                if(config.rangeMin > 1){
-                    chartLabels.push(`<${config.rangeMin}`);
-                    chartData.push(`${fragmentSizes[0]}`);
-                }
-            }
-            
-            for(let i = 1; i < fragmentSizes.length-1; i++){
-                let min = `${config.rangeMin + (i-1)*config.lengthDistribution}`;
-                let max = `${(config.rangeMin + i*config.lengthDistribution-1) > config.rangeMax ? config.rangeMax : config.rangeMin + i*config.lengthDistribution-1}`;
-                let range = min === max ? min : `${min}-${max}`;
-                chartLabels.push(range);
-                chartData.push(`${fragmentSizes[i]}`);
-            }
-
-            if(config.includeOutliers){
-                chartLabels.push(`${config.rangeMax}<`);
-                chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
-            }
-            
-
-
-            fragmentChartObject = new Chart(config.fragmentChartCanvas, {
-                type: 'bar',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Fragments',
-                        data: chartData,
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.2)',
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: "Fragment Length"
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: "Fragment Count"
-                            }
-                        }
-                    }
-                }
-            });
-            }
-
-            var date2 = new Date();
-            var elapsedTime = date2-date1;
+            var timeFinish = new Date();
+            var elapsedTime = timeFinish-timeStart;
             elapsedTime = elapsedTime/1000
             console.log(`Elapsed time: ${elapsedTime} seconds`);
 
-            
-            //let progress bar catch up
-            await new Promise(resolve => setTimeout(resolve, 500));
+            /* Show and hide elements at the end specified in config */
+            showElementsEnd(config);
+            hideElementsEnd(config);
 
-            /* Display the elements hidden in the beginning */
-            for(let i = 0; i < config.hideThenShow.length; i++){
-                config.hideThenShow[i].style.display = displayHistory[i];
-            }
-
-            /*Hide elements specified at the end*/
-            for(let i = 0; i < config.showThenHide.length; i++){
-                config.showThenHide[i].style.display = "none";
-            }
         }
     })(reader);
 
