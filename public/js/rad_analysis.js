@@ -22,7 +22,7 @@ window.radAnalyze = async function(config){
     
 //     /* Get from config*/
 //     let genomeFile = config.genomeFile;
-//     let restrictionSite = config.restrictionSite;
+//     let restrictionSite = config.restrictionSite1;
 //     let probability = Math.floor(config.probability*100);
 //     let lengthDistribution = config.lengthDistribution;
 //     let rangeMin = config.rangeMin;
@@ -520,6 +520,11 @@ function generateChart(fragmentSizes, config){
 }
 
 
+function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite1, restrictionSite2, probability){
+    
+}
+
+
 
 async function singleEnzymeDigest(config){
 
@@ -559,7 +564,7 @@ async function singleEnzymeDigest(config){
             fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
             */
             var sliceIndexes = [0,];
-            var sliceOffset = config.restrictionSite.length/2;
+            var sliceOffset = config.restrictionSite1.length/2;
             var position = 0;
             var totalSiteCount = 0;
             var expectedSiteCount = 0;
@@ -569,7 +574,7 @@ async function singleEnzymeDigest(config){
             while(true){
 
                 //Find position of next site
-                position = contents.indexOf(config.restrictionSite, position);
+                position = contents.indexOf(config.restrictionSite1, position);
 
                 /*
                 If site is -1, it does not exist in the rest of the file.
@@ -589,7 +594,7 @@ async function singleEnzymeDigest(config){
                     }
 
                     //Set the new position to read the file from
-                    position += config.restrictionSite.length;                    
+                    position += config.restrictionSite1.length;                    
                     
 
 
@@ -658,5 +663,169 @@ async function singleEnzymeDigest(config){
 
 
 async function doubleEnzymeDigest(){
-    console.log("double digest");
+    console.log("Double digest");
+    
+
+    /*Set initial values of certain config elements */
+    setInitialValues(config);
+    
+
+    /* Show and Hide elements in the beginning specified in config */
+    showElementsBeginning(config);
+    hideElementsBeginning(config);
+
+    var reader = new FileReader();
+
+    /* run this function on file read */
+    console.log("Setting onload");
+    reader.onload = (function(reader)
+    {
+        return async function()
+        {
+            var timeStart = new Date();
+
+            /*Get file text content, removing all whitespaces, newlines*/
+            var contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+            console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
+
+
+            /*First Enzyme Operation*/
+            let sliceIndexes1 = []
+                
+            /* 
+            sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
+            position: Contains the current position inside of the genome file
+            */
+            var sliceOffset = config.restrictionSite1.length/2;
+            var position = 0;
+            let lastPercentage = 0;
+            /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
+            while(true){
+
+                //Find position of next site
+                position = contents.indexOf(config.restrictionSite1, position);
+
+                /*
+                If site is -1, it does not exist in the rest of the file.
+                If it is not equal to -1, add 1 to the total site count and run this block of code
+                */
+                if(position !== -1){
+                    sliceIndexes1.push(position+sliceOffset);
+
+                    //Set the new position to read the file from
+                    position += config.restrictionSite1.length;                    
+                    
+
+
+                    //prevent interface from freezing, update progressBar percent
+                    let percentage = position/(contents.length);
+                    percentage = (percentage*100)/2;
+                    if(lastPercentage != Math.floor(percentage)){
+                        lastPercentage = Math.floor(percentage);
+                        if(config.progressBar !== null){
+                            config.progressBar.style.width = `${percentage}%`;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                } else {
+                    break;
+                }
+
+            }
+
+
+            /*2nd Enzyme Operation*/
+            let sliceIndexes2 = []
+                
+            /* 
+            sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
+            position: Contains the current position inside of the genome file
+            */
+            sliceOffset = config.restrictionSite2.length/2;
+            position = 0;
+
+            /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
+            while(true){
+
+                //Find position of next site
+                position = contents.indexOf(config.restrictionSite2, position);
+
+                /*
+                If site is -1, it does not exist in the rest of the file.
+                If it is not equal to -1, add 1 to the total site count and run this block of code
+                */
+                if(position !== -1){
+                    sliceIndexes2.push(position+sliceOffset);
+
+                    //Set the new position to read the file from
+                    position += config.restrictionSite2.length;                    
+                    
+
+
+                    //prevent interface from freezing, update progressBar percent
+                    let percentage = position/contents.length;
+                    percentage = ((percentage*100)/2) + 50;
+                    if(lastPercentage != Math.floor(percentage)){
+                        lastPercentage = Math.floor(percentage);
+                        if(config.progressBar !== null){
+                            config.progressBar.style.width = `${percentage}%`;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                } else {
+                    break;
+                }
+
+            }
+
+
+
+
+        /*Merge indexes based off conflicts and probability*/
+        mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite1, config.restrictionSite2, config.probability);
+
+        /* 
+        fragmentSizes: Contains the count for each distribution
+        fragmentCount: n + 1 where n is the actualSiteCount
+        expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
+        fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
+        */
+        var fragmentSizes = getFragmentSizes(sliceIndexes, config);
+        var fragmentCount = actualSiteCount + 1;
+        var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/100));
+        var fragmentRangeCount = getFragmentRangeCount(fragmentSizes);
+
+        
+
+
+            /* Display data tables */
+            var tableData = {
+                totalSiteCount,
+                expectedSiteCount,
+                actualSiteCount,
+                fragmentCount,
+                fragmentRangeCount,
+            };
+            displaySingleEnzymeDigestionData(tableData, config)
+
+
+            /*Generate chart*/
+            generateChart(fragmentSizes, config);
+
+            var timeFinish = new Date();
+            var elapsedTime = timeFinish-timeStart;
+            elapsedTime = elapsedTime/1000
+            console.log(`Elapsed time: ${elapsedTime} seconds`);
+
+            /* Show and hide elements at the end specified in config */
+            showElementsEnd(config);
+            hideElementsEnd(config);
+
+        }
+    })(reader);
+
+    console.log("Reading File");
+
+    //Read file as text
+    reader.readAsText(config.genomeFile);
 }
