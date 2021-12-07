@@ -521,7 +521,80 @@ function generateChart(fragmentSizes, config){
 
 
 function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite1, restrictionSite2, probability){
+    let length1 = restrictionSite1.length;
+    let length2 = restrictionSite2.length;
+    let sliceOffset2 = restrictionSite2.length/2;
+    let mergedIndexes = new Set();
+    //if the start of restrictionSite2 or a slice index is in the range [ (sliceIndexOf1 - length2 + 1)-(sliceIndexOf1) ), there is a conflict
+    //CTGA
+    //ACTG
+    //AC TGA
+
+    //ABCTAC TGTAC TGTA
+
+    //AG
+    //TA
+    //T A GCT
+
+    //TACT
+    //ACTG
+    //TACTGTACTG
+    let conflictCount = 0;
+    for(let index of sliceIndexes1){
+        let conflict = false;
+        let conflictIndex = 0;
+        for(let i = index-1; i > index-length2; i--){
+            if(sliceIndexes2.has(i+sliceOffset2)){
+                conflict = true;
+                conflictIndex = i;
+                sliceIndexes2.delete(i+sliceOffset2);
+                break;
+            } else if(mergedIndexes.has(i)){
+                break;
+            }
+        }
+
+        if(conflict){
+            conflictCount++;
+            let firstChoice = index;
+            let secondChoice = conflictIndex;
+            let randomNumber = Math.floor((Math.random() * 2) + 1);
+            if(randomNumber === 1){
+                firstChoice = conflictIndex;
+                secondChoice = index;
+            }
+
     
+            randomNumber = Math.floor((Math.random() * 100) + 1);
+            if(randomNumber <= probability){
+                mergedIndexes.add(firstChoice);
+            } else {
+
+                randomNumber = Math.floor((Math.random() * 100) + 1);
+                if(randomNumber <= probability){
+                    mergedIndexes.add(secondChoice);
+                }
+            }
+
+        } else {
+            let randomNumber = Math.floor((Math.random() * 100) + 1);
+            if(randomNumber <= probability){
+                mergedIndexes.add(index);
+            }
+        }
+    }
+
+    console.log(sliceIndexes2.size);
+    sliceIndexes2.forEach((n)=>{
+        let randomNumber = Math.floor((Math.random() * 100) + 1);
+        if(randomNumber <= probability){
+            mergedIndexes.add(n);
+        }
+    });
+    console.log(mergedIndexes.size);
+    console.log(probability);
+    console.log(conflictCount);
+    return mergedIndexes;
 }
 
 
@@ -662,7 +735,7 @@ async function singleEnzymeDigest(config){
 }
 
 
-async function doubleEnzymeDigest(){
+async function doubleEnzymeDigest(config){
     console.log("Double digest");
     
 
@@ -690,8 +763,8 @@ async function doubleEnzymeDigest(){
 
 
             /*First Enzyme Operation*/
-            let sliceIndexes1 = []
-                
+            let sliceIndexes1 = new Set();
+
             /* 
             sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
             position: Contains the current position inside of the genome file
@@ -699,6 +772,7 @@ async function doubleEnzymeDigest(){
             var sliceOffset = config.restrictionSite1.length/2;
             var position = 0;
             let lastPercentage = 0;
+            var totalSiteCount = 0;
             /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
             while(true){
 
@@ -710,7 +784,8 @@ async function doubleEnzymeDigest(){
                 If it is not equal to -1, add 1 to the total site count and run this block of code
                 */
                 if(position !== -1){
-                    sliceIndexes1.push(position+sliceOffset);
+                    sliceIndexes1.add(position+sliceOffset);
+                    totalSiteCount++;
 
                     //Set the new position to read the file from
                     position += config.restrictionSite1.length;                    
@@ -735,7 +810,7 @@ async function doubleEnzymeDigest(){
 
 
             /*2nd Enzyme Operation*/
-            let sliceIndexes2 = []
+            let sliceIndexes2 = new Set();
                 
             /* 
             sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
@@ -755,7 +830,9 @@ async function doubleEnzymeDigest(){
                 If it is not equal to -1, add 1 to the total site count and run this block of code
                 */
                 if(position !== -1){
-                    sliceIndexes2.push(position+sliceOffset);
+                    totalSiteCount++;
+
+                    sliceIndexes2.add(position+sliceOffset);
 
                     //Set the new position to read the file from
                     position += config.restrictionSite2.length;                    
@@ -782,7 +859,11 @@ async function doubleEnzymeDigest(){
 
 
         /*Merge indexes based off conflicts and probability*/
-        mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite1, config.restrictionSite2, config.probability);
+        let mergedIndexes = mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite1, config.restrictionSite2, config.probability);
+        mergedIndexes.add(0);
+        mergedIndexes.add(contents.length);
+        mergedIndexes = Array.from(mergedIndexes);
+        mergedIndexes.sort(function(a, b){return a-b});
 
         /* 
         fragmentSizes: Contains the count for each distribution
@@ -790,9 +871,11 @@ async function doubleEnzymeDigest(){
         expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
         fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
         */
-        var fragmentSizes = getFragmentSizes(sliceIndexes, config);
+        var fragmentSizes = getFragmentSizes(mergedIndexes, config);
+        var actualSiteCount = mergedIndexes.length - 2;
         var fragmentCount = actualSiteCount + 1;
-        var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/100));
+        //var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/100));
+        var expectedSiteCount = 0;
         var fragmentRangeCount = getFragmentRangeCount(fragmentSizes);
 
         
