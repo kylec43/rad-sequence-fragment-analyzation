@@ -357,9 +357,9 @@ Add 2 to the count for outliers.
 If the remainder is 0 we need to add one extra distribution count otherwise we will be missing one.
 For example:    (101-1) / 2 = 2. 2 + 1 = 3     1-50  51-100  101-101
 */
-function getDistributionCount(config){
-    let distributionCount = Math.ceil((config.graphRangeMax-config.graphRangeMin)/config.lengthDistribution) + 2
-    let remainder = (config.graphRangeMax-config.graphRangeMin)%config.lengthDistribution;
+function getDistributionCount(rangeMin, rangeMax, config){
+    let distributionCount = Math.ceil((rangeMax-rangeMin)/config.lengthDistribution);
+    let remainder = (rangeMax-rangeMin)%config.lengthDistribution;
     if(remainder === 0){
         distributionCount += 1
     }
@@ -372,7 +372,7 @@ function getDistributionCount(config){
 We will get the fragment size and determine if it is within our specified min and max range.
 If it is within our
 */
-function getFragmentSizes(sliceIndexes, config){
+function getFragmentSizes2(sliceIndexes, config){
     
     /* Get the amount of distributions according to the minimum range, maximum range, and length distribution*/
     var distributionCount = getDistributionCount(config);
@@ -404,11 +404,130 @@ function getFragmentSizes(sliceIndexes, config){
 We will get the fragment size and determine if it is within our specified min and max range.
 If it is within our
 */
-function getFragmentRangeCount(fragmentSizes){
+function getFragmentSizes(sliceIndexes){
+
+    //fragmentSizes: An array holding the count for each distribution
+    var fragmentSizes = {};
+    
+    
+    for(let i = 0; i < sliceIndexes.length-1; i++){
+        let fragmentSize = sliceIndexes[i+1] - sliceIndexes[i];
+        fragmentSizes[fragmentSize] = fragmentSizes[fragmentSize] != undefined ? fragmentSizes[fragmentSize]+1 : 1;
+    }
+
+    return fragmentSizes;
+}
+
+
+function getFragmentDistributions(fragmentSizes, config){
+
+    /* Get the amount of distributions according to the minimum range, maximum range, and length distribution*/
+    var distributionCountBegin = getDistributionCount(config.graphRangeMin, config.focusRangeMin-1, config);
+    var distributionCountMiddle = getDistributionCount(config.focusRangeMin, config.focusRangeMax, config);
+    var distributionCountEnd = getDistributionCount(config.focusRangeMax+1, config.graphRangeMax, config);
+    console.log(`${distributionCountBegin} ${distributionCountMiddle} ${distributionCountEnd}`);
+
+
+    /*Get graph begin*/
+    var fragmentDistributionsBegin = distributionCountBegin > 0 ? new Array(distributionCountBegin) : [];
+    for(let i = 0; i < fragmentDistributionsBegin.length; i++){
+        let min = `${config.graphRangeMin + i*config.lengthDistribution}`;
+        let max = `${(config.graphRangeMin + (i+1)*config.lengthDistribution-1) > (config.focusRangeMax-1) ? (config.focusRangeMax-1) : config.graphRangeMin + (i+1)*config.lengthDistribution-1}`;
+        let range = min === max ? min : `${min}-${max}`;
+        fragmentDistributionsBegin[i] = {
+            count: 0,
+            range,
+            focusArea: false,
+        };
+    }
+
+    var fragmentDistributionsMiddle = new Array(distributionCountMiddle);
+    for(let i = 0; i < fragmentDistributionsMiddle.length; i++){
+        let min = `${config.focusRangeMin + i*config.lengthDistribution}`;
+        let max = `${(config.focusRangeMin + (i+1)*config.lengthDistribution-1) > config.focusRangeMax ? config.focusRangeMax : config.focusRangeMin + (i+1)*config.lengthDistribution-1}`;
+        let range = min === max ? min : `${min}-${max}`;
+        fragmentDistributionsMiddle[i] = {
+            count: 0,
+            range,
+            focusArea: true,
+        };
+    }
+
+    var fragmentDistributionsEnd = distributionCountEnd > 0 ? new Array(distributionCountEnd) : [];
+    for(let i = 0; i < fragmentDistributionsEnd.length; i++){
+        let min = `${(config.focusRangeMax+1) + i*config.lengthDistribution}`;
+        let max = `${((config.focusRangeMax+1) + (i+1)*config.lengthDistribution-1) > config.graphRangeMax ? config.graphRangeMax : (config.focusRangeMax+1) + (i+1)*config.lengthDistribution-1}`;
+        let range = min === max ? min : `${min}-${max}`;
+        fragmentDistributionsEnd[i] = {
+            count: 0,
+            range,
+            focusArea: false,
+        };
+    }
+
+    var outliersEnd = [{
+        count: 0,
+        range: `${config.graphRangeMax}<`,
+        focusArea: false,
+
+    },];
+
+    var outliersBegin = [{
+        count: 0,
+        range: `<${config.graphRangeMin}`,
+        focusArea: false,
+    },];
+
+
+    for(let size in fragmentSizes){
+        size = parseInt(size);
+        if(size >= config.graphRangeMin && size < config.focusRangeMin-1 && fragmentDistributionsBegin.length > 0){
+            //console.log(`Fragment distribution length is ${fragmentDistributionsBegin.length}`);
+            let index = Math.floor((size-config.graphRangeMin)/config.lengthDistribution);
+            fragmentDistributionsBegin[index].count += fragmentSizes[size];
+        } else if(size >= config.focusRangeMin && size <= config.focusRangeMax){
+            let index = Math.floor((size-config.focusRangeMin)/config.lengthDistribution);
+            fragmentDistributionsMiddle[index].count += fragmentSizes[size];
+        } else if(size > config.focusRangeMax && size <= config.graphRangeMax && fragmentDistributionsEnd.length > 0){
+            let index = Math.floor((size-(config.focusRangeMax+1))/config.lengthDistribution);
+            fragmentDistributionsEnd[index].count += fragmentSizes[size];
+        } else if (size < config.graphRangeMin){
+            outliersBegin[0].count += fragmentSizes[size];
+        } else {
+            outliersEnd[0].count += fragmentSizes[size];
+        }
+    }
+
+
+    var totalDistributions = null;
+    if(config.includeOutliers){
+        if(config.graphRangeMin !== 1){
+            totalDistributions = outliersBegin.concat(fragmentDistributionsBegin, fragmentDistributionsMiddle, fragmentDistributionsEnd, outliersEnd);
+        } else {
+            totalDistributions = fragmentDistributionsBegin.concat(fragmentDistributionsMiddle, fragmentDistributionsEnd, outliersEnd);
+        }
+    } else {
+        totalDistributions = fragmentDistributionsBegin.concat(fragmentDistributionsMiddle, fragmentDistributionsEnd);
+    }
+
+
+    console.log(totalDistributions[10]);
+
+    return totalDistributions
+}
+
+
+/*
+We will get the fragment size and determine if it is within our specified min and max range.
+If it is within our
+*/
+function getFragmentRangeCount(fragmentDistributions){
 
     let fragmentRangeCount = 0;
-    for(let i = 1; i < fragmentSizes.length-1; i++){
-        fragmentRangeCount += fragmentSizes[i];
+    for(let i = 1; i < fragmentDistributions.length-1; i++){
+        if(fragmentDistributions[i].focusArea){
+            fragmentRangeCount += fragmentDistributions[i].count;
+        }
     }
 
     return fragmentRangeCount;
@@ -459,26 +578,38 @@ function generateChart(fragmentSizes, config){
     if(config.fragmentChartCanvas !== null){
         let chartLabels = [];
         let chartData = [];
+        let backgroundColor = [];
+        let borderColor = [];
 
-        if(config.includeOutliers){
-            if(config.graphRangeMin > 1){
-                chartLabels.push(`<${config.graphRangeMin}`);
-                chartData.push(`${fragmentSizes[0]}`);
-            }
-        }
+        // if(config.includeOutliers){
+        //     if(config.graphRangeMin > 1){
+        //         chartLabels.push(`<${config.graphRangeMin}`);
+        //         chartData.push(`${fragmentSizes[0]}`);
+        //     }
+        // }
         
-        for(let i = 1; i < fragmentSizes.length-1; i++){
-            let min = `${config.graphRangeMin + (i-1)*config.lengthDistribution}`;
-            let max = `${(config.graphRangeMin + i*config.lengthDistribution-1) > config.graphRangeMax ? config.graphRangeMax : config.graphRangeMin + i*config.lengthDistribution-1}`;
-            let range = min === max ? min : `${min}-${max}`;
-            chartLabels.push(range);
-            chartData.push(`${fragmentSizes[i]}`);
+        for(let i = 0; i < fragmentSizes.length; i++){
+            // let min = `${config.graphRangeMin + (i-1)*config.lengthDistribution}`;
+            // let max = `${(config.graphRangeMin + i*config.lengthDistribution-1) > config.graphRangeMax ? config.graphRangeMax : config.graphRangeMin + i*config.lengthDistribution-1}`;
+            // let range = min === max ? min : `${min}-${max}`;
+            // chartLabels.push(range);
+            // chartData.push(`${fragmentSizes[i]}`);
+            chartLabels.push(fragmentSizes[i].range);
+            chartData.push(`${fragmentSizes[i].count}`);
+            if(fragmentSizes[i].focusArea){
+                backgroundColor.push('rgba(30, 130, 76, 0.2)');
+                borderColor.push('rgba(30, 130, 76, 1)');
+            } else {
+                backgroundColor.push('rgba(54, 162, 235, 0.2)');
+                borderColor.push('rgba(54, 162, 235, 1.0)');
+            }
+
         }
 
-        if(config.includeOutliers){
-            chartLabels.push(`${config.graphRangeMax}<`);
-            chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
-        }
+        // if(config.includeOutliers){
+        //     chartLabels.push(`${config.graphRangeMax}<`);
+        //     chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
+        // }
         
 
 
@@ -489,12 +620,8 @@ function generateChart(fragmentSizes, config){
                 datasets: [{
                     label: 'Fragments',
                     data: chartData,
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.2)',
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                    ],
+                    backgroundColor,
+                    borderColor,
                     borderWidth: 1
                 }]
             },
@@ -696,10 +823,11 @@ async function singleEnzymeDigest(config){
             expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
             fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
             */
-            var fragmentSizes = getFragmentSizes(sliceIndexes, config);
+            var fragmentSizes = getFragmentSizes(sliceIndexes);
+            var fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
             var fragmentCount = actualSiteCount + 1;
             var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/100));
-            var fragmentRangeCount = getFragmentRangeCount(fragmentSizes);
+            var fragmentRangeCount = getFragmentRangeCount(fragmentDistributions);
 
 
             /* Display data tables */
@@ -714,7 +842,7 @@ async function singleEnzymeDigest(config){
 
 
             /*Generate chart*/
-            generateChart(fragmentSizes, config);
+            generateChart(fragmentDistributions, config);
 
             var timeFinish = new Date();
             var elapsedTime = timeFinish-timeStart;
