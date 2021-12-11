@@ -432,7 +432,7 @@ function getFragmentDistributions(fragmentSizes, config){
     var fragmentDistributionsBegin = distributionCountBegin > 0 ? new Array(distributionCountBegin) : [];
     for(let i = 0; i < fragmentDistributionsBegin.length; i++){
         let min = `${config.graphRangeMin + i*config.lengthDistribution}`;
-        let max = `${(config.graphRangeMin + (i+1)*config.lengthDistribution-1) > (config.focusRangeMax-1) ? (config.focusRangeMax-1) : config.graphRangeMin + (i+1)*config.lengthDistribution-1}`;
+        let max = `${(config.graphRangeMin + (i+1)*config.lengthDistribution-1) > (config.focusRangeMin-1) ? (config.focusRangeMin-1) : config.graphRangeMin + (i+1)*config.lengthDistribution-1}`;
         let range = min === max ? min : `${min}-${max}`;
         fragmentDistributionsBegin[i] = {
             count: 0,
