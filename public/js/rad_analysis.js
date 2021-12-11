@@ -25,8 +25,8 @@ window.radAnalyze = async function(config){
 //     let restrictionSite = config.restrictionSite1;
 //     let probability = Math.floor(config.probability*100);
 //     let lengthDistribution = config.lengthDistribution;
-//     let rangeMin = config.rangeMin;
-//     let rangeMax = config.rangeMax;
+//     let graphRangeMin = config.graphRangeMin;
+//     let graphRangeMax = config.graphRangeMax;
 //     let includeOutliers = config.includeOutliers;
 //     let fragmentTableContainer = config.fragmentTableContainer;
 //     let fragmentChartCanvas = config.fragmentChartCanvas;
@@ -86,8 +86,8 @@ window.radAnalyze = async function(config){
 
             
 //             /* Get the amount of distributions */
-//             let distributionCount = Math.ceil((rangeMax-rangeMin)/lengthDistribution) + 2
-//             let remainder = (rangeMax-rangeMin)%lengthDistribution;
+//             let distributionCount = Math.ceil((graphRangeMax-graphRangeMin)/lengthDistribution) + 2
+//             let remainder = (graphRangeMax-graphRangeMin)%lengthDistribution;
 //             if(remainder === 0){
 //                 distributionCount += 1
 //             }
@@ -115,15 +115,15 @@ window.radAnalyze = async function(config){
 
 //                         let fragmentSize = position+sliceOffset - lastSliceIndex;
 
-//                         if(fragmentSize >= rangeMin && fragmentSize <= rangeMax){
-//                             let index = Math.floor((fragmentSize-rangeMin)/lengthDistribution) + 1
+//                         if(fragmentSize >= graphRangeMin && fragmentSize <= graphRangeMax){
+//                             let index = Math.floor((fragmentSize-graphRangeMin)/lengthDistribution) + 1
 //                             if(index >= fragmentSizes.length){
 //                                 index = fragmentSizes.length-1;
 //                             }
 
 //                             fragmentSizes[index]++;
 //                             fragmentRangeCount++;
-//                         } else if (fragmentSize < rangeMin){
+//                         } else if (fragmentSize < graphRangeMin){
 //                             fragmentSizes[0]++;
 //                         } else {
 //                             fragmentSizes[fragmentSizes.length-1]++;
@@ -150,15 +150,15 @@ window.radAnalyze = async function(config){
 
 //             /* Add last fragment */
 //             let fragmentSize = contents.length - lastSliceIndex;
-//             if(fragmentSize >= rangeMin && fragmentSize <= rangeMax){
-//                 let index = Math.floor((fragmentSize-rangeMin)/lengthDistribution) + 1
+//             if(fragmentSize >= graphRangeMin && fragmentSize <= graphRangeMax){
+//                 let index = Math.floor((fragmentSize-graphRangeMin)/lengthDistribution) + 1
 //                 if(index >= fragmentSizes.length){
 //                     index = fragmentSizes.length-1;
 //                 }
 //                 console.log(`Index is ${index}`);
 //                 fragmentSizes[index]++;
 //                 fragmentRangeCount++;
-//             } else if (fragmentSize < rangeMin){
+//             } else if (fragmentSize < graphRangeMin){
 //                 fragmentSizes[0]++;
 //             } else {
 //                 fragmentSizes[fragmentSizes.length-1]++;
@@ -219,22 +219,22 @@ window.radAnalyze = async function(config){
 //             let chartData = [];
 
 //             if(includeOutliers){
-//                 if(rangeMin > 1){
-//                     chartLabels.push(`<${rangeMin}`);
+//                 if(graphRangeMin > 1){
+//                     chartLabels.push(`<${graphRangeMin}`);
 //                     chartData.push(`${fragmentSizes[0]}`);
 //                 }
 //             }
             
 //             for(let i = 1; i < fragmentSizes.length-1; i++){
-//                 let min = `${rangeMin + (i-1)*lengthDistribution}`;
-//                 let max = `${(rangeMin + i*lengthDistribution-1) > rangeMax ? rangeMax : rangeMin + i*lengthDistribution-1}`;
+//                 let min = `${graphRangeMin + (i-1)*lengthDistribution}`;
+//                 let max = `${(graphRangeMin + i*lengthDistribution-1) > graphRangeMax ? graphRangeMax : graphRangeMin + i*lengthDistribution-1}`;
 //                 let range = min === max ? min : `${min}-${max}`;
 //                 chartLabels.push(range);
 //                 chartData.push(`${fragmentSizes[i]}`);
 //             }
 
 //             if(includeOutliers){
-//                 chartLabels.push(`${rangeMax}<`);
+//                 chartLabels.push(`${graphRangeMax}<`);
 //                 chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
 //             }
             
@@ -350,7 +350,7 @@ function hideElementsEnd(config){
 
 
 /*
-We can get the distribution count by dividing (rangeMax-rangeMin)/lengthDistribution rounded up
+We can get the distribution count by dividing (graphRangeMax-graphRangeMin)/lengthDistribution rounded up
 For example: (100-1)/ 2 = 2      1-50    51-100
 Add 2 to the count for outliers.
 
@@ -358,8 +358,8 @@ If the remainder is 0 we need to add one extra distribution count otherwise we w
 For example:    (101-1) / 2 = 2. 2 + 1 = 3     1-50  51-100  101-101
 */
 function getDistributionCount(config){
-    let distributionCount = Math.ceil((config.rangeMax-config.rangeMin)/config.lengthDistribution) + 2
-    let remainder = (config.rangeMax-config.rangeMin)%config.lengthDistribution;
+    let distributionCount = Math.ceil((config.graphRangeMax-config.graphRangeMin)/config.lengthDistribution) + 2
+    let remainder = (config.graphRangeMax-config.graphRangeMin)%config.lengthDistribution;
     if(remainder === 0){
         distributionCount += 1
     }
@@ -382,14 +382,14 @@ function getFragmentSizes(sliceIndexes, config){
 
     for(let i = 0; i < sliceIndexes.length-1; i++){
         let fragmentSize = sliceIndexes[i+1] - sliceIndexes[i];
-        if(fragmentSize >= config.rangeMin && fragmentSize <= config.rangeMax){
-            let index = Math.floor((fragmentSize-config.rangeMin)/config.lengthDistribution) + 1
+        if(fragmentSize >= config.graphRangeMin && fragmentSize <= config.graphRangeMax){
+            let index = Math.floor((fragmentSize-config.graphRangeMin)/config.lengthDistribution) + 1
             if(index >= fragmentSizes.length){
                 index = fragmentSizes.length-1;
             }
 
             fragmentSizes[index]++;
-        } else if (fragmentSize < config.rangeMin){
+        } else if (fragmentSize < config.graphRangeMin){
             fragmentSizes[0]++;
         } else {
             fragmentSizes[fragmentSizes.length-1]++;
@@ -461,22 +461,22 @@ function generateChart(fragmentSizes, config){
         let chartData = [];
 
         if(config.includeOutliers){
-            if(config.rangeMin > 1){
-                chartLabels.push(`<${config.rangeMin}`);
+            if(config.graphRangeMin > 1){
+                chartLabels.push(`<${config.graphRangeMin}`);
                 chartData.push(`${fragmentSizes[0]}`);
             }
         }
         
         for(let i = 1; i < fragmentSizes.length-1; i++){
-            let min = `${config.rangeMin + (i-1)*config.lengthDistribution}`;
-            let max = `${(config.rangeMin + i*config.lengthDistribution-1) > config.rangeMax ? config.rangeMax : config.rangeMin + i*config.lengthDistribution-1}`;
+            let min = `${config.graphRangeMin + (i-1)*config.lengthDistribution}`;
+            let max = `${(config.graphRangeMin + i*config.lengthDistribution-1) > config.graphRangeMax ? config.graphRangeMax : config.graphRangeMin + i*config.lengthDistribution-1}`;
             let range = min === max ? min : `${min}-${max}`;
             chartLabels.push(range);
             chartData.push(`${fragmentSizes[i]}`);
         }
 
         if(config.includeOutliers){
-            chartLabels.push(`${config.rangeMax}<`);
+            chartLabels.push(`${config.graphRangeMax}<`);
             chartData.push(`${fragmentSizes[fragmentSizes.length-1]}`);
         }
         
