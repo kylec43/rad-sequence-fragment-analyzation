@@ -17,11 +17,8 @@
             </div>
             <hr>
             <div class="card-body rad-card-body">
-                <% if (errorMessage !== null) { %>
-                    <p id="error" class="rad-card-error-message text-center"><%- errorMessage %></p>               
-                    <br>
-                <% } %>
                 <form action="/register" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -64,6 +61,11 @@
         </div>
 
         <%- include('partials/scripts.ejs') %>
+        <script>
+            <% if (errorMessage !== null) { %>
+                alert("<%= errorMessage %>");
+            <% } %>
+        </script>
     </body>
 
 

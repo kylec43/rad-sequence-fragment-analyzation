@@ -77,11 +77,11 @@ app.post('/results', auth, async (req, res) => {
 
 app.get('/login', authAndRedirectHome, (req, res) => {
     //return res.send("<h1>Page Disabled</h1>")
-    return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: null, user: req.user});
+    return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: null, user: req.user, csrfToken: req.csrfToken()});
 });
 
 app.get('/register', authAndRedirectHome, (req, res) => {
-    return res.render(Pages.REGISTER_PAGE, {errorMessage: null, user: req.user});
+    return res.render(Pages.REGISTER_PAGE, {errorMessage: null, user: req.user, csrfToken: req.csrfToken()});
 });
 
 app.post('/register', authAndRedirectHome, async (req, res) => {
@@ -116,7 +116,7 @@ app.post('/change_password', authAndRedirectLogIn, async (req, res) => {
 
 
 app.get('/forgot_password', auth, async (req, res) => {
-    return res.render(Pages.FORGOT_PASSWORD_PAGE, {error:false, errorMessage: null, user: req.user});
+    return res.render(Pages.FORGOT_PASSWORD_PAGE, {error:false, errorMessage: null, user: req.user, csrfToken: req.csrfToken()});
 });
 
 app.post('/forgot_password', auth, async (req, res) => {

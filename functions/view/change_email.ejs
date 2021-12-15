@@ -17,15 +17,13 @@
             </div>
             <hr>
             <div class="card-body rad-card-body">
-                <% if (errorMessage !== null) { %>
-                    <p id="error" class="rad-card-error-message text-center"><%- errorMessage %></p>               
-                    <br>
-                <% } %>
+                <p id="error" class="rad-card-error-message text-center"><%- errorMessage ? errorMessage : "" %></p>               
+                <br>
                 <% if (successMessage !== null) { %>
                     <p class="text-center rad-card-success-message"><%= successMessage %></p>
                     <br>
                 <% } %>
-                <form action="/change_email" method="post">
+                <form action="/change_email" id="change_email_form">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="form-group">
                         <h6 class="rad-card-text-header">Current Email</h6>
@@ -40,9 +38,9 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                                <span class="input-group-text"> <i class="fa fa-lock"></i></span>
                             </div>
-                            <input class="form-control" name="newEmail" placeholder="New email" type="email">
+                            <input class="form-control" id="password" name="password" placeholder="Password" type="password">
                         </div>
                     </div>
                     <div class="form-group">
@@ -50,17 +48,27 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fa fa-user"></i> </span>
                             </div>
-                            <input class="form-control" name="confirmNewEmail" placeholder="Confirm new email" type="email">
+                            <input class="form-control" id="newEmail" name="newEmail" placeholder="New email" type="email">
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="rad-button margin-center">Change</button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input class="form-control" id="confirmNewEmail" name="confirmNewEmail" placeholder="Confirm new email" type="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="rad-button margin-center" type="button" onclick="changeEmail(document.querySelector('#currentEmail').value, document.querySelector('#newEmail').value, document.querySelector('#confirmNewEmail').value, document.querySelector('#password').value)">Change</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <%- include('partials/scripts.ejs') %>
+        <script>
+        </script>
     </body>
 
 

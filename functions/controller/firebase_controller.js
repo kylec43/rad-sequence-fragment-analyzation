@@ -52,15 +52,15 @@ async function registerUser(req, res)
     }
 
     if(errorMessage.length > 0){
-        return res.render(Pages.REGISTER_PAGE, {errorMessage, user: req.user});
+        return res.render(Pages.REGISTER_PAGE, {errorMessage, user: req.user, csrfToken: req.csrfToken()});
     } else {
         await FirebaseAdmin.auth().createUser({
             email,
             password,
         }).then(()=>{
-            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: "Registration Successful! Please Sign In", user: req.user});
+            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: "Registration Successful! Please Sign In", user: req.user, csrfToken: req.csrfToken()});
         }).catch((e)=>{
-            return res.render(Pages.REGISTER_PAGE, {errorMessage: `${e}`, user: req.user});
+            return res.render(Pages.REGISTER_PAGE, {errorMessage: `${e}`, user: req.user, csrfToken: req.csrfToken()});
         });
     }
 }
@@ -98,9 +98,9 @@ async function sendPasswordResetLink(req, res)
 {
     const email = req.body.email;
     await FirebaseAuth.sendPasswordResetEmail(FirebaseAuth.getAuth(), email).then(()=>{
-        return res.render(Pages.LOGIN_PAGE, {error: false, errorMessage: null, user: req.user, successMessage: "Password reset link sent!"});
+        return res.render(Pages.LOGIN_PAGE, {error: false, errorMessage: null, user: req.user, successMessage: "Password reset link sent!", csrfToken: req.csrfToken()});
     }).catch(e => {
-        return res.render(Pages.FORGOT_PASSWORD_PAGE, {error: true, errorMessage: `${e}`, user: req.user, successMessage: null});
+        return res.render(Pages.FORGOT_PASSWORD_PAGE, {error: true, errorMessage: `${e}`, user: req.user, successMessage: null, csrfToken: req.csrfToken()});
     });
 }
 
