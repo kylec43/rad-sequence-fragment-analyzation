@@ -18,21 +18,18 @@
             </div>
             <hr>
             <div class="card-body rad-card-body">
-                <% if (errorMessage !== null) { %>
-                    <p id="error" class="rad-card-error-message text-center"><%- errorMessage %></p>               
-                    <br>
-                <% } %>
+                <p id="error" class="rad-card-error-message text-center"><%- errorMessage ? errorMessage : "" %></p>               
                 <% if (successMessage !== null) { %>
                     <p class="text-center rad-card-success-message"><%= successMessage %></p>
                     <br>
                 <% } %>
-                <form action="/login" method="post">
+                <form id="login_form" action="/login" method="post">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fa fa-user"></i> </span>
                             </div>
-                            <input class="form-control" name="email" placeholder="Email" type="email">
+                            <input class="form-control" id="email" name="email" placeholder="Email" type="email">
                         </div>
                     </div>
                     <div class="form-group">
@@ -40,7 +37,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
                             </div>
-                            <input class="form-control" name="password" placeholder="Password" type="password">
+                            <input class="form-control" id="password" name="password" placeholder="Password" type="password">
                         </div>
                     </div>
                     <div class="form-group">
@@ -53,7 +50,12 @@
             </div>
         </div>
         
-        <%- include('partials/scripts.ejs') %>
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>        <%- include('partials/scripts.ejs') %>
+        <script>
+            window.onload = ()=>{
+                initLogin();
+            }
+        </script>
     </body>
 
 

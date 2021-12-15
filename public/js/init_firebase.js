@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+import { getAuth, setPersistence, inMemoryPersistence, browserLocalPersistence, signInWithCustomToken} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -19,3 +20,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
+
+
+console.log("TESTETSTETFAFAEFWAEFA");
+setPersistence(getAuth(), browserLocalPersistence).then(()=>{
+    console.log("TESTETSTETFAFAEFWAEFA");
+});

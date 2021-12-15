@@ -4,7 +4,6 @@ const FirebaseAuth = require("firebase/auth");
 
 //initialize firebase admin
 var FirebaseAdmin = require('firebase-admin');
-var FirebaseFirestore = require('firebase/firestore');
 var FirebaseStorage = require('firebase/storage');
 
 var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
@@ -27,6 +26,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+var FirebaseFirestore = FirebaseAdmin.firestore();
+
 
 
 async function registerUser(req, res) 
@@ -38,58 +39,58 @@ async function registerUser(req, res)
     const confirmPassword = req.body.confirmPassword;
 
     let errorMessage = "";
-    try {
-        if(email !== confirmEmail){
-            error = true;
-            errorMessage += "Email and Confirmation Email do not match";
-        }
-        if(password !== confirmPassword){
-            errorMessage += errorMessage.length > 0 ? "<br>" : "";
-            errorMessage += "Password and Confirmation Password do not match"
-        } else if (password.length < 6) {
-            errorMessage += errorMessage.length > 0 ? "<br>" : "";
-            errorMessage += "Password length is too short. 6 characters minimum";
-        }
-
-        if(errorMessage.length > 0){
-            return res.render(Pages.REGISTER_PAGE, {errorMessage, user: req.user});
-        } else {
-            await FirebaseAuth.createUserWithEmailAndPassword(FirebaseAuth.getAuth(), email, password);
-            await FirebaseAuth.signOut(FirebaseAuth.getAuth());
-            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: "Registration Successful! Please Sign In", user: req.user})
-        }
-
-    } catch (e) {
-        return res.render(Pages.REGISTER_PAGE, {errorMessage: `${e}`, user: req.user});
+    if(email !== confirmEmail){
+        error = true;
+        errorMessage += "Email and Confirmation Email do not match";
+    }
+    if(password !== confirmPassword){
+        errorMessage += errorMessage.length > 0 ? "<br>" : "";
+        errorMessage += "Password and Confirmation Password do not match"
+    } else if (password.length < 6) {
+        errorMessage += errorMessage.length > 0 ? "<br>" : "";
+        errorMessage += "Password length is too short. 6 characters minimum";
     }
 
+    if(errorMessage.length > 0){
+        return res.render(Pages.REGISTER_PAGE, {errorMessage, user: req.user});
+    } else {
+        await FirebaseAdmin.auth().createUser({
+            email,
+            password,
+        }).then(()=>{
+            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, successMessage: "Registration Successful! Please Sign In", user: req.user});
+        }).catch((e)=>{
+            return res.render(Pages.REGISTER_PAGE, {errorMessage: `${e}`, user: req.user});
+        });
+    }
 }
 
 async function changeEmail(req, res) 
 {
     const newEmail = req.body.newEmail;
     const confirmNewEmail = req.body.confirmNewEmail;
+    console.log("===================1===============================");
+    const user = await verifySession(req.cookies.__session);
+    console.log("2");
 
-    try {
 
-        let errorMessage = "";
-        if(newEmail !== confirmNewEmail){
-            error = true;
-            errorMessage += "Email and Confirmation Email do not match";
-        }
-
-        if(errorMessage.length > 0){
-            return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage, user: req.user, successMessage: null});
-        } else {
-            
-            await FirebaseAuth.updateEmail(FirebaseAuth.getAuth().currentUser, newEmail);
-            return res.render(Pages.CHANGE_EMAIL_PAGE, {error:false, errorMessage: null, user: req.user, successMessage: "Email successfully changed!"});
-        }
-
-    } catch (e) {
-        return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
+    let errorMessage = "";
+    if(newEmail !== confirmNewEmail){
+        error = true;
+        errorMessage += "Email and Confirmation Email do not match";
     }
 
+    if(errorMessage.length > 0){
+        return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage, user: req.user, successMessage: null});
+    } else {
+        await FirebaseAdmin.auth().updateUser(user.uid, {
+            email: newEmail
+        }).then(()=>{
+            return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage: null, user: req.user, successMessage: "Email successfully changed! Please Log In.", csrfToken: req.csrfToken()});
+        }).catch((e)=>{
+            return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null, csrfToken: req.csrfToken()});
+        });
+    }
 }
 
 
@@ -109,52 +110,32 @@ async function changePassword(req, res)
     const newPassword = req.body.newPassword;
     const confirmNewPassword = req.body.confirmNewPassword;
 
-    try {
 
-        let errorMessage = "";
-        if(newPassword !== confirmNewPassword){
-            error = true;
-            errorMessage += "New password and New password confirmation do not match";
-        }
+    let errorMessage = "";
+    if(newPassword !== confirmNewPassword){
+        error = true;
+        errorMessage += "New password and New password confirmation do not match";
+    }
 
-        if(errorMessage.length > 0){
-            return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage, user: req.user, successMessage: null});
-        } else {
-            
-            await FirebaseAuth.updatePassword(FirebaseAuth.getAuth().currentUser, newPassword);
-            return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: null, user: req.user, successMessage: "Password successfully changed!"});
-        }
-
-    } catch (e) {
-        return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
+    if(errorMessage.length > 0){
+        return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage, user: req.user, successMessage: null});
+    } else {
+        
+        FirebaseAdmin.auth().updateUser(req.user.uid, {
+            password: newPassword
+        }).then(()=>{
+            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, user: req.user, successMessage: "Password successfully changed! Please Log In.", csrfToken: req.csrfToken()});
+        }).catch((e)=>{
+            return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null, csrfToken: req.csrfToken()});
+        });
     }
 
 }
 
-async function loginUser(req, res){
-    let email = req.body.email;
-    let password = req.body.password;
-
-    await FirebaseAuth.signInWithEmailAndPassword(FirebaseAuth.getAuth(), email, password)
-    .then((userCredential) => {
-        return res.redirect('/');
-    })
-    .catch((e) => {
-        return res.render(Pages.LOGIN_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
-    });
-    
-}
-
 async function logoutUser(req, res){
 
-    await FirebaseAuth.getAuth().signOut()
-    .then(() => {
-        return res.redirect('/login');
-    })
-    .catch((e) => {
-        return res.render(Pages.LOGIN_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null});
-    });
-    
+    res.clearCookie("__session");
+    return res.redirect('/login');
 }
 
 function getCurrentUser(){
@@ -172,9 +153,11 @@ async function userSignedIn(){
 async function getRestrictionEnzymes(user){
 
     try {
-        var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'restriction_enzymes', user.uid);
-        var docSnap = await FirebaseFirestore.getDoc(docRef);
-        if(docSnap.exists()){
+        console.log(user.uid);
+        var docSnap = await FirebaseFirestore.collection('restriction_enzymes').doc(user.uid).get();
+
+        console.log(JSON.stringify(docSnap));
+        if(docSnap.exists){
             let enzymes = docSnap.data()["restriction_enzymes"];
 
             for(let i = 1; i < enzymes.length; i++){
@@ -195,6 +178,7 @@ async function getRestrictionEnzymes(user){
     } catch(e) {
         console.log(`Error getting enzymes ${e}`);
     }
+    
 
     return [];
 }
@@ -202,9 +186,9 @@ async function getRestrictionEnzymes(user){
 async function getGenomes(user){
 
     try {
-        var docRef = FirebaseFirestore.doc(FirebaseFirestore.getFirestore(), 'genomes', user.uid);
-        var docSnap = await FirebaseFirestore.getDoc(docRef);
-        if(docSnap.exists()){
+        var docSnap = await FirebaseFirestore.collection('genomes').doc(user.uid).get();
+    
+        if(docSnap.data()){
             let genomes = docSnap.data()["genomes"];
             for(let i = 1; i < genomes.length; i++){
                 let j = i-1;
@@ -266,30 +250,88 @@ async function generateToken(user){
 
 async function deleteDoc(){
     try{
+        
         for(let i = 0; i < 60; i++){
-        const q = FirebaseFirestore.query(FirebaseFirestore.collection(FirebaseFirestore.getFirestore(), "genomes_text_data"), FirebaseFirestore.where("index", "==", i));
-        const querySnapshot = await FirebaseFirestore.getDocs(q);
-        console.log("Got query snapshot");
-        console.log(`Snapshot size is ${querySnapshot.size}`);
-        querySnapshot.forEach(async (doc) => {
-            try{
-            await FirebaseFirestore.deleteDoc(doc.ref)
-            console.log("Deleted Doc");
-            } catch(e){
-                console.log(`Error ocurred: ${e}`);
-            }
-          });
+            const querySnapshot = await FirebaseFirestore.collection("genomes_text_data").where("index", "==", i).get();
+            console.log("Got query snapshot");
+            console.log(`Snapshot size is ${querySnapshot.size}`);
+            querySnapshot.forEach(async (doc) => {
+                try{
+                await FirebaseFirestore.deleteDoc(doc.ref)
+                console.log("Deleted Doc");
+                } catch(e){
+                    console.log(`Error ocurred: ${e}`);
+                }
+            });
         }
-        } catch(e){
+    } catch(e){
             console.log(`Error ocurred: ${e}`);
-        }
     }
+}
+
+
+async function sessionLogin(req, res){
+    const idToken = req.body.idToken.toString();
+    const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    FirebaseAdmin
+    .auth()
+    .createSessionCookie(idToken, {expiresIn})
+    .then(
+        (sessionCookie)=>{
+            console.log("SESSION LOGIN! " + sessionCookie);
+            const options = {maxAge: expiresIn, httpOnly: true};
+            res.cookie("__session", sessionCookie, options);
+            return res.end(JSON.stringify({status: "success"}));        
+        },
+        (error) => {
+            console.log("SESSION LOGIN FAILED!!!");
+            res.status(401).send("UNAUTHORIZED ACCESS")
+        }
+    );
+}
+
+async function sessionLoginIdToken(req, res, idToken){
+    const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    FirebaseAdmin
+    .auth()
+    .createSessionCookie(idToken, {expiresIn})
+    .then(
+        (sessionCookie)=>{
+            console.log("SESSION LOGIN! " + sessionCookie);
+            const options = {maxAge: expiresIn, httpOnly: true};
+            res.cookie("__session", sessionCookie, options);
+        },
+        (error) => {
+            console.log(`SESSION LOGIN FAILED!!! ${error}`);
+        }
+    );
+}
+
+
+async function verifySession(sessionCookie){
+    let user = null;
+    console.log("The session cookie is:");
+    console.log(sessionCookie);
+    await FirebaseAdmin
+    .auth()
+    .verifySessionCookie(sessionCookie, true)
+    .then((decodedClaims)=>{
+        console.log(`DECODED CLAIMS: ${JSON.stringify(decodedClaims)}`);
+        user = decodedClaims;
+    })
+    .catch((e)=>{
+        console.log(`The error is ${e}`);
+    });
+
+    return user
+}
+
+
   
 
 module.exports = {
     deleteDoc,
     registerUser,
-    loginUser,
     getCurrentUser,
     userSignedIn,
     logoutUser,
@@ -300,4 +342,7 @@ module.exports = {
     getGenomes,
     generateV4UploadSignedUrl,
     generateToken,
+    sessionLogin,
+    verifySession,
+    sessionLoginIdToken,
 };

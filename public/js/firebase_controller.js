@@ -1,6 +1,42 @@
-import { getAuth, signInWithCustomToken} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
+import { getAuth, signInWithCustomToken, signOut, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 import {getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
+
+window.initLogin = ()=>{
+    $("#login_form").on("submit", (event)=>{
+        event.preventDefault();
+
+        const email = event.target.email.value;
+        const password = event.target.password.value;
+        console.log(`${email}, ${password}`);
+        console.log("1");
+        signInWithEmailAndPassword(getAuth(), email, password).then(({user})=>{
+            console.log("2");
+            return user.getIdToken().then((idToken)=>{
+                console.log("3");
+                let res = fetch("/sessionLogin", {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                    },
+                    body: JSON.stringify({idToken}),
+                });
+                console.log(res);
+                return res;
+            });
+        }).then(async ()=>{
+            console.log("4");
+            return signOut(getAuth());
+        }).then(()=>{
+            console.log("5");
+            window.location.assign("/")
+        }).catch((e)=>{
+            $("#error").html("Invalid Username or Password");
+        });
+    });
+}
 
 window.FirebaseController = {
 
