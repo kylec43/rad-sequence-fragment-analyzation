@@ -1,7 +1,6 @@
 import { getAuth, signInWithCustomToken, updateEmail, signOut, updatePassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 import {getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
-
 window.sessionLogin = async (email, password, redirect = null)=>{
 
     var error = false;
@@ -53,22 +52,24 @@ window.changeEmail = async (currentEmail, newEmail, confirmNewEmail, password)=>
         return;
     }
 
+    
+    if(await sessionLogin(currentEmail, password)){
+        var user = getAuth().currentUser;
+        console.log(`User ${JSON.stringify(user)}`);
 
-    await sessionLogin(currentEmail, password)
-    var user = getAuth().currentUser;
-    if(user){
-        updateEmail(user, newEmail).then(async ()=>{
-            await signOut(getAuth());
-            if(await sessionLogin(user.email, password)){
-                alert("Email Successfully Changed!");
-                $("#currentEmail").val(newEmail);
+        console.log("UPDATING EMAIL");
+        await updateEmail(user, newEmail).then(async ()=>{
+            if(!await sessionLogin(newEmail, password)){
+                throw Error("Unable to maintain session");
             }
+            await signOut(getAuth());
+            alert("Email Successfully Changed!");
+            $("#currentEmail").val(newEmail);
         }).catch((e)=>{
             alert(`${e}`);
         });
-    } else {
-        alert("You have entered the wrong password.");
     }
+
 }
 
 
@@ -80,7 +81,6 @@ window.changePassword = async (currentPassword, newPassword, confirmNewPassword,
     }
     let errorMessage = "";
     if(newPassword !== confirmNewPassword){
-        error = true;
         errorMessage += "Password and Confirmation Password do not match";
     }
 
@@ -90,19 +90,19 @@ window.changePassword = async (currentPassword, newPassword, confirmNewPassword,
     }
 
 
-    await sessionLogin(email, currentPassword)
-    var user = getAuth().currentUser;
-    if(user){
-        updatePassword(user, newPassword).then(async ()=>{
-            await signOut(getAuth());
-            if(await sessionLogin(user.email, newPassword)){
-                alert("Password Successfully Changed!");
+    if(await sessionLogin(email, currentPassword)){
+        var user = getAuth().currentUser;
+        console.log(`User ${JSON.stringify(user)}`);
+        await updatePassword(user, newPassword).then(async ()=>{
+            if(!await sessionLogin(email, newPassword)){
+                throw Error("Unable to maintain session");
             }
+            await signOut(getAuth());
+            console.log("UPDATED PASSWORD");
+            alert("Password Successfully Changed!");
         }).catch((e)=>{
             alert(`${e}`);
         });
-    } else {
-        alert("You have entered the wrong password.");
     }
 }
 
