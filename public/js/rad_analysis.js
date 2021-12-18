@@ -429,6 +429,7 @@ function getFragmentDistributions(fragmentSizes, config){
 
 
     /*Get graph begin*/
+    console.log(`Begin Length ${distributionCountBegin}`);
     var fragmentDistributionsBegin = distributionCountBegin > 0 ? new Array(distributionCountBegin) : [];
     for(let i = 0; i < fragmentDistributionsBegin.length; i++){
         let min = `${config.graphRangeMin + i*config.lengthDistribution}`;
@@ -441,6 +442,7 @@ function getFragmentDistributions(fragmentSizes, config){
         };
     }
 
+    console.log(`Middle Length ${distributionCountMiddle}`);
     var fragmentDistributionsMiddle = new Array(distributionCountMiddle);
     for(let i = 0; i < fragmentDistributionsMiddle.length; i++){
         let min = `${config.focusRangeMin + i*config.lengthDistribution}`;
@@ -453,6 +455,7 @@ function getFragmentDistributions(fragmentSizes, config){
         };
     }
 
+    console.log(`End Length ${distributionCountEnd}`);
     var fragmentDistributionsEnd = distributionCountEnd > 0 ? new Array(distributionCountEnd) : [];
     for(let i = 0; i < fragmentDistributionsEnd.length; i++){
         let min = `${(config.focusRangeMax+1) + i*config.lengthDistribution}`;
