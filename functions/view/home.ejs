@@ -282,6 +282,9 @@
                         if(focusRangeMaxNumber > graphRangeMaxNumber){
                             focusRangeMax.value = `${graphRangeMaxNumber}`;
                             focusRangeMaxNumber = graphRangeMaxNumber;
+                        } else if (focusRangeMaxNumber < graphRangeMinNumber){
+                            focusRangeMax.value = `${graphRangeMinNumber}`;
+                            focusRangeMax = graphRangeMin;
                         }
 
                         if(focusRangeMinNumber > focusRangeMaxNumber){

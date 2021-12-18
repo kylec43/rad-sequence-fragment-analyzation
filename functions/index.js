@@ -6,16 +6,13 @@ const bodyParser = require("body-parser");
 const Pages = require('./model/ejs_constants.js');
 const FragmentAnalyzer = require('./model/dna_fragment_analyzer');
 const FirebaseController = require('./controller/firebase_controller.js');
-const cors = require('cors')({origin: true});
 
 
 
 const csrfMiddleware = csrf({cookie: true});
 
 const app = express();
-app.use(cors);
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 app.use(cookieParser());
 app.use(csrfMiddleware);
 
