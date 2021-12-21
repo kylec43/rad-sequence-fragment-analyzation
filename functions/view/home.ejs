@@ -47,13 +47,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row display-none" id="secondEnzymeBlock">
                                     <div class="col">
                                         <div class="form-group">
                                             <label for="enzyme_select2">Restriction Enzyme:</label>
                                             <div class="input-group">
                                                 <select class="form-control" onchange="onSelectEnzyme2(this);" name="enzyme_select2" id="enzyme_select2">
-                                                    <option>&lt&ltnone&gt&gt</option>
                                                     <option>&lt&ltcustom&gt&gt</option>
                                                     <% for(let i = 0; i < restriction_enzymes.length; i++) { %>
                                                         <option id="<%= restriction_enzymes[i]['id'] %>2"><%= restriction_enzymes[i]["name"] %></option>
@@ -66,9 +65,16 @@
                                         <div class="form-group">
                                             <label for="enzyme_site">Restriction Site:</label>
                                             <div class="input-group">
-                                                <input class="form-control" id="enzyme_site2" name="enzyme_site2" type="text" minlength="2" maxlength="8" disabled>
+                                                <input class="form-control" id="enzyme_site2" name="enzyme_site2" type="text" minlength="2" maxlength="8">
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="doubleDigest" style="display: flex; align-items: center;">
+                                            <input id="doubleDigest" class="rad-checkbox" name="doubleDigest" type="checkbox" onchange="showRestrictionSite2(this)">&nbsp;Double Digest
+                                        </label>
                                     </div>
                                 </div>
                                 <hr>
@@ -198,6 +204,7 @@
             var focusRangeMin = document.getElementById('focus_range_min');
             var focusRangeMax = document.getElementById('focus_range_max');
             var outlierInput = document.getElementById('outlier');
+            var doubleDigestInput = document.getElementById('doubleDigest');
 
             var genomeFileInput = document.getElementById('genome_file');
 
@@ -225,6 +232,17 @@
             <% } %>
 
             
+            function showRestrictionSite2(checkbox){
+                if(checkbox.checked){
+                    document.querySelector("#secondEnzymeBlock").classList.remove("display-none");
+                    enzymeSite2.required = true;
+                } else {
+                    document.querySelector("#secondEnzymeBlock").classList.add("display-none");
+                    enzymeSite2.required = false;
+                }
+            }
+
+
             function updateToFixed(){
                 let value = parseFloat(probability.value);
                 if(!isNaN(value) && value >= 0.001 && value <= 1.000){
@@ -246,16 +264,11 @@
 
             function onSelectEnzyme2(sel){
                 if(sel.selectedIndex === 0){
-                    enzymeSite2.disabled = true;
-                    enzymeSite2.value = "";
-
-                } else if(sel.selectedIndex === 1){
                     enzymeSite2.disabled = false;
                     enzymeSite2.value = "";
                 } else {
                     enzymeSite2.disabled = true;
-                    enzymeSite2.value = restriction_enzymes[sel.selectedIndex-2].restrictionSite;
-
+                    enzymeSite2.value = restriction_enzymes[sel.selectedIndex-1].restrictionSite;
                 }
             }
 
@@ -298,7 +311,7 @@
                         let radConfig = {
                             genomeFile: genomeFileInput.files[0],
                             restrictionSite1: enzymeSite.value.toUpperCase(),
-                            restrictionSite2: enzymeSite2.value.toUpperCase(),
+                            restrictionSite2: doubleDigest.checked ? enzymeSite2.value.toUpperCase() : null,
                             probability: probabilityNumber,
                             lengthDistribution: lengthDistributionNumber,
                             graphRangeMin: graphRangeMinNumber,

@@ -5,7 +5,7 @@ var fragmentChartObject = null;
 
 window.radAnalyze = async function(config){
 
-    if(config.restrictionSite2 !== ""){
+    if(config.restrictionSite2 !== null){
         doubleEnzymeDigest(config);
     } else {
         singleEnzymeDigest(config);
