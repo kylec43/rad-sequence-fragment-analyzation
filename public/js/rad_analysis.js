@@ -538,9 +538,9 @@ function getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, ou
 
 
 function getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists){
-
+    console.log(outlierHeadExists ? "EXISTS" : "DOES NOT");
     let fragmentGraphRangeCount = 0;
-    for(let i = outlierHeadExists ? 1 : 0; i < fragmentDistributions.length-outlierTailExists ? 1 : 0; i++){
+    for(let i = outlierHeadExists ? 1 : 0; i < fragmentDistributions.length - outlierTailExists ? 1 : 0; i++){
         fragmentGraphRangeCount += fragmentDistributions[i].count;
     }
 
@@ -888,7 +888,7 @@ async function singleEnzymeDigest(config){
             var fragmentCount = actualSiteCount + 1;
             var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
 
-            var outlierHeadExists = config.includeOutliers && config.graphRange !== 1 ? true : false;
+            var outlierHeadExists = config.includeOutliers && config.graphRangeMin !== 1 ? true : false;
             var outlierTailExists = config.includeOutliers;
             var fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
             var fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
