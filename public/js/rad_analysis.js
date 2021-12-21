@@ -561,8 +561,8 @@ function displaySingleEnzymeDigestionData(tableData, config){
         </button>
         <div class="collapse navbar-collapse rad-navbar-collapse-data-tables" id="navbarNavData">
             <ul class="navbar-nav">
-            <li class="nav-item rad-item active" id="totalityItem">
-                <a class="nav-link table-link" href="#" onclick="showTotalityData(this)">Totality</a>
+            <li class="nav-item rad-item active" id="totalItem">
+                <a class="nav-link table-link" href="#" onclick="showTotalData(this)">Total</a>
             </li>
             <li class="nav-item rad-item" id="focusRangeItem">
                 <a class="nav-link table-link" href="#" onclick="showFocusRangeData(this)">Focus Range</a>
@@ -574,7 +574,7 @@ function displaySingleEnzymeDigestionData(tableData, config){
         </div>
     </nav>
     <hr>
-    <table class="rad-data-table" id="totalityDataTable">
+    <table class="rad-data-table" id="totalDataTable">
         <tr>
             <th class="rad-th" title="RS Count = Number of Restriction Sites inside Genome File">RS Count</th>
             <th class="rad-th" title="Expected RS Slice Count = RS Count * Probability">Expected RS Slice Count</th>
