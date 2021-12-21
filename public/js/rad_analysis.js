@@ -524,56 +524,99 @@ function getFragmentDistributions(fragmentSizes, config){
 We will get the fragment size and determine if it is within our specified min and max range.
 If it is within our
 */
-function getFragmentRangeCount(fragmentDistributions){
+function getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists){
 
-    let fragmentRangeCount = 0;
-    for(let i = 1; i < fragmentDistributions.length-1; i++){
+    let fragmentFocusRangeCount = 0;
+    for(let i = outlierHeadExists ? 1 : 0; i < fragmentDistributions.length - outlierTailExists ? 1 : 0; i++){
         if(fragmentDistributions[i].focusArea){
-            fragmentRangeCount += fragmentDistributions[i].count;
+            fragmentFocusRangeCount += fragmentDistributions[i].count;
         }
     }
 
-    return fragmentRangeCount;
+    return fragmentFocusRangeCount;
+}
+
+
+function getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists){
+
+    let fragmentGraphRangeCount = 0;
+    for(let i = outlierHeadExists ? 1 : 0; i < fragmentDistributions.length-outlierTailExists ? 1 : 0; i++){
+        fragmentGraphRangeCount += fragmentDistributions[i].count;
+    }
+
+    return fragmentGraphRangeCount;
 }
 
 
 function displaySingleEnzymeDigestionData(tableData, config){
+    document.querySelector("#after-data-hr") ? document.querySelector("#after-data-hr").remove() : null;
+
     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
     config.fragmentTableContainer.innerHTML = `
-    <div class="row">
-        <div class="col">
-            <table class="rad-data-table">
-                <tr>
-                    <th class="rad-th" title="Total RS Count = Number of Restriction Sites inside Genome File">Total RS Count</th>
-                    <th class="rad-th" title="Expected RS Slice Count = Total RS Count * Probability">Expected RS Slice Count</th>
-                    <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
-                </tr>
-                <tr>
-                    <td class="rad-td" id="total_rs_count" title="Total RS Count = Number of Restriction Sites inside Genome File">${tableData.totalSiteCount}</td>
-                    <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${tableData.expectedSiteCount}</td>
-                    <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${tableData.actualSiteCount}</td>
-                </tr>
-            </table>
+
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark rad-navbar-data-tables">
+        <a class="navbar-brand rad-navbar-brand-data-tables" href="#">Data Tables</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavData">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse rad-navbar-collapse-data-tables" id="navbarNavData">
+            <ul class="navbar-nav">
+            <li class="nav-item rad-item active" id="totalityItem">
+                <a class="nav-link table-link" href="#" onclick="showTotalityData(this)">Totality</a>
+            </li>
+            <li class="nav-item rad-item" id="focusRangeItem">
+                <a class="nav-link table-link" href="#" onclick="showFocusRangeData(this)">Focus Range</a>
+            </li>
+            <li class="nav-item rad-item" id="graphRangeItem">
+                <a class="nav-link table-link" href="#" onclick="showGraphRangeData(this)">Graph Range</a>
+            </li>
+            </ul>
         </div>
-    </div>
+    </nav>
     <hr>
-    <div class="row margin-top-md">
-        <div class="col">
-            <table class="rad-data-table">
-                <tr>
-                    <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
-                    <th class="rad-th" title="Fragment Range Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
-                    <th class="rad-th" title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
-                </tr>
-                <tr>
-                    <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${tableData.fragmentCount}</td>
-                    <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${tableData.fragmentRangeCount}</td>
-                    <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((tableData.fragmentRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <table class="rad-data-table" id="totalityDataTable">
+        <tr>
+            <th class="rad-th" title="RS Count = Number of Restriction Sites inside Genome File">RS Count</th>
+            <th class="rad-th" title="Expected RS Slice Count = RS Count * Probability">Expected RS Slice Count</th>
+            <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
+            <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
+        </tr>
+        <tr>
+            <td class="rad-td" id="total_rs_count" title="RS Count = Number of Restriction Sites inside Genome File">${tableData.totalSiteCount}</td>
+            <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${tableData.expectedSiteCount}</td>
+            <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${tableData.actualSiteCount}</td>
+            <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${tableData.fragmentCount}</td>
+        </tr>
+    </table>
+    <table class="rad-data-table display-none" id="focusRangeDataTable">
+        <tr>
+            <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
+            <th class="rad-th" title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
+        </tr>
+        <tr>
+            <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${tableData.fragmentFocusRangeCount}</td>
+            <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((tableData.fragmentFocusRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
+        </tr>
+    </table>
+    <table class="rad-data-table display-none" id="graphRangeDataTable">
+        <tr>
+            <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
+            <th class="rad-th" title="Fragment Percentage = (Fragments Count/Fragment Count) * 100">Fragment Range Percentage</th>
+        </tr>
+        <tr>
+            <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${tableData.fragmentGraphRangeCount}</td>
+            <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((tableData.fragmentGraphRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
+        </tr>
+    </table>
+    <hr>
     `;
+    config.fragmentTableContainer.insertAdjacentHTML("afterend", "<hr id=\"after-data-hr\"");
+
+    $(".nav-link.table-link").on("click", (event)=>{
+        console.log("DID IT");
+        event.preventDefault();
+        return false;
+    });
 }
 
 
@@ -778,7 +821,7 @@ async function singleEnzymeDigest(config){
             totalSiteCount: Contains the total count of restriction sites in the file
             expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
             actualSiteCount: Contains the randomized slice count which should approximately be the probability% * total count of restriction sites in the file.
-            fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
+            fragmentFocusRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
             */
             var sliceIndexes = [0,];
             var sliceOffset = config.restrictionSite1.length/2;
@@ -838,13 +881,18 @@ async function singleEnzymeDigest(config){
             fragmentSizes: Contains the count for each distribution
             fragmentCount: n + 1 where n is the actualSiteCount
             expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
-            fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
+            fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
             */
             var fragmentSizes = getFragmentSizes(sliceIndexes);
             var fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
             var fragmentCount = actualSiteCount + 1;
             var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
-            var fragmentRangeCount = getFragmentRangeCount(fragmentDistributions);
+
+            var outlierHeadExists = config.includeOutliers && config.graphRange !== 1 ? true : false;
+            var outlierTailExists = config.includeOutliers;
+            var fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+            var fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+
 
 
             /* Display data tables */
@@ -853,10 +901,11 @@ async function singleEnzymeDigest(config){
                 expectedSiteCount,
                 actualSiteCount,
                 fragmentCount,
-                fragmentRangeCount,
+                fragmentFocusRangeCount,
+                fragmentGraphRangeCount
             };
-            displaySingleEnzymeDigestionData(tableData, config)
 
+            displaySingleEnzymeDigestionData(tableData, config)
 
             /*Generate chart*/
             generateChart(fragmentDistributions, config);
@@ -1014,14 +1063,18 @@ async function doubleEnzymeDigest(config){
         fragmentSizes: Contains the count for each distribution
         fragmentCount: n + 1 where n is the actualSiteCount
         expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
-        fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum range.
+        fragmentFocusRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
         */
         var actualSiteCount = mergedIndexes.length -2;
         var fragmentSizes = getFragmentSizes(mergedIndexes);
         var fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
         var fragmentCount = actualSiteCount + 1;
         var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
-        var fragmentRangeCount = getFragmentRangeCount(fragmentDistributions);
+
+        var outlierHeadExists = config.includeOutliers && config.graphRange !== 1 ? true : false;
+        var outlierTailExists = config.includeOutliers;
+        var fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+        var fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
 
         
 
@@ -1032,8 +1085,10 @@ async function doubleEnzymeDigest(config){
                 expectedSiteCount,
                 actualSiteCount,
                 fragmentCount,
-                fragmentRangeCount,
+                fragmentFocusRangeCount,
+                fragmentGraphRangeCount
             };
+
             displaySingleEnzymeDigestionData(tableData, config)
 
 
