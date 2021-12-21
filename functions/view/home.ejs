@@ -218,6 +218,8 @@
             var fragmentTableContainer = document.getElementById('fragment_table_container');
             const fragmentChartCanvas = document.getElementById('fragment_chart');
 
+            var fragmentChartObject = null;
+
 
             /*Server data*/
             var token = "<%= userToken %>"
@@ -310,7 +312,7 @@
                         console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
                         let radConfig = {
                             genomeFile: genomeFileInput.files[0],
-                            restrictionSite1: enzymeSite.value.toUpperCase(),
+                            restrictionSite: enzymeSite.value.toUpperCase(),
                             restrictionSite2: doubleDigest.checked ? enzymeSite2.value.toUpperCase() : null,
                             probability: probabilityNumber,
                             lengthDistribution: lengthDistributionNumber,
@@ -329,12 +331,166 @@
                             },
                         }
 
-                        await radAnalyze(radConfig);
+                        var analyzer = new RadSequencingAnalyzer(radConfig);
+
+                        analyzer.onBegin(()=>{
+                            progressBar.style.width = "0%";
+                            analysisLoadingBlock.style.display = "block";
+                            analysisButton.style.display = "none";
+                            fragmentTableContainer.innerHTML = ``;
+                            if(fragmentChartObject !== null) {
+                                console.log("Destroyed");
+                                fragmentChartObject.destroy();
+                            }
+                        });
+
+                        analyzer.onProgress((percentage)=>{
+                            progressBar.style.width = `${percentage}%`;
+                        });
+
+                        analyzer.onResult((data)=>{
+                            analysisLoadingBlock.style.display = "none";
+                            analysisButton.style.display = "block";
+                            displayTableData(data);
+                            displayChart(data.fragmentDistributions);
+                        });
+
+                        analyzer.onReadError(()=>{
+                            analysisLoadingBlock.style.display = "none";
+                            analysisButton.style.display = "block";
+                        });
+
+                        analyzer.analyze(genomeFileInput.files[0])
+                        //await radAnalyze(genomeFileInput.files[0], radConfig);
                     } catch(e) {
                         console.log(`Error: ${e}`);
                     }
                 } else {
                     $analysisForm[0].reportValidity()                }
+            }
+
+            function displayTableData(data){
+                document.querySelector("#after-data-hr") ? document.querySelector("#after-data-hr").remove() : null;
+
+                var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (2 || -1) + '})?');
+                fragmentTableContainer.innerHTML = `
+
+                <nav class="navbar navbar-expand-sm navbar-dark bg-dark rad-navbar-data-tables">
+                    <a class="navbar-brand rad-navbar-brand-data-tables" href="#">Data Tables</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavData">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse rad-navbar-collapse-data-tables" id="navbarNavData">
+                        <ul class="navbar-nav">
+                        <li class="nav-item rad-item active" id="totalItem">
+                            <a class="nav-link table-link" href="#" onclick="showTotalData(this)">Total</a>
+                        </li>
+                        <li class="nav-item rad-item" id="focusRangeItem">
+                            <a class="nav-link table-link" href="#" onclick="showFocusRangeData(this)">Focus Range</a>
+                        </li>
+                        <li class="nav-item rad-item" id="graphRangeItem">
+                            <a class="nav-link table-link" href="#" onclick="showGraphRangeData(this)">Graph Range</a>
+                        </li>
+                        </ul>
+                    </div>
+                </nav>
+                <hr>
+                <table class="rad-data-table" id="totalDataTable">
+                    <tr>
+                        <th class="rad-th" title="RS Count = Number of Restriction Sites inside Genome File">RS Count</th>
+                        <th class="rad-th" title="Expected RS Slice Count = RS Count * Probability">Expected RS Slice Count</th>
+                        <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
+                        <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
+                    </tr>
+                    <tr>
+                        <td class="rad-td" id="total_rs_count" title="RS Count = Number of Restriction Sites inside Genome File">${data.totalSiteCount}</td>
+                        <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${data.expectedSiteCount}</td>
+                        <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${data.actualSiteCount}</td>
+                        <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${data.fragmentCount}</td>
+                    </tr>
+                </table>
+                <table class="rad-data-table display-none" id="focusRangeDataTable">
+                    <tr>
+                        <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
+                        <th class="rad-th" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">Fragment Percentage</th>
+                    </tr>
+                    <tr>
+                        <td class="rad-td" id="fragment_range_count" title="Fragment Count = Actual RS Slice Count in range + 1">${data.fragmentFocusRangeCount}</td>
+                        <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragment Count/Total Fragment Count) * 100">${(((data.fragmentFocusRangeCount)/data.fragmentCount)*100).toString().match(re)[0]}%</td>
+                    </tr>
+                </table>
+                <table class="rad-data-table display-none" id="graphRangeDataTable">
+                    <tr>
+                        <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
+                        <th class="rad-th" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">Fragment Percentage</th>
+                    </tr>
+                    <tr>
+                        <td class="rad-td" id="fragment_range_count" title="Fragment Count = Actual RS Slice Count in range + 1">${data.fragmentGraphRangeCount}</td>
+                        <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">${(((data.fragmentGraphRangeCount)/data.fragmentCount)*100).toString().match(re)[0]}%</td>
+                    </tr>
+                </table>
+                <hr>
+                `;
+                fragmentTableContainer.insertAdjacentHTML("afterend", "<hr id=\"after-data-hr\"");
+
+                $(".nav-link.table-link").on("click", (event)=>{
+                    event.preventDefault();
+                    return false;
+                });
+            }
+
+
+            function displayChart(fragmentDistributions){
+                let chartLabels = [];
+                let chartData = [];
+                let backgroundColor = [];
+                let borderColor = [];
+
+                for(let i = 0; i < fragmentDistributions.length; i++){
+
+                    chartLabels.push(fragmentDistributions[i].range);
+                    chartData.push(`${fragmentDistributions[i].count}`);
+                    if(fragmentDistributions[i].focusArea){
+                        backgroundColor.push('rgba(30, 130, 76, 0.2)');
+                        borderColor.push('rgba(30, 130, 76, 1)');
+                    } else {
+                        backgroundColor.push('rgba(54, 162, 235, 0.2)');
+                        borderColor.push('rgba(54, 162, 235, 1.0)');
+                    }
+
+                }
+                
+                fragmentChartObject = new Chart(fragmentChartCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Fragments',
+                            data: chartData,
+                            backgroundColor,
+                            borderColor,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: "Fragment Length"
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: "Fragment Count"
+                                }
+                            }
+                        }
+                    }
+                });
+                
             }
 
         </script>
