@@ -590,22 +590,22 @@ function displaySingleEnzymeDigestionData(tableData, config){
     </table>
     <table class="rad-data-table display-none" id="focusRangeDataTable">
         <tr>
-            <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
-            <th class="rad-th" title="Fragment Percentage = (Fragments Range Count/Fragment Count) * 100">Fragment Range Percentage</th>
+            <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
+            <th class="rad-th" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">Fragment Percentage</th>
         </tr>
         <tr>
-            <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${tableData.fragmentFocusRangeCount}</td>
-            <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((tableData.fragmentFocusRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
+            <td class="rad-td" id="fragment_range_count" title="Fragment Count = Actual RS Slice Count in range + 1">${tableData.fragmentFocusRangeCount}</td>
+            <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragment Count/Total Fragment Count) * 100">${(((tableData.fragmentFocusRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
         </tr>
     </table>
     <table class="rad-data-table display-none" id="graphRangeDataTable">
         <tr>
-            <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Range Count</th>
-            <th class="rad-th" title="Fragment Percentage = (Fragments Count/Fragment Count) * 100">Fragment Range Percentage</th>
+            <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
+            <th class="rad-th" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">Fragment Percentage</th>
         </tr>
         <tr>
-            <td class="rad-td" id="fragment_range_count" title="Fragment Range Count = Actual RS Slice Count in range + 1">${tableData.fragmentGraphRangeCount}</td>
-            <td class="rad-td" id="fragment_percentage" title="Fragment Range Percentage = (Fragments Range Count/Fragment Count) * 100">${(((tableData.fragmentGraphRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
+            <td class="rad-td" id="fragment_range_count" title="Fragment Count = Actual RS Slice Count in range + 1">${tableData.fragmentGraphRangeCount}</td>
+            <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">${(((tableData.fragmentGraphRangeCount)/tableData.fragmentCount)*100).toString().match(re)[0]}%</td>
         </tr>
     </table>
     <hr>
