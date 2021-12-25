@@ -227,12 +227,15 @@
             var restriction_enzymes = [];
             restriction_enzymes = <%- JSON.stringify(restriction_enzymes) %>;
 
-            <% if (user) { %>
                 window.onload = async ()=>{
-                    await FirebaseController.signIn(token);
+                    <% if (user) { %>
+                        await FirebaseController.signIn(token);
+                    <% } %>
+                    if($("#doubleDigest")[0].checked){
+                        $("#secondEnzymeBlock")[0].classList.remove("display-none");
+                        $("#enzyme_site2").required = true;
+                    }
                 };
-            <% } %>
-
             
             function showRestrictionSite2(checkbox){
                 if(checkbox.checked){
@@ -398,12 +401,14 @@
                 <table class="rad-data-table" id="totalDataTable">
                     <tr>
                         <th class="rad-th" title="RS Count = Number of Restriction Sites inside Genome File">RS Count</th>
+                        ${data.digestionType === "double" ? '<th class="rad-th" title="Amount of overlapping restriction sites">Conflict Sites</th>' : ''}
                         <th class="rad-th" title="Expected RS Slice Count = RS Count * Probability">Expected RS Slice Count</th>
                         <th class="rad-th" title="Actual RS Slice Count = Slicing based off of probability">Actual RS Slice Count</th>
                         <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
                     </tr>
                     <tr>
                         <td class="rad-td" id="total_rs_count" title="RS Count = Number of Restriction Sites inside Genome File">${data.totalSiteCount}</td>
+                        ${data.digestionType === "double" ? '<td class="rad-td" title="Amount of overlapping restriction sites">' + data.conflicts.toString() + '</td>' : ''}
                         <td class="rad-td" id="expected_rs_slice_count" title="Expected RS Slice Count = Total RS Count * Probability">${data.expectedSiteCount}</td>
                         <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of probability">${data.actualSiteCount}</td>
                         <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${data.fragmentCount}</td>

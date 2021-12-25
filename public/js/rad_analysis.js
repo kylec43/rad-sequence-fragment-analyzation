@@ -117,7 +117,7 @@ Get the count of every single fragment size
 function getFragmentSizes(sliceIndexes){
 
     //fragmentSizes: An array holding the count for each distribution
-    var fragmentSizes = {};
+    let fragmentSizes = {};
     
     
     for(let i = 0; i < sliceIndexes.length-1; i++){
@@ -133,15 +133,15 @@ function getFragmentSizes(sliceIndexes){
 function getFragmentDistributions(fragmentSizes, config){
 
     /* Get the amount of distributions according to the minimum range, maximum range, and length distribution*/
-    var distributionCountBegin = getDistributionCount(config.graphRangeMin, config.focusRangeMin-1, config);
-    var distributionCountMiddle = getDistributionCount(config.focusRangeMin, config.focusRangeMax, config);
-    var distributionCountEnd = getDistributionCount(config.focusRangeMax+1, config.graphRangeMax, config);
+    let distributionCountBegin = getDistributionCount(config.graphRangeMin, config.focusRangeMin-1, config);
+    let distributionCountMiddle = getDistributionCount(config.focusRangeMin, config.focusRangeMax, config);
+    let distributionCountEnd = getDistributionCount(config.focusRangeMax+1, config.graphRangeMax, config);
     console.log(`${distributionCountBegin} ${distributionCountMiddle} ${distributionCountEnd}`);
 
 
     /*Create the beginning distributions before the focus range*/
     console.log(`Begin Length ${distributionCountBegin}`);
-    var fragmentDistributionsBegin = distributionCountBegin > 0 ? new Array(distributionCountBegin) : [];
+    let fragmentDistributionsBegin = distributionCountBegin > 0 ? new Array(distributionCountBegin) : [];
     for(let i = 0; i < fragmentDistributionsBegin.length; i++){
         let min = `${config.graphRangeMin + i*config.lengthDistribution}`;
         let max = `${(config.graphRangeMin + (i+1)*config.lengthDistribution-1) > (config.focusRangeMin-1) ? (config.focusRangeMin-1) : config.graphRangeMin + (i+1)*config.lengthDistribution-1}`;
@@ -155,7 +155,7 @@ function getFragmentDistributions(fragmentSizes, config){
 
     /*Create the middle graph/the focus range */
     console.log(`Middle Length ${distributionCountMiddle}`);
-    var fragmentDistributionsMiddle = new Array(distributionCountMiddle);
+    let fragmentDistributionsMiddle = new Array(distributionCountMiddle);
     for(let i = 0; i < fragmentDistributionsMiddle.length; i++){
         let min = `${config.focusRangeMin + i*config.lengthDistribution}`;
         let max = `${(config.focusRangeMin + (i+1)*config.lengthDistribution-1) > config.focusRangeMax ? config.focusRangeMax : config.focusRangeMin + (i+1)*config.lengthDistribution-1}`;
@@ -169,7 +169,7 @@ function getFragmentDistributions(fragmentSizes, config){
 
     /*Create the latter distributions after the focus range */
     console.log(`End Length ${distributionCountEnd}`);
-    var fragmentDistributionsEnd = distributionCountEnd > 0 ? new Array(distributionCountEnd) : [];
+    let fragmentDistributionsEnd = distributionCountEnd > 0 ? new Array(distributionCountEnd) : [];
     for(let i = 0; i < fragmentDistributionsEnd.length; i++){
         let min = `${(config.focusRangeMax+1) + i*config.lengthDistribution}`;
         let max = `${((config.focusRangeMax+1) + (i+1)*config.lengthDistribution-1) > config.graphRangeMax ? config.graphRangeMax : (config.focusRangeMax+1) + (i+1)*config.lengthDistribution-1}`;
@@ -182,7 +182,7 @@ function getFragmentDistributions(fragmentSizes, config){
     }
 
     /*Create outlier end distribution */
-    var outliersEnd = [{
+    let outliersEnd = [{
         count: 0,
         range: `${config.graphRangeMax}<`,
         focusArea: false,
@@ -190,7 +190,7 @@ function getFragmentDistributions(fragmentSizes, config){
     },];
 
     /*Create outline begin distribution*/
-    var outliersBegin = [{
+    let outliersBegin = [{
         count: 0,
         range: `<${config.graphRangeMin}`,
         focusArea: false,
@@ -217,7 +217,7 @@ function getFragmentDistributions(fragmentSizes, config){
     }
 
     /*Combine all distributions together. beginning, middle, end, and outliers if necessary */
-    var totalDistributions = null;
+    let totalDistributions = null;
     if(config.includeOutliers){
         if(config.graphRangeMin !== 1){
             totalDistributions = outliersBegin.concat(fragmentDistributionsBegin, fragmentDistributionsMiddle, fragmentDistributionsEnd, outliersEnd);
@@ -333,7 +333,10 @@ function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restriction
     console.log(mergedIndexes.size);
     console.log(probability);
     console.log(conflictCount);
-    return mergedIndexes;
+    return {
+            mergedIndexes,
+            conflicts: conflictCount
+        };
 }
 
 
@@ -343,7 +346,7 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
     /* Call onBegin if not null */
     callbacks.onBegin ? callbacks.onBegin() : null;
 
-    var reader = new FileReader();
+    let reader = new FileReader();
 
     /* run this function on file read */
     console.log("Setting onload");
@@ -352,10 +355,10 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
         return async function()
         {
 
-            var timeStart = new Date();
+            let timeStart = new Date();
 
             /*Get file text content, removing all whitespaces, newlines*/
-            var contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+            let contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
             console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
 
             
@@ -368,12 +371,11 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
             actualSiteCount: Contains the randomized slice count which should approximately be the probability% * total count of restriction sites in the file.
             fragmentFocusRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
             */
-            var sliceIndexes = [0,];
-            var sliceOffset = config.restrictionSite.length/2;
-            var position = 0;
-            var totalSiteCount = 0;
-            var expectedSiteCount = 0;
-            var actualSiteCount = 0;
+            let sliceIndexes = [0,];
+            let sliceOffset = config.restrictionSite.length/2;
+            let position = 0;
+            let totalSiteCount = 0;
+            let actualSiteCount = 0;
             let lastPercentage = 0;
             /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
             while(true){
@@ -426,18 +428,18 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
             expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
             fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
             */
-            var fragmentSizes = getFragmentSizes(sliceIndexes);
-            var fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
-            var fragmentCount = actualSiteCount + 1;
-            var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
+            let fragmentSizes = getFragmentSizes(sliceIndexes);
+            let fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
+            let fragmentCount = actualSiteCount + 1;
+            let expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
 
-            var outlierHeadExists = config.includeOutliers && config.graphRangeMin !== 1 ? true : false;
-            var outlierTailExists = config.includeOutliers;
-            var fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
-            var fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+            let outlierHeadExists = config.includeOutliers && config.graphRangeMin !== 1 ? true : false;
+            let outlierTailExists = config.includeOutliers;
+            let fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+            let fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
 
 
-            var data = {
+            let data = {
                 fragmentDistributions,
                 totalSiteCount,
                 expectedSiteCount,
@@ -448,8 +450,8 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
                 digestionType: "single"
             }
 
-            var timeFinish = new Date();
-            var elapsedTime = timeFinish-timeStart;
+            let timeFinish = new Date();
+            let elapsedTime = timeFinish-timeStart;
             elapsedTime = elapsedTime/1000
             console.log(`Elapsed time: ${elapsedTime} seconds`);
 
@@ -478,7 +480,7 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
     /* Call onBegin if not null */
     callbacks.onBegin ? callbacks.onBegin() : null;
 
-    var reader = new FileReader();
+    let reader = new FileReader();
 
     /* run this function on file read */
     reader.onload = (function(reader)
@@ -486,10 +488,10 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
         return async function()
         {
 
-            var timeStart = new Date();
+            let timeStart = new Date();
 
             /*Get file text content, removing all whitespaces, newlines*/
-            var contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+            let contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
             console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
 
 
@@ -500,10 +502,10 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
             sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
             position: Contains the current position inside of the genome file
             */
-            var sliceOffset = config.restrictionSite.length/2;
-            var position = 0;
+            let sliceOffset = config.restrictionSite.length/2;
+            let position = 0;
             let lastPercentage = 0;
-            var totalSiteCount = 0;
+            let totalSiteCount = 0;
             /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
             while(true){
 
@@ -586,7 +588,7 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
 
 
             /*Merge indexes based off conflicts and probability*/
-            let mergedIndexes = mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite, config.restrictionSite2, config.probability);
+            let {mergedIndexes, conflicts} = mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite, config.restrictionSite2, config.probability);
             mergedIndexes.add(0);
             mergedIndexes.add(contents.length);
             mergedIndexes = Array.from(mergedIndexes);
@@ -598,21 +600,24 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
             expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
             fragmentFocusRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
             */
-            var actualSiteCount = mergedIndexes.length -2;
-            var fragmentSizes = getFragmentSizes(mergedIndexes);
-            var fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
-            var fragmentCount = actualSiteCount + 1;
-            var expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
+            let actualSiteCount = mergedIndexes.length - 2;
+            let fragmentSizes = getFragmentSizes(mergedIndexes);
+            let fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
+            let fragmentCount = actualSiteCount + 1;
 
-            var outlierHeadExists = config.includeOutliers && config.graphRangeMin !== 1 ? true : false;
-            var outlierTailExists = config.includeOutliers;
-            var fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
-            var fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+
+            let sliceChanceDec = (config.probability/1000) 
+            let expectedSiteCount = Math.floor((totalSiteCount-conflicts*2) * sliceChanceDec + conflicts * (1 - Math.pow(1-sliceChanceDec, 2)));
+
+            let outlierHeadExists = config.includeOutliers && config.graphRangeMin !== 1 ? true : false;
+            let outlierTailExists = config.includeOutliers;
+            let fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
+            let fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
 
             
 
 
-            var data = {
+            let data = {
                 fragmentDistributions,
                 totalSiteCount,
                 expectedSiteCount,
@@ -620,15 +625,16 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
                 fragmentCount,
                 fragmentFocusRangeCount,
                 fragmentGraphRangeCount,
+                conflicts,
                 digestionType: "double"
             }
 
-            var timeFinish = new Date();
-            var elapsedTime = timeFinish-timeStart;
+            let timeFinish = new Date();
+            let elapsedTime = timeFinish-timeStart;
             elapsedTime = elapsedTime/1000
             console.log(`Elapsed time: ${elapsedTime} seconds`);
 
-            /* Show and hide elements at the end specified in config */
+
             callbacks.onResult(data);
         }
     })(reader);
