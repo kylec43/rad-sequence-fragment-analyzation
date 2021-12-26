@@ -281,7 +281,7 @@ async function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restr
         let conflictIndex = 0;
 
         /*Resolve conflicts by seeing if a restriction site 2 index is within a range that conflicts with a restriction site 1 index */
-        for(let i = index-sliceOffset1+length1-1; i > index-sliceOffset1-length2; i--){
+        for(let i = index-sliceOffset1+length1-1; i > index-sliceOffset1-length2 && i >= 0; i--){
             if(sliceIndexes2.has(i+sliceOffset2)){
                 conflict = true;
                 conflictIndex = i+sliceOffset2;
