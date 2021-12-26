@@ -118,8 +118,7 @@ function getFragmentSizes(sliceIndexes){
 
     //fragmentSizes: An array holding the count for each distribution
     let fragmentSizes = {};
-    
-    
+
     for(let i = 0; i < sliceIndexes.length-1; i++){
         let fragmentSize = sliceIndexes[i+1] - sliceIndexes[i];
         fragmentSizes[fragmentSize] = fragmentSizes[fragmentSize] != undefined ? fragmentSizes[fragmentSize]+1 : 1;

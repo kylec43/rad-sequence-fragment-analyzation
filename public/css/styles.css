@@ -10,6 +10,14 @@ label{
     font-size: 1rem;
 }
 
+hr{
+    margin: 8px 0px;
+}
+
+h5{
+    margin: 0px 0px;
+}
+
 
 /* Display, Layout Classes */
 
@@ -59,6 +67,10 @@ label{
 
 .display-table{
     display: table;
+}
+
+.font-weight-bold{
+    font-weight: bold;
 }
 
 
@@ -129,6 +141,35 @@ label{
 .progress-bar{
     width: 0%; 
     transition: none;
+}
+
+
+/*Icon Classes*/
+.icon-question{
+    color: white;
+    vertical-align: middle;
+}
+
+.icon-question-container:hover{
+    background-image: linear-gradient(to bottom right,#83EAF1,#63A4FF);
+}
+
+.icon-question-container{
+    background-image: linear-gradient(to bottom right,#09C6F9,#045DE9);
+    display: inline-block;
+    border-radius: 100%;
+    width: 1.7rem;
+    height: 1.7rem;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.graph-properties-header{
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: top;
+    margin: 15px 0px 0px;
 }
 
 
