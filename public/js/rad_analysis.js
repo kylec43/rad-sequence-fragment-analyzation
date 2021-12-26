@@ -463,7 +463,13 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
                 digestionType: "single",
                 restrictionSite: config.restrictionSite,
                 restrictionSite2: null,
-                sliceProbability: config.probability/1000
+                sliceProbability: config.probability/1000,
+                graphRangeMin: config.graphRangeMin,
+                graphRangeMax: config.graphRangeMax,
+                focusRangeMin: config.focusRangeMin,
+                focusRangeMax: config.focusRangeMax,
+                lengthDistribution: config.lengthDistribution,
+                includeOutliers: config.includeOutliers,
             }
 
             let timeFinish = new Date();
@@ -645,7 +651,13 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
                 digestionType: "double",
                 restrictionSite: config.restrictionSite,
                 restrictionSite2: config.restrictionSite2,
-                sliceProbability: config.probability/1000
+                sliceProbability: config.probability/1000,
+                graphRangeMin: config.graphRangeMin,
+                graphRangeMax: config.graphRangeMax,
+                focusRangeMin: config.focusRangeMin,
+                focusRangeMax: config.focusRangeMax,
+                lengthDistribution: config.lengthDistribution,
+                includeOutliers: config.includeOutliers,
             }
 
             let timeFinish = new Date();

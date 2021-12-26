@@ -88,7 +88,7 @@ window.displayChart = (fragmentDistributions)=>{
                 x: {
                     title: {
                         display: true,
-                        text: "Fragment Length"
+                        text: "Fragment Length (bp)"
                     }
                 },
                 y: {
@@ -177,11 +177,19 @@ window.displayTableData = (data)=>{
             <th class="rad-th">Restriction Site${data.digestionType === 'double' ? ' #1' : ''}</th>
             ${data.digestionType === 'double' ? '<th class="rad-th">Restriction Site #2</th>' : ''}
             <th class="rad-th">Slice Probability</th>
+            <th class="rad-th">Graph Range</th>
+            <th class="rad-th">Focus Range</th>
+            <th class="rad-th">Length Distribution</th>
+            <th class="rad-th">Include Outliers</th>
         </tr>
         <tr>
             <td class="rad-td">${data.restrictionSite}</td>
             ${ data.digestionType === 'double' ? `<td class="rad-td">${data.restrictionSite2}</td>` : ''}
             <td class="rad-td">${data.sliceProbability*100}%</td>
+            <td class="rad-td">${data.graphRangeMin.toString() + "-" + data.graphRangeMax.toString()}</td>
+            <td class="rad-td">${data.focusRangeMin.toString() + "-" + data.focusRangeMax.toString()}</td>
+            <td class="rad-td">${data.lengthDistribution}bp</td>
+            <td class="rad-td">${data.includeOutliers ? "Yes" : "No"}</td>
         </tr>
     </table>
     <hr>
