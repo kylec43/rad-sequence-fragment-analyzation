@@ -385,15 +385,18 @@
                     </button>
                     <div class="collapse navbar-collapse rad-navbar-collapse-data-tables" id="navbarNavData">
                         <ul class="navbar-nav">
-                        <li class="nav-item rad-item active" id="totalItem">
-                            <a class="nav-link table-link" href="#" onclick="showTotalData(this)">Total</a>
-                        </li>
-                        <li class="nav-item rad-item" id="focusRangeItem">
-                            <a class="nav-link table-link" href="#" onclick="showFocusRangeData(this)">Focus Range</a>
-                        </li>
-                        <li class="nav-item rad-item" id="graphRangeItem">
-                            <a class="nav-link table-link" href="#" onclick="showGraphRangeData(this)">Graph Range</a>
-                        </li>
+                            <li class="nav-item rad-item active" id="totalItem">
+                                <a class="nav-link table-link" href="#" onclick="showTotalData(this)">Total</a>
+                            </li>
+                            <li class="nav-item rad-item" id="graphRangeItem">
+                                <a class="nav-link table-link" href="#" onclick="showGraphRangeData(this)">Graph Range</a>
+                            </li>
+                            <li class="nav-item rad-item" id="focusRangeItem">
+                                <a class="nav-link table-link" href="#" onclick="showFocusRangeData(this)">Focus Range</a>
+                            </li>
+                            <li class="nav-item rad-item" id="analysisPropertiesItem">
+                                <a class="nav-link table-link" href="#" onclick="showAnalysisPropertiesData(this)">Analysis Properties</a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -414,6 +417,16 @@
                         <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${data.fragmentCount}</td>
                     </tr>
                 </table>
+                <table class="rad-data-table display-none" id="graphRangeDataTable">
+                    <tr>
+                        <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
+                        <th class="rad-th" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">Fragment Percentage</th>
+                    </tr>
+                    <tr>
+                        <td class="rad-td" id="fragment_range_count" title="Fragment Count = Actual RS Slice Count in range + 1">${data.fragmentGraphRangeCount}</td>
+                        <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">${(((data.fragmentGraphRangeCount)/data.fragmentCount)*100).toString().match(re)[0]}%</td>
+                    </tr>
+                </table>
                 <table class="rad-data-table display-none" id="focusRangeDataTable">
                     <tr>
                         <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
@@ -424,14 +437,16 @@
                         <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragment Count/Total Fragment Count) * 100">${(((data.fragmentFocusRangeCount)/data.fragmentCount)*100).toString().match(re)[0]}%</td>
                     </tr>
                 </table>
-                <table class="rad-data-table display-none" id="graphRangeDataTable">
+                <table class="rad-data-table display-none" id="analysisPropertiesDataTable">
                     <tr>
-                        <th class="rad-th" title="Fragment Count = Actual RS Slice Count in range + 1">Fragment Count</th>
-                        <th class="rad-th" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">Fragment Percentage</th>
+                        <th class="rad-th">Restriction Site${data.digestionType === 'double' ? ' #1' : ''}</th>
+                        ${data.digestionType === 'double' ? '<th class="rad-th">Restriction Site #2</th>' : ''}
+                        <th class="rad-th">Slice Probability</th>
                     </tr>
                     <tr>
-                        <td class="rad-td" id="fragment_range_count" title="Fragment Count = Actual RS Slice Count in range + 1">${data.fragmentGraphRangeCount}</td>
-                        <td class="rad-td" id="fragment_percentage" title="Fragment Percentage = (Fragments Count/Total Fragment Count) * 100">${(((data.fragmentGraphRangeCount)/data.fragmentCount)*100).toString().match(re)[0]}%</td>
+                        <td class="rad-td">${data.restrictionSite}</td>
+                        ${ data.digestionType === 'double' ? `<td class="rad-td">${data.restrictionSite2}</td>` : ''}
+                        <td class="rad-td">${data.sliceProbability*100}%</td>
                     </tr>
                 </table>
                 <hr>
@@ -543,6 +558,15 @@
 
                 deactivateNavRadItems();
                 document.querySelector("#graphRangeItem").classList.add("active");
+            }
+
+            function showAnalysisPropertiesData(){
+                hideDataTables();
+                document.querySelector("#analysisPropertiesDataTable").classList.add("display-table");
+
+
+                deactivateNavRadItems();
+                document.querySelector("#analysisPropertiesItem").classList.add("active");
             }
         </script>
     </body>

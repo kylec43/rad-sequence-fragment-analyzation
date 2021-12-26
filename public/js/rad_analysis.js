@@ -265,7 +265,7 @@ function getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, ou
 }
 
 
-function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restrictionSite2, probability){
+async function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restrictionSite2, probability, callbacks){
     let length1 = restrictionSite.length;
     let length2 = restrictionSite2.length;
     let sliceOffset1 = Math.floor(restrictionSite.length/2);
@@ -274,6 +274,8 @@ function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restriction
 
     //if the start of restrictionSite2 or a slice index is in the range [ (first char of restrictionSite1 - length2 + 1)-(last char of restrictionSite1) ], there is a conflict
     let conflictCount = 0;
+    let loopedCount = 0;
+    let lastPercentage = 0;
     for(let index of sliceIndexes1){
         let conflict = false;
         let conflictIndex = 0;
@@ -321,6 +323,18 @@ function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restriction
                 mergedIndexes.add(index);
             }
         }
+
+
+        //prevent interface from freezing, update progressBar percent
+        let percentage = loopedCount/sliceIndexes1.size;
+        percentage = ((percentage*100)/3) + (100/3)*2;
+        if(lastPercentage != Math.floor(percentage)){
+            lastPercentage = Math.floor(percentage);
+            callbacks.onProgress(percentage);
+            await new Promise(resolve => setTimeout(resolve, 1));
+        }
+
+        loopedCount++;
     }
 
     //Add the remaining indexes that did not have any conflicts
@@ -376,7 +390,7 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
             let position = 0;
             let totalSiteCount = 0;
             let actualSiteCount = 0;
-            let lastPercentage = 0;
+            let lastPercentage = 66;
             /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
             while(true){
 
@@ -447,7 +461,10 @@ async function singleEnzymeDigest(genomeFile, config, callbacks){
                 fragmentCount,
                 fragmentFocusRangeCount,
                 fragmentGraphRangeCount,
-                digestionType: "single"
+                digestionType: "single",
+                restrictionSite: config.restrictionSite,
+                restrictionSite2: null,
+                sliceProbability: config.probability/1000
             }
 
             let timeFinish = new Date();
@@ -527,7 +544,7 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
 
                     //prevent interface from freezing, update progressBar percent
                     let percentage = position/(contents.length);
-                    percentage = (percentage*100)/2;
+                    percentage = (percentage*100)/3;
                     if(lastPercentage != Math.floor(percentage)){
                         lastPercentage = Math.floor(percentage);
                         callbacks.onProgress(percentage);
@@ -572,7 +589,7 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
 
                     //prevent interface from freezing, update progressBar percent
                     let percentage = position/contents.length;
-                    percentage = ((percentage*100)/2) + 50;
+                    percentage = ((percentage*100)/3) + 100/3;
                     if(lastPercentage != Math.floor(percentage)){
                         lastPercentage = Math.floor(percentage);
                         callbacks.onProgress(percentage);
@@ -588,7 +605,7 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
 
 
             /*Merge indexes based off conflicts and probability*/
-            let {mergedIndexes, conflicts} = mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite, config.restrictionSite2, config.probability);
+            let {mergedIndexes, conflicts} = await mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite, config.restrictionSite2, config.probability, callbacks);
             mergedIndexes.add(0);
             mergedIndexes.add(contents.length);
             mergedIndexes = Array.from(mergedIndexes);
@@ -626,7 +643,10 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
                 fragmentFocusRangeCount,
                 fragmentGraphRangeCount,
                 conflicts,
-                digestionType: "double"
+                digestionType: "double",
+                restrictionSite: config.restrictionSite,
+                restrictionSite2: config.restrictionSite2,
+                sliceProbability: config.probability/1000
             }
 
             let timeFinish = new Date();
