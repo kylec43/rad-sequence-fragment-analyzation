@@ -41,13 +41,13 @@ window.showGraphRangeData = ()=>{
     document.querySelector("#graphRangeItem").classList.add("active");
 }
 
-window.showAnalysisPropertiesData = ()=>{
+window.showInputPropertiesData = ()=>{
     hideDataTables();
-    document.querySelector("#analysisPropertiesDataTable").classList.add("display-table");
+    document.querySelector("#inputPropertiesDataTable").classList.add("display-table");
 
 
     deactivateNavRadItems();
-    document.querySelector("#analysisPropertiesItem").classList.add("active");
+    document.querySelector("#inputPropertiesItem").classList.add("active");
 }
 
 
@@ -129,8 +129,8 @@ window.displayTableData = (data)=>{
                 <li class="nav-item rad-item" id="focusRangeItem">
                     <a class="nav-link table-link" href="#" onclick="showFocusRangeData(this)">Focus Range</a>
                 </li>
-                <li class="nav-item rad-item" id="analysisPropertiesItem">
-                    <a class="nav-link table-link" href="#" onclick="showAnalysisPropertiesData(this)">Analysis Properties</a>
+                <li class="nav-item rad-item" id="inputPropertiesItem">
+                    <a class="nav-link table-link" href="#" onclick="showInputPropertiesData(this)">Input Properties</a>
                 </li>
             </ul>
         </div>
@@ -172,7 +172,7 @@ window.displayTableData = (data)=>{
             <td class="rad-td" id="fragment_focus_range_percentage" title="Fragment Percentage = (Fragment Count/Total Fragment Count) * 100">${(((data.fragmentFocusRangeCount)/data.fragmentCount)*100).toString().match(re)[0]}%</td>
         </tr>
     </table>
-    <table class="rad-data-table display-none" id="analysisPropertiesDataTable">
+    <table class="rad-data-table display-none" id="inputPropertiesDataTable">
         <tr>
             <th class="rad-th">Restriction Site${data.digestionType === 'double' ? ' #1' : ''}</th>
             ${data.digestionType === 'double' ? '<th class="rad-th">Restriction Site #2</th>' : ''}

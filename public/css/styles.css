@@ -164,14 +164,6 @@ h5{
     margin-top: 15px;
 }
 
-.graph-properties-header{
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: inline-block;
-    vertical-align: top;
-    margin: 15px 0px 0px;
-}
-
 
 /*Chart classes */
 
@@ -326,4 +318,13 @@ h5{
 .rad-navbar-data-tables{
     box-shadow: none;
     border-radius: 20px;
+}
+
+
+.rad-input-properties-header{
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: top;
+    margin: 15px 0px 0px;
 }
