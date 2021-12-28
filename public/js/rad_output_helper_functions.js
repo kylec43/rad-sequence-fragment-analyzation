@@ -139,16 +139,16 @@ window.displayTableData = (data)=>{
     <table class="rad-data-table" id="totalDataTable">
         <tr>
             <th class="rad-th" title="RS Count = Number of Restriction Sites inside Genome File">RS Count</th>
-            ${data.digestionType === "double" ? '<th class="rad-th" title="Amount of times restriction site #1 and restriction site #2 overlap">Conflict Sites</th>' : ''}
-            <th class="rad-th" title="${data.digestionType === 'single' ? 'Expected RS Slice Count = Total RS Count * Probability' : 'Expected RS Slice Count = (Total RS Count-Conflict Sites*2)*Slice Probability + Conflict Sites*(1-(1-Slice Probability)^2)'}">Expected RS Slice Count</th>
-            <th class="rad-th" title="Actual RS Slice Count = Slicing based off of slice probability${data.digestionType === 'double' ? ' and conflicts' : ''}">Actual RS Slice Count</th>
+            ${data.restrictionEnzymes.length > 1 ? '<th class="rad-th" title="Amount of times restriction site #1 and restriction site #2 overlap">Conflict Sites</th>' : ''}
+            <th class="rad-th" title="${data.restrictionEnzymes.length === 1 ? 'Expected RS Slice Count = Total RS Count * Probability' : 'Expected RS Slice Count = (Total RS Count-Conflict Sites*2)*Slice Probability + Conflict Sites*(1-(1-Slice Probability)^2)'}">Expected RS Slice Count</th>
+            <th class="rad-th" title="Actual RS Slice Count = Slicing based off of slice probability${data.restrictionEnzymes.length > 1 ? ' and conflicts' : ''}">Actual RS Slice Count</th>
             <th class="rad-th" title="Fragment Count = Actual RS Slice Count + 1">Fragment Count</th>
         </tr>
         <tr>
             <td class="rad-td" id="total_rs_count" title="RS Count = Number of Restriction Sites inside Genome File">${data.totalSiteCount}</td>
-            ${data.digestionType === "double" ? '<td class="rad-td" title="Amount of times restriction site #1 and restriction site #2 overlap">' + data.conflicts.toString() + '</td>' : ''}
-            <td class="rad-td" id="expected_rs_slice_count" title="${data.digestionType === 'single' ? 'Expected RS Slice Count = Total RS Count * Probability' : 'Expected RS Slice Count = (Total RS Count-Conflict Sites*2)*Slice Probability + Conflict Sites*(1-(1-Slice Probability)^2)'}">${data.expectedSiteCount}</td>
-            <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of slice probability${data.digestionType === 'double' ? ' and conflicts' : ''}">${data.actualSiteCount}</td>
+            ${data.restrictionEnzymes.length > 1 ? '<td class="rad-td" title="Amount of times restriction site #1 and restriction site #2 overlap">' + data.conflicts.toString() + '</td>' : ''}
+            <td class="rad-td" id="expected_rs_slice_count" title="${data.restrictionEnzymes.length === 1 ? 'Expected RS Slice Count = Total RS Count * Probability' : 'Expected RS Slice Count = (Total RS Count-Conflict Sites*2)*Slice Probability + Conflict Sites*(1-(1-Slice Probability)^2)'}">${data.expectedSiteCount}</td>
+            <td class="rad-td" id="actual_rs_slice_count" title="Actual RS Slice Count = Slicing based off of slice probability${data.restrictionEnzymes.length > 1 ? ' and conflicts' : ''}">${data.actualSiteCount}</td>
             <td class="rad-td" id="fragment_count" title="Fragment Count = Actual RS Slice Count + 1">${data.fragmentCount}</td>
         </tr>
     </table>
@@ -174,8 +174,8 @@ window.displayTableData = (data)=>{
     </table>
     <table class="rad-data-table display-none" id="inputPropertiesDataTable">
         <tr>
-            <th class="rad-th">Restriction Site${data.digestionType === 'double' ? ' #1' : ''}</th>
-            ${data.digestionType === 'double' ? '<th class="rad-th">Restriction Site #2</th>' : ''}
+            <th class="rad-th">Restriction Site${restrictionEnzymes.length > 1 ? ' #1' : ''}</th>
+            ${data.restrictionEnzymes.length > 1 ? '<th class="rad-th">Restriction Site #2</th>' : ''}
             <th class="rad-th">Slice Probability</th>
             <th class="rad-th">Graph Range</th>
             <th class="rad-th">Focus Range</th>
@@ -183,8 +183,8 @@ window.displayTableData = (data)=>{
             <th class="rad-th">Include Outliers</th>
         </tr>
         <tr>
-            <td class="rad-td">${data.restrictionSite}</td>
-            ${ data.digestionType === 'double' ? `<td class="rad-td">${data.restrictionSite2}</td>` : ''}
+            <td class="rad-td">${data.restrictionEnzymes[0].site}</td>
+            ${ data.restrictionEnzymes.length > 1 ? `<td class="rad-td">${data.restrictionEnzymes[1].site}</td>` : ''}
             <td class="rad-td">${data.sliceProbability*100}%</td>
             <td class="rad-td">${data.graphRangeMin.toString() + "-" + data.graphRangeMax.toString()}</td>
             <td class="rad-td">${data.focusRangeMin.toString() + "-" + data.focusRangeMax.toString()}</td>
