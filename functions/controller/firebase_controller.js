@@ -6,7 +6,7 @@ const FirebaseAuth = require("firebase/auth");
 var FirebaseAdmin = require('firebase-admin');
 var FirebaseStorage = require('firebase/storage');
 
-var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-30e829260e.json");
+var serviceAccount = require("../rcsa-rad-sequencing-firebase-adminsdk-odhfz-9375265fde.json");
 FirebaseAdmin.initializeApp({
     credential: FirebaseAdmin.credential.cert(serviceAccount),
     storageBucket: "rcsa-rad-sequencing.appspot.com",
