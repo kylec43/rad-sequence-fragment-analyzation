@@ -322,11 +322,24 @@
                             focusRangeMinNumber = graphRangeMinNumber;
                         }
 
+                        restrictionEnzymes = [];
+                        restrictionEnzymes.push({
+                            site: enzymeSite.value.toUpperCase(),
+                        });
+
+        
+                        if(doubleDigest.checked){
+                            restrictionEnzymes.push({
+                                site: enzymeSite2.value.toUpperCase(),
+                            });
+                        }
+                    
+
                         console.log(`1. Genome file size: ${genomeFileInput.files[0].size}`);
                         let radConfig = {
                             genomeFile: genomeFileInput.files[0],
-                            restrictionSite: enzymeSite.value.toUpperCase(),
-                            restrictionSite2: doubleDigest.checked ? enzymeSite2.value.toUpperCase() : null,
+                            restrictionEnzymes,
+                            sliceOffsets: null,
                             probability: probabilityNumber,
                             lengthDistribution: lengthDistributionNumber,
                             graphRangeMin: graphRangeMinNumber,

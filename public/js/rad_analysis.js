@@ -14,11 +14,19 @@ window.RadSequencingAnalyzer = class {
 
 
         //config = JSON.parse(JSON.stringify(config));
-
-
-        if(_isUndefined(config.restrictionSite)){
+        console.log(1);
+        console.log(config.restrictionEnzymes[0].site);
+        console.log(2);
+        if(_isUndefined(config.restrictionEnzymes) || config.restrictionEnzymes.length < 1){
             throw Error("Restriction Site is required");
-        } 
+        } else {
+            for(let i = 0; i < config.restrictionEnzymes.length; i++){
+                if(_isUndefined(config.restrictionEnzymes[i].sliceOffset)){
+                    config.restrictionEnzymes[i].sliceOffset = (config.restrictionEnzymes[i].site.length/2);
+                    console.log("YES");
+                }
+            }
+        }
         
         if(_isUndefined(config.probability)){
             config.probability = 1000;
@@ -50,10 +58,6 @@ window.RadSequencingAnalyzer = class {
             config.includeOutliers = false;
         }
 
-        if(_isUndefined(config.restrictionSite2)){
-            config.restrictionSite2 = null;
-        }
-
         this.config = config;
     }
 
@@ -61,12 +65,7 @@ window.RadSequencingAnalyzer = class {
     analyze(genomeFile){
 
         if(!_isUndefined(this.config)){
-
-            if(!_isUndefined(this.config.restrictionSite2)){
-                doubleEnzymeDigest(genomeFile, this.config, this.callbacks);
-            } else {
-                singleEnzymeDigest(genomeFile, this.config, this.callbacks);
-            }
+            enzymeDigest(genomeFile, this.config, this.callbacks);
         } else {
             throw Error("Configuration has not been set");
         }
@@ -264,87 +263,158 @@ function getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, ou
 }
 
 
-async function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restrictionSite2, probability, callbacks){
-    let length1 = restrictionSite.length;
-    let length2 = restrictionSite2.length;
-    let sliceOffset1 = Math.floor(restrictionSite.length/2);
-    let sliceOffset2 = Math.floor(restrictionSite2.length/2);
+async function mergeAndSliceIndexes(sliceIndexes, config, callbacks){
+
     let mergedIndexes = new Set();
 
     //if the start of restrictionSite2 or a slice index is in the range [ (first char of restrictionSite1 - length2 + 1)-(last char of restrictionSite1) ], there is a conflict
     let conflictCount = 0;
-    let loopedCount = 0;
-    let lastPercentage = 0;
-    for(let index of sliceIndexes1){
-        let conflict = false;
-        let conflictIndex = 0;
+    let lastPercentage = 70;
+    let survivingConflictIndexes = new Set();
 
-        /*Resolve conflicts by seeing if a restriction site 2 index is within a range that conflicts with a restriction site 1 index */
-        for(let i = index-sliceOffset1+length1-1; i > index-sliceOffset1-length2 && i >= 0; i--){
-            if(sliceIndexes2.has(i+sliceOffset2)){
-                conflict = true;
-                conflictIndex = i+sliceOffset2;
-                sliceIndexes2.delete(i+sliceOffset2);
-                break;
-            }
-        }
-        
+    console.log(`enzyme site 1 is ${config.restrictionEnzymes[0].site}`);
+    if(sliceIndexes.length > 1){
+        for(let i = 0; i < sliceIndexes.length; i++){
+            let sliceOffset1 = config.restrictionEnzymes[i].sliceOffset;
+            let length1 = config.restrictionEnzymes[i].site.length;
+            let loopedCount = 0;
+            const sliceIndexesLength = sliceIndexes[i].size;
+            console.log(sliceIndexesLength);
+            for(let index of sliceIndexes[i]){
+                let indexSliceFailed = false;
+                let conflict = false;
+                for(let k = 0; k < sliceIndexes.length; k++){
+                    if(k === i){
+                        continue;
+                    }
 
-        if(conflict){
-            conflictCount++;
-            let firstChoice = index;
-            let secondChoice = conflictIndex;
+                    let sliceOffset2 = config.restrictionEnzymes[k].sliceOffset;
+                    let length2 = config.restrictionEnzymes[k].site.length;
 
-            //Randomly choose which restriction enzyme reaches the site first
-            let randomNumber = Math.floor((Math.random() * 2) + 1);
-            if(randomNumber === 1){
-                firstChoice = conflictIndex;
-                secondChoice = index;
-            }
+                    let conflictIndex = 0;
 
-            //If the first choice slices, it beats out the second choice
-            randomNumber = Math.floor((Math.random() * 1000) + 1);
-            if(randomNumber <= probability){
-                mergedIndexes.add(firstChoice);
 
-            //If the first choice fails, the second choice attempts to slice it
-            } else {
-                randomNumber = Math.floor((Math.random() * 1000) + 1);
-                if(randomNumber <= probability){
-                    mergedIndexes.add(secondChoice);
+                    /*Resolve conflicts by seeing if a restriction site 2 index is within a range that conflicts with a restriction site 1 index */
+                    for(let j = index-sliceOffset1+length1-1; j > index-sliceOffset1-length2 && j >= 0; j--){
+                        if(sliceIndexes[k].has(j+sliceOffset2)){
+                            conflict = true;
+                            conflictCount++;
+                            conflictIndex = j+sliceOffset2;
+                            let firstChoice = index;
+                            let secondChoice = conflictIndex;
+                            let swapped = false;
+
+
+                            //Randomly choose which restriction enzyme reaches the site first
+                            let randomNumber = Math.floor((Math.random() * 2) + 1);
+                            if(randomNumber === 1){
+                                swapped = true;
+                                firstChoice = conflictIndex;
+                                secondChoice = index;
+                            }
+
+                            //If the first choice slices, it beats out the second choice
+                            randomNumber = Math.floor((Math.random() * 1000) + 1);
+                            if(randomNumber <= config.probability){
+                                survivingConflictIndexes.add(firstChoice);
+                                if(swapped){
+                                    sliceIndexes[i].delete(secondChoice);
+                                    indexSliceFailed = true;
+                                    break;
+                                } else {
+                                    sliceIndexes[k].delete(secondChoice);
+                                }
+                            //If the first choice fails, the second choice attempts to slice it
+                            } else {
+                                randomNumber = Math.floor((Math.random() * 1000) + 1);
+                                if(randomNumber <= config.probability){
+                                    survivingConflictIndexes.add(secondChoice);
+                                    if(swapped){
+                                        sliceIndexes[k].delete(firstChoice);
+                                    } else {
+                                        sliceIndexes[i].delete(firstChoice);
+                                        indexSliceFailed = true;
+                                        break;
+                                    }
+                                } else {
+                                    if(swapped){
+                                        sliceIndexes[k].delete(firstChoice);
+                                        sliceIndexes[i].delete(secondChoice);
+                                    } else {
+                                        sliceIndexes[i].delete(firstChoice);
+                                        sliceIndexes[k].delete(secondChoice);
+                                    }
+                                    indexSliceFailed = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    //If there is not a conflict, add the restriction site to the merged indexes
+                    if(!conflict) {
+                        //If the index survived a conflict and has no more conflicts, it has already succeeded in slicing
+                        if(!survivingConflictIndexes.has(index)){
+                            let randomNumber = Math.floor((Math.random() * 1000) + 1);
+                            if(randomNumber > config.probability){
+                                sliceIndexes[i].delete(index);
+                            }
+                        }
+                    }
+
+                    
+                    if (indexSliceFailed){
+                        break;
+                    }
                 }
-            }
 
-        //If there is not a conflict, add the restriction site to the merged indexes
-        } else {
+                //prevent interface from freezing, update progressBar percent 0.33
+                let percentage = (loopedCount/sliceIndexesLength)/(sliceIndexes.length) + (i/sliceIndexes.length);
+                percentage = 0.70 + (0.30 * percentage);
+                percentage = (percentage*100);
+                if(lastPercentage != Math.floor(percentage)){
+
+                    lastPercentage = Math.floor(percentage);
+                    console.log(lastPercentage);
+                    console.log(`loop count: ${loopedCount}`);
+                    callbacks.onProgress(percentage);
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                }
+                loopedCount++;
+            }
+        }
+    } else {
+        let loopedCount = 0;
+        let sliceIndexesLength = sliceIndexes[0].size;
+        for(let index of sliceIndexes[0]){
             let randomNumber = Math.floor((Math.random() * 1000) + 1);
-            if(randomNumber <= probability){
-                mergedIndexes.add(index);
+            if(randomNumber > config.probability){
+                sliceIndexes[0].delete(index);
             }
+
+            //prevent interface from freezing, update progressBar percent 0.33
+            let percentage = (loopedCount/sliceIndexesLength);
+            percentage = 0.70 + (0.30 * percentage);
+            percentage = (percentage*100);
+            if(lastPercentage != Math.floor(percentage)){
+
+                lastPercentage = Math.floor(percentage);
+                console.log(lastPercentage);
+                console.log(`loop count: ${loopedCount}`);
+                callbacks.onProgress(percentage);
+                await new Promise(resolve => setTimeout(resolve, 1));
+            }
+            loopedCount++;
         }
-
-
-        //prevent interface from freezing, update progressBar percent
-        let percentage = loopedCount/sliceIndexes1.size;
-        percentage = ((percentage*100)/3) + (100/3)*2;
-        if(lastPercentage != Math.floor(percentage)){
-            lastPercentage = Math.floor(percentage);
-            callbacks.onProgress(percentage);
-            await new Promise(resolve => setTimeout(resolve, 1));
-        }
-
-        loopedCount++;
     }
 
     //Add the remaining indexes that did not have any conflicts
-    sliceIndexes2.forEach((n)=>{
-        let randomNumber = Math.floor((Math.random() * 1000) + 1);
-        if(randomNumber <= probability){
-            mergedIndexes.add(n);
+    sliceIndexes.forEach((indexes)=>{
+        for (let index of indexes){
+            mergedIndexes.add(index);
         }
     });
     console.log(mergedIndexes.size);
-    console.log(probability);
+    console.log(config.probability);
     console.log(conflictCount);
     return {
             mergedIndexes,
@@ -353,151 +423,7 @@ async function mergeIndexes(sliceIndexes1, sliceIndexes2, restrictionSite, restr
 }
 
 
-
-async function singleEnzymeDigest(genomeFile, config, callbacks){
-
-    /* Call onBegin if not null */
-    callbacks.onBegin ? callbacks.onBegin() : null;
-
-    let reader = new FileReader();
-
-    /* run this function on file read */
-    console.log("Setting onload");
-    reader.onload = (function(reader)
-    {
-        return async function()
-        {
-
-            let timeStart = new Date();
-
-            /*Get file text content, removing all whitespaces, newlines*/
-            let contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
-            console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
-
-            
-            /* 
-            sliceIndexes: Contains all of the actual slice indexes
-            sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
-            position: Contains the current position inside of the genome file
-            totalSiteCount: Contains the total count of restriction sites in the file
-            expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
-            actualSiteCount: Contains the randomized slice count which should approximately be the probability% * total count of restriction sites in the file.
-            fragmentFocusRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
-            */
-            let sliceIndexes = [0,];
-            let sliceOffset = config.restrictionSite.length/2;
-            let position = 0;
-            let totalSiteCount = 0;
-            let actualSiteCount = 0;
-            let lastPercentage = 66;
-            /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
-            while(true){
-
-                //Find position of next site
-                position = contents.indexOf(config.restrictionSite, position);
-
-                /*
-                If site is -1, it does not exist in the rest of the file.
-                If it is not equal to -1, add 1 to the total site count and run this block of code
-                */
-                if(position !== -1){
-                    totalSiteCount++;
-
-                    /*
-                    We will determine if this site was sliced based off randomized probability.
-                    If it was add 1 to the actual site count and will add the slice position to sliceIndexes
-                    */
-                    let randomNumber = Math.floor((Math.random() * 1000) + 1);
-                    if(randomNumber <= config.probability){
-                        actualSiteCount++;
-                        sliceIndexes.push(position+sliceOffset);
-                    }
-
-                    //Set the new position to read the file from
-                    position += config.restrictionSite.length;                    
-                    
-
-
-                    //prevent interface from freezing, update progressBar percent
-                    let percentage = position/(contents.length);
-                    percentage = percentage*100;
-                    if(lastPercentage != Math.floor(percentage)){
-                        lastPercentage = Math.floor(percentage);
-                        callbacks.onProgress(percentage);
-                        await new Promise(resolve => setTimeout(resolve, 1));
-                    }
-                } else {
-                    break;
-                }
-
-            }
-
-            sliceIndexes.push(contents.length);
-
-
-            /* 
-            fragmentSizes: Contains the count for each distribution
-            fragmentCount: n + 1 where n is the actualSiteCount
-            expectedSiteCount: Contains the probability% * total count of restriction sites in the file. For example: 90% * 10 = 9
-            fragmentRangeCount: Contains the amount of fragments in the specified minimum and maximum focus range.
-            */
-            let fragmentSizes = getFragmentSizes(sliceIndexes);
-            let fragmentDistributions = getFragmentDistributions(fragmentSizes, config);
-            let fragmentCount = actualSiteCount + 1;
-            let expectedSiteCount = Math.floor(totalSiteCount * (config.probability/1000));
-
-            let outlierHeadExists = config.includeOutliers && config.graphRangeMin !== 1 ? true : false;
-            let outlierTailExists = config.includeOutliers;
-            let fragmentFocusRangeCount = getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
-            let fragmentGraphRangeCount = getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists);
-
-
-            let data = {
-                fragmentDistributions,
-                totalSiteCount,
-                expectedSiteCount,
-                actualSiteCount,
-                fragmentCount,
-                fragmentFocusRangeCount,
-                fragmentGraphRangeCount,
-                digestionType: "single",
-                restrictionSite: config.restrictionSite,
-                restrictionSite2: null,
-                sliceProbability: config.probability/1000,
-                graphRangeMin: config.graphRangeMin,
-                graphRangeMax: config.graphRangeMax,
-                focusRangeMin: config.focusRangeMin,
-                focusRangeMax: config.focusRangeMax,
-                lengthDistribution: config.lengthDistribution,
-                includeOutliers: config.includeOutliers,
-            }
-
-            let timeFinish = new Date();
-            let elapsedTime = timeFinish-timeStart;
-            elapsedTime = elapsedTime/1000
-            console.log(`Elapsed time: ${elapsedTime} seconds`);
-
-            callbacks.onResult(data);
-
-        }
-    })(reader);
-
-    console.log("Reading File");
-
-    //Read file as text
-    try {
-        reader.readAsText(genomeFile);
-    } catch(e) {
-        if(callbacks.onReadError){
-            callbacks.onReadError(e);
-        } else {
-            throw e;
-        }
-    }
-}
-
-
-async function doubleEnzymeDigest(genomeFile, config, callbacks){    
+async function enzymeDigest(genomeFile, config, callbacks){    
     
     /* Call onBegin if not null */
     callbacks.onBegin ? callbacks.onBegin() : null;
@@ -518,99 +444,55 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
 
 
             /*First Enzyme Operation*/
-            let sliceIndexes1 = new Set();
-
+            let sliceIndexes = []
+            for(let i = 0; i < config.restrictionEnzymes.length; i++){
+                sliceIndexes.push(new Set());
+            }
             /* 
             sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
             position: Contains the current position inside of the genome file
             */
-            let sliceOffset = config.restrictionSite.length/2;
             let position = 0;
             let lastPercentage = 0;
             let totalSiteCount = 0;
             /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
-            while(true){
+            for(let i = 0; i < config.restrictionEnzymes.length; i++){
+                while(true){
 
-                //Find position of next site
-                position = contents.indexOf(config.restrictionSite, position);
+                    //Find position of next site
+                    position = contents.indexOf(config.restrictionEnzymes[i].site, position);
 
-                /*
-                If site is -1, it does not exist in the rest of the file.
-                If it is not equal to -1, add 1 to the total site count and run this block of code
-                */
-                if(position !== -1){
-                    sliceIndexes1.add(position+sliceOffset);
-                    totalSiteCount++;
+                    /*
+                    If site is -1, it does not exist in the rest of the file.
+                    If it is not equal to -1, add 1 to the total site count and run this block of code
+                    */
+                    if(position !== -1){
+                        sliceIndexes[i].add(position+config.restrictionEnzymes[i].sliceOffset);
+                        totalSiteCount++;
 
-                    //Set the new position to read the file from
-                    position += config.restrictionSite.length;                    
-                    
+                        //Set the new position to read the file from
+                        position += config.restrictionEnzymes[i].site.length;
+
+                        
 
 
-                    //prevent interface from freezing, update progressBar percent
-                    let percentage = position/(contents.length);
-                    percentage = (percentage*100)/3;
-                    if(lastPercentage != Math.floor(percentage)){
-                        lastPercentage = Math.floor(percentage);
-                        callbacks.onProgress(percentage);
-                        await new Promise(resolve => setTimeout(resolve, 1));
+                        //prevent interface from freezing, update progressBar percent
+                        let percentage = (position/contents.length)/(restrictionEnzymes.length) + (i/restrictionEnzymes.length);
+                        percentage = (percentage*70);
+                        if(lastPercentage != Math.floor(percentage)){
+                            lastPercentage = Math.floor(percentage);
+                            callbacks.onProgress(percentage);
+                            await new Promise(resolve => setTimeout(resolve, 1));
+                        }
+                    } else {
+                        break;
                     }
-                } else {
-                    break;
+
                 }
-
             }
-
-
-            /*2nd Enzyme Operation*/
-            let sliceIndexes2 = new Set();
-                
-            /* 
-            sliceOffset: If we find the restriction site, we need to add this to the current position for the slice position
-            position: Contains the current position inside of the genome file
-            */
-            sliceOffset = config.restrictionSite2.length/2;
-            position = 0;
-
-            /*Get the totalSiteCount, actualSiteCount, and sliceIndexes in this loop */
-            while(true){
-
-                //Find position of next site
-                position = contents.indexOf(config.restrictionSite2, position);
-
-                /*
-                If site is -1, it does not exist in the rest of the file.
-                If it is not equal to -1, add 1 to the total site count and run this block of code
-                */
-                if(position !== -1){
-                    totalSiteCount++;
-
-                    sliceIndexes2.add(position+sliceOffset);
-
-                    //Set the new position to read the file from
-                    position += config.restrictionSite2.length;                    
-                    
-
-
-                    //prevent interface from freezing, update progressBar percent
-                    let percentage = position/contents.length;
-                    percentage = ((percentage*100)/3) + 100/3;
-                    if(lastPercentage != Math.floor(percentage)){
-                        lastPercentage = Math.floor(percentage);
-                        callbacks.onProgress(percentage);
-                        await new Promise(resolve => setTimeout(resolve, 1));
-                    }
-                } else {
-                    break;
-                }
-
-            }
-
-
-
 
             /*Merge indexes based off conflicts and probability*/
-            let {mergedIndexes, conflicts} = await mergeIndexes(sliceIndexes1, sliceIndexes2, config.restrictionSite, config.restrictionSite2, config.probability, callbacks);
+            let {mergedIndexes, conflicts} = await mergeAndSliceIndexes(sliceIndexes, config, callbacks);
             mergedIndexes.add(0);
             mergedIndexes.add(contents.length);
             mergedIndexes = Array.from(mergedIndexes);
@@ -648,9 +530,7 @@ async function doubleEnzymeDigest(genomeFile, config, callbacks){
                 fragmentFocusRangeCount,
                 fragmentGraphRangeCount,
                 conflicts,
-                digestionType: "double",
-                restrictionSite: config.restrictionSite,
-                restrictionSite2: config.restrictionSite2,
+                restrictionEnzymes: config.restrictionEnzymes,
                 sliceProbability: config.probability/1000,
                 graphRangeMin: config.graphRangeMin,
                 graphRangeMax: config.graphRangeMax,
