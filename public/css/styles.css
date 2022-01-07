@@ -199,7 +199,7 @@ h5{
 }
 
 .rad-card-body{
-    padding: 30px;
+    padding: 10px 30px 30px;
 }
 
 .rad-card-footer{
@@ -325,20 +325,18 @@ h5{
     font-size: 1.2rem;
     font-weight: bold;
     display: inline-block;
-    vertical-align: top;
-    margin: 15px 0px 0px;
+    vertical-align: bottom;
+    margin: 5px 0px 0px;
 }
 
 
 .rad-popup-box{
     padding: 8px;
     position: fixed;
-    width: 60%;
+    width: 70%;
     height: 80%;
     min-width: 350px;
-    max-width: 700px;
     min-height: 300px;
-    max-height: 900px;
     left: 0px;
     right: 0px;
     margin: 0 auto;
@@ -385,4 +383,15 @@ h5{
     left: 0px;
     background: rgba(0, 0, 0, 0.5);
     z-index: 1999;
+}
+
+.rad-def-label{
+    font-size: 1.2rem;
+    display: block;
+    margin-top: 32px;
+}
+
+.rad-ex-label{
+    color: rgb(200, 0, 0);
+    display: block;
 }

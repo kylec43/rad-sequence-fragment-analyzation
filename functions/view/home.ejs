@@ -31,7 +31,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="form-group">
-                                            <label for="enzyme_select">Restriction Enzyme:</label>
+                                            <label for="enzyme_select">Restriction Enzyme</label>
                                             <div class="input-group">
                                                 <select class="form-control" onchange="onSelectEnzyme(this);" name="enzyme_select" id="enzyme_select">
                                                     <option>&lt&ltcustom&gt&gt</option>
@@ -44,7 +44,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="form-group">
-                                            <label for="enzyme_site">Restriction Site:</label>
+                                            <label for="enzyme_site">Restriction Site</label>
                                             <div class="input-group">
                                                 <input class="form-control" id="enzyme_site" name="enzyme_site" type="text" minlength="2" maxlength="8" required>
                                             </div>
@@ -54,7 +54,7 @@
                                 <div class="row display-none" id="secondEnzymeBlock">
                                     <div class="col">
                                         <div class="form-group">
-                                            <label for="enzyme_select2">Restriction Enzyme:</label>
+                                            <label for="enzyme_select2">Restriction Enzyme</label>
                                             <div class="input-group">
                                                 <select class="form-control" onchange="onSelectEnzyme2(this);" name="enzyme_select2" id="enzyme_select2">
                                                     <option>&lt&ltcustom&gt&gt</option>
@@ -67,7 +67,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="form-group">
-                                            <label for="enzyme_site">Restriction Site:</label>
+                                            <label for="enzyme_site">Restriction Site</label>
                                             <div class="input-group">
                                                 <input class="form-control" id="enzyme_site2" name="enzyme_site2" type="text" minlength="2" maxlength="8">
                                             </div>
@@ -85,7 +85,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="form-group">
-                                            <label for="genome_file">Genome File:</label>
+                                            <label for="genome_file">Genome File</label>
                                             <div class="input-group">
                                                 <input type="file" id="genome_file" required>
                                             </div>
@@ -287,6 +287,30 @@
                 }
             }
 
+            function parseRestrictionSite(site){
+                const reg = new RegExp("[^\|ACTG]")
+                let siteUpper = site.toUpperCase();
+
+                const invalidCharIndex = siteUpper.search(reg);
+                const pipes = siteUpper.match(/\|/g);
+                const pipeCount = pipes !== null ? pipes.length : 0;
+
+                if(pipeCount > 1 || invalidCharIndex !== -1){
+                    throw Error(`Invalid input for restriction site: ${site}`)
+                } else {
+                    const pipeIndex = siteUpper.indexOf("|");
+                    let sliceOffset = null;
+                    if(pipeIndex !== -1){
+                        sliceOffset = pipeIndex;
+                        siteUpper = siteUpper.replace("|", "");
+                    } else {
+                        sliceOffset = siteUpper.length/2;
+                    }
+                    return {site: siteUpper, sliceOffset};
+                }
+
+            }
+
             
             async function performAnalysis(){
                 var $analysisForm = $('#analysis_form');
@@ -322,16 +346,13 @@
                             focusRangeMinNumber = graphRangeMinNumber;
                         }
 
+
                         restrictionEnzymes = [];
-                        restrictionEnzymes.push({
-                            site: enzymeSite.value.toUpperCase(),
-                        });
+                        restrictionEnzymes.push(parseRestrictionSite(enzymeSite.value));
 
         
                         if(doubleDigest.checked){
-                            restrictionEnzymes.push({
-                                site: enzymeSite2.value.toUpperCase(),
-                            });
+                            restrictionEnzymes.push(parseRestrictionSite(enzymeSite2.value));
                         }
                     
 
@@ -339,7 +360,6 @@
                         let radConfig = {
                             genomeFile: genomeFileInput.files[0],
                             restrictionEnzymes,
-                            sliceOffsets: null,
                             probability: probabilityNumber,
                             lengthDistribution: lengthDistributionNumber,
                             graphRangeMin: graphRangeMinNumber,
@@ -389,7 +409,7 @@
                         analyzer.analyze(genomeFileInput.files[0])
                         //await radAnalyze(genomeFileInput.files[0], radConfig);
                     } catch(e) {
-                        console.log(`Error: ${e}`);
+                        alert(e);
                     }
                 } else {
                     $analysisForm[0].reportValidity()                }

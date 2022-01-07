@@ -19,13 +19,6 @@ window.RadSequencingAnalyzer = class {
         console.log(2);
         if(_isUndefined(config.restrictionEnzymes) || config.restrictionEnzymes.length < 1){
             throw Error("Restriction Site is required");
-        } else {
-            for(let i = 0; i < config.restrictionEnzymes.length; i++){
-                if(_isUndefined(config.restrictionEnzymes[i].sliceOffset)){
-                    config.restrictionEnzymes[i].sliceOffset = (config.restrictionEnzymes[i].site.length/2);
-                    console.log("YES");
-                }
-            }
         }
         
         if(_isUndefined(config.probability)){
