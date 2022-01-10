@@ -64,8 +64,81 @@
     </div>
     <div class="rad-popup-body">
         <div class="rad-popup-content">
-            <h1>Page Load popup</h1> 
-            <p>Lorem ipsum dolor sit amet, onsectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. Advertise your ads Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut laboreet.</p>
+            <label class="rad-def-label" style="margin-top: 0px">Graph X and Y definitions: </label>
+            <p>
+                Graph X: Represents the fragment length distributions.
+                <br>
+                Graph Y: Represents the amount of fragments in a fragment length distribution.
+                <br>
+                <a href="images/rad-graph.png" target="_blank">Example Output</a>
+            </p>
+            <br>
+            <label class="rad-def-label" style="margin-top: 0px">Graph Range -</label>
+            <p>
+                The graph range min input allows you to specify the begin x range of the entire graph.
+                <br>
+                The graph range max input allows you to specify the end x range of the entire graph.
+            </p>
+            <label class="rad-def-label">Focus Range -</label>
+            <p>
+                The focus range min input allows you to specify the begin x of a range within the graph range.
+                <br>
+                The focus range max input allows you to specify the end x of a range within the graph range.
+                <br><br>
+                This range will typically be the range you are most interested in. By specifying this range, you will be able to see the fragment count and fragment percentage this range accounts for.
+            </p>
+            <label class="rad-def-label">Length Distribution -</label>
+            <p>
+                The length distribution input allows you to specify how fragment sizes should be grouped together on the graph.
+                <br><br>
+                <label class="rad-ex-label">Example 1:</label>
+                If your graph range and focus range are set to the range 1-100, and you specify a length distribution of 50 without outliers, there will be 2 distributions along the x axis. One distrubtion will be the amount of fragments with the length between 1bp-50bp, and the other distribution will be the amount of fragments with the length between 51bp-100bp.
+                <br>
+                1) 1bp-50bp
+                <br>
+                2) 51bp-100bp
+                <br>
+                <a href="images/length_distribution_ex1.png" target="_blank">Example Output</a>
+                <br><br>
+                <label class="rad-ex-label">Example 2:</label>
+                If your graph range and focus range are set to the range 1-80, and you specify a length distribution of 50 without outliers, there will be 2 distributions along the x axis. One distrubtion will be the amount of fragments with the length between 1bp-50bp, and the other distribution will be the amount of fragments with the length between 51bp-80bp.
+                <br>
+                1) 1bp-50bp
+                <br>
+                2) 51bp-80bp
+                <br>
+                <a href="images/length_distribution_ex2.png" target="_blank">Example Output</a>
+                <br><br>
+                <label class="rad-ex-label">Example 3:</label>
+                If your graph range is set to 1-100 and your focus range is set to 20-30, and you specify a length distribution of 50 without outliers, there will be 4 distributions along the x axis.
+                <br>
+                1) 1bp-19bp
+                <br>
+                2) 20bp-30bp
+                <br>
+                3) 31bp-80bp
+                <br>
+                4) 81bp-100bp
+                <br>
+                <a href="images/length_distribution_ex3.png" target="_blank">Example Output</a>
+            </p>
+            <label class="rad-def-label">Include Outliers -</label>
+            <p>
+                The include outliers input allows you to include an additional distribution for the amount of fragments outside the graph range minimum, and an extra distribution for the amount of fragments outside the graph range maximum.
+                <br><br>
+                <label class="rad-ex-label">Example:</label>
+                If your graph range and focus range are set to the range 101-200, and you specify a length distribution of 50 with outliers, there will be 4 distributions along the x axis. One distrubtion will be the amount of fragments with the length between 101bp-150bp, and another distribution will be the amount of fragments with the length between 151bp-200bp. Additionally, there will be 2 more distributions. One will be the amount of fragments with a length less than 101bp, and the other one will be the amount of fragments greater than 200bp.
+                <br>
+                1) &lt;101bp
+                <br>
+                2) 101bp-150bp
+                <br>
+                3) 151bp-200bp
+                <br>
+                4) 200bp&lt;
+                <br>
+                <a href="images/include_outliers_ex.png" target="_blank">Example Output</a>
+            </p>
         </div>
     </div>
     <div class="rad-popup-footer">
