@@ -2,7 +2,7 @@
 
 body {
     background-color: rgba(210,210,210,1);
-    padding: 96px 0px;
+    padding: 96px 20px;
 }
 
 label{
@@ -16,6 +16,10 @@ hr{
 
 h5{
     margin: 0px 0px;
+}
+
+label{
+    font-size: 0.9rem;
 }
 
 
@@ -85,7 +89,7 @@ h5{
 .nav-button{
     border-radius: 10px;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     display: inline-block;
     border: 2px solid transparent;
 }
@@ -108,7 +112,7 @@ h5{
     color: rgba(255,255,255,.5);
     border-radius: 10px;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     display: inline-block;
  }
 
@@ -192,6 +196,8 @@ h5{
     border-radius: 20px;
     background: rgb(240, 240, 240);
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.2);
+    transform: scale(0.9);
+    transform-origin: 0 0;
 }
 
 .rad-card-header{
@@ -322,7 +328,7 @@ h5{
 
 
 .rad-input-properties-header{
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
     display: inline-block;
     vertical-align: bottom;
