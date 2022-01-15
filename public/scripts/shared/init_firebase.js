@@ -22,7 +22,6 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 
 
-console.log("TESTETSTETFAFAEFWAEFA");
 setPersistence(getAuth(), browserLocalPersistence).then(()=>{
-    console.log("TESTETSTETFAFAEFWAEFA");
+    console.log("Attempted Persistance");
 });

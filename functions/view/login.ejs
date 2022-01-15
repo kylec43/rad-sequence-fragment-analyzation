@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="rad-button margin-center" type="button" onclick="sessionLogin(document.querySelector('#email').value, document.querySelector('#password').value, '/')">Login</button>
+                        <button class="rad-button margin-center" type="button" id="loginButton">Login</button>
                         <hr>
                         <a class="inner-center" href="/forgot_password">Forgot password?</a>
                         <p class="inner-center">New user? Sign up <span><a href="/register">here</a></span></p>
@@ -46,15 +46,11 @@
             </div>
         </div>
         
+        <input type="hidden" id="successMessage" value="<%=successMessage === null ? '' : successMessage %>">
+        <input type="hidden" id="errorMessage" value="<%= errorMessage === null ? '' : errorMessage %>">
+
         <%- include('partials/scripts.ejs') %>
-        <script>
-            <% if (successMessage !== null) { %>
-                alert("<%= successMessage %>");
-            <% } %>
-            <% if (errorMessage !== null) { %>
-                alert("<%= errorMessage %>");
-            <% } %>
-        </script>
+        <script src="scripts/login.js"></script>
     </body>
 
 

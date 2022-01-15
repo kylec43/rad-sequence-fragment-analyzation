@@ -60,12 +60,11 @@
             </div>
         </div>
 
+
+        <input type="hidden" id="errorMessage" value="<%= errorMessage === null ? '' : errorMessage %>">
+
         <%- include('partials/scripts.ejs') %>
-        <script>
-            <% if (errorMessage !== null) { %>
-                alert("<%= errorMessage %>");
-            <% } %>
-        </script>
+        <script src="scripts/register.js"></script>
     </body>
 
 
