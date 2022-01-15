@@ -60,15 +60,14 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <button class="rad-button margin-center" type="button" onclick="changeEmail(document.querySelector('#currentEmail').value, document.querySelector('#newEmail').value, document.querySelector('#confirmNewEmail').value, document.querySelector('#password').value)">Change</button>
+                        <button class="rad-button margin-center" type="button" id="changeEmailButton">Change</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <%- include('partials/scripts.ejs') %>
-        <script>
-        </script>
+        <script src="scripts/change_password.js"></script>
     </body>
 
 
