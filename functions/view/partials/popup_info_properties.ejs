@@ -149,22 +149,22 @@
 
 <script>
     function closeAnalysisInfoPopup(){
-        document.querySelector("#analysisInfoPopup").style.display = "none";
-        document.querySelector("#infoShadow").style.display = "none";
+        $("#analysisInfoPopup").addClass("display-none");
+        $("#infoShadow").addClass("display-none");
     }
 
     function showAnalysisInfoPopup(){
-        document.querySelector("#analysisInfoPopup").style.display = "block";
-        document.querySelector("#infoShadow").style.display = "block";
+        $("#analysisInfoPopup").removeClass("display-none");
+        $("#infoShadow").removeClass("display-none");
     }
 
     function closeGraphInfoPopup(){
-        document.querySelector("#graphInfoPopup").style.display = "none";
-        document.querySelector("#infoShadow").style.display = "none";
+        $("#graphInfoPopup").addClass("display-none");
+        $("#infoShadow").addClass("display-none");
     }
 
     function showGraphInfoPopup(){
-        document.querySelector("#graphInfoPopup").style.display = "block";
-        document.querySelector("#infoShadow").style.display = "block";
+        $("#graphInfoPopup").removeClass("display-none");
+        $("#infoShadow").removeClass("display-none");
     }
 </script>

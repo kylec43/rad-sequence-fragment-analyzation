@@ -19,7 +19,7 @@ h5{
 }
 
 label{
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 
@@ -66,7 +66,7 @@ label{
 }
 
 .display-none{
-    display: none;
+    display: none !important;
 }
 
 .display-table{
@@ -89,7 +89,7 @@ label{
 .nav-button{
     border-radius: 10px;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 1rem;
     display: inline-block;
     border: 2px solid transparent;
 }
@@ -112,7 +112,7 @@ label{
     color: rgba(255,255,255,.5);
     border-radius: 10px;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 1rem;
     display: inline-block;
  }
 
@@ -196,8 +196,6 @@ label{
     border-radius: 20px;
     background: rgb(240, 240, 240);
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.2);
-    transform: scale(0.9);
-    transform-origin: 0 0;
 }
 
 .rad-card-header{
@@ -290,6 +288,7 @@ label{
     width: 100%;
     max-width: 700px;
     margin: auto;
+    display: table;
 }
 
 .rad-th{
@@ -311,7 +310,7 @@ label{
 }
 
 .rad-outlier-label{
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 
