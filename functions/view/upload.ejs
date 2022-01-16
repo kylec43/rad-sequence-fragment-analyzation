@@ -56,49 +56,7 @@
             </div>
         </div>
 
-        <script>
-            /* Input Elements */
-            var enzymeName = document.getElementById("enzyme_name");
-            var restrictionSite = document.getElementById("restriction_site");
-
-            /* Form Elements */
-            var radUploadBlock = document.getElementById("rad_upload_block");
-            var uploadButton = document.getElementById('upload_button');
-            var error = document.getElementById('error');
-
-            /*Data from Server*/
-            var DOC_NAME = '<%= user.uid%>';
-            var USER_UID = '<%= user.uid %>';
-
-            window.onload = () => {
-                FirebaseController.signIn("<%= userToken %>");
-            };
-
-        
-            async function uploadEnzyme(){
-
-                var $uploadForm = $('#upload_form');
-                    if ($uploadForm[0].checkValidity()){
-                    error.style.display = "none";
-                    uploadButton.style.display = "none";
-                    radUploadBlock.style.display = "flex";
-
-                    try{
-                        await FirebaseController.uploadRestrictionEnzyme(enzymeName.value, restrictionSite.value);
-                    } catch(e) {
-                        error.style.display = "block";
-                        error.innerHTML = `${e}`;
-                    }
-                    console.log("done");
-                    uploadButton.style.display = "block"
-                    radUploadBlock.style.display = "none";
-                } else {
-                    $uploadForm[0].reportValidity(); 
-                }
-            }
-            
-
-        </script>
+        <input type="hidden" id="userUid" value="<%= user.uid %>">
 
         <%- include('partials/scripts.ejs') %>
     </body>

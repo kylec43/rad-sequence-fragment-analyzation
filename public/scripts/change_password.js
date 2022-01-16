@@ -1,5 +1,6 @@
 window.onload = () => {
     changePasswordButton.on("click", () => {
+        console.log("YEP");
         changePassword(currentPassword.val(), newPassword.val(), confirmNewPassword.val(), userEmail);
     });
 }

@@ -37,8 +37,10 @@ window.sessionLogin = async (email, password, redirect = null)=>{
 
 window.changeEmail = async (currentEmail, newEmail, confirmNewEmail, password)=>{
 
-    if(!$("#change_email_form")[0].checkValidity()){
-        $("#change_email_form")[0].reportValidity(); 
+    const changeEmailForm = $("#change_email_form");
+
+    if(!changeEmailForm[0].checkValidity()){
+        changeEmailForm[0].reportValidity(); 
         return;
     }
     let errorMessage = "";
@@ -75,8 +77,10 @@ window.changeEmail = async (currentEmail, newEmail, confirmNewEmail, password)=>
 
 window.changePassword = async (currentPassword, newPassword, confirmNewPassword, email)=>{
 
-    if(!$("#change_password_form")[0].checkValidity()){
-        $("#change_password_form")[0].reportValidity(); 
+    const changePasswordForm = $("#change_password_form");
+
+    if(!changePasswordForm[0].checkValidity()){
+        changePasswordForm[0].reportValidity();
         return;
     }
     let errorMessage = "";
@@ -138,7 +142,8 @@ window.FirebaseController = {
     updateRestrictionEnzyme: async function (){
 
         try{
-    
+            const DOC_NAME = $("#userUid").val();
+
             console.log("updating firestore");
             var docRef = doc(getFirestore(), 'restriction_enzymes', DOC_NAME)
             
@@ -146,7 +151,7 @@ window.FirebaseController = {
             restriction_enzymes[enzymeSelect.selectedIndex].restrictionSite = enzymeSite.value
     
             await setDoc(docRef, {restriction_enzymes});
-            document.getElementById(restriction_enzymes[enzymeSelect.selectedIndex]['id']).innerHTML = enzymeName.value;
+            $(restriction_enzymes[enzymeSelect.selectedIndex]['id']).html(enzymeName.value);
     
             console.log("file updated")
             

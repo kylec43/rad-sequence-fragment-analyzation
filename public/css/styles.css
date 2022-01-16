@@ -73,6 +73,10 @@ label{
     display: table;
 }
 
+.display-flex{
+    display: flex;
+}
+
 .font-weight-bold{
     font-weight: bold;
 }

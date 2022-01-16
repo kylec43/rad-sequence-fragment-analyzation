@@ -9,7 +9,7 @@ window.onload = () => {
 
 /*----------------------------- Input HTML Elements -----------------------------*/
 const currentEmail = $("#currentEmail");
-const newEmail = $("#confirmNewEmail");
+const newEmail = $("#newEmail");
 const confirmNewEmail = $("#confirmNewEmail");
 const password = $("#password");
 

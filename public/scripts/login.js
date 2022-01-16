@@ -1,23 +1,24 @@
 window.onload = () => {
-
-    if (errorMessage.val() !== null) {
+    if (errorMessage.val() !== "") {
         alert(errorMessage.val());
     }
 
     if(successMessage.val() !== "") {
         alert(successMessage.val());
     }
-    loginButton.on("click", () => {
+    sessionLoginButton.on("click", () => {
+        console.log("YEP");
         sessionLogin(email.val(), password.val(), '/');
     });
+
 }
 
 
 /*----------------------------- Input HTML Elements -----------------------------*/
-const emailInput = $("#email");
-const passwordInput = $("#password");
+const email = $("#email");
+const password = $("#password");
 
 /*----------------------------- Misc HTML Elements -----------------------------*/
 const successMessage = $("#successMessage");
 const errorMessage = $("#errorMessage");
-const loginButton = $("#loginButton");
+const sessionLoginButton = $("#sessionLoginButton");

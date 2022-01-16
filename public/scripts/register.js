@@ -1,5 +1,5 @@
 window.onload = () => {
-    if (errorMessage.val() !== null) {
+    if (errorMessage.val() !== "") {
         alert(errorMessage.val());
     }
 }
