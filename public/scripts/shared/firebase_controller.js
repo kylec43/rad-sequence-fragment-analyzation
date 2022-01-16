@@ -127,6 +127,8 @@ window.FirebaseController = {
 
     uploadRestrictionEnzyme: async function(name, restrictionSite){
 
+        const DOC_NAME = $("#userUid").val();
+
         var docRef = doc(getFirestore(), 'restriction_enzymes', DOC_NAME)
         var docSnap = await getDoc(docRef);
         

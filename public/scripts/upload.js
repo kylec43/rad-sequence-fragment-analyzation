@@ -1,9 +1,10 @@
 window.onload = () => {
-    FirebaseController.signIn(USER_UID);
+    FirebaseController.signIn(USER_TOKEN);
+    enzymeUploadButton.on("click", uploadEnzyme);
 };
 
 /*----------------------------- Data from server -----------------------------*/
-const USER_UID = $("#userUid").val();
+const USER_TOKEN = $("#userToken").val();
 
 /*----------------------------- Input Elements -----------------------------*/
 const enzymeName = $("#enzyme_name");
@@ -11,7 +12,7 @@ const restrictionSite = $("#restriction_site");
 
 /*----------------------------- Misc Elements -----------------------------*/
 const radUploadBlock = $("#rad_upload_block");
-const uploadButton = $('#upload_button');
+const enzymeUploadButton = $('#enzymeUploadButton');
 const error = $('#error');
 const uploadForm = $('#upload_form');
 
@@ -20,7 +21,7 @@ async function uploadEnzyme(){
 
         if (uploadForm[0].checkValidity()){
         error.addClass("display-none");
-        uploadButton.addClass("display-none");
+        enzymeUploadButton.addClass("display-none");
         radUploadBlock.removeClass("display-none");
 
         try{
@@ -30,7 +31,7 @@ async function uploadEnzyme(){
             error.html(`${e}`);
         }
         console.log("done");
-        uploadButton.removeClass("display-none");
+        enzymeUploadButton.removeClass("display-none");
         radUploadBlock.addClass("display-none");
     } else {
         uploadForm[0].reportValidity(); 
