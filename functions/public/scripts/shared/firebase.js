@@ -1,7 +1,7 @@
 import { getAuth, signInWithCustomToken, updateEmail, signOut, updatePassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-auth.js";
 import {getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
-window.sessionLogin = async (email, password, redirect = null)=>{
+window.sessionLogin = async (email, password, redirect = null) => {
 
     var error = false;
     await signInWithEmailAndPassword(getAuth(), email, password).then(({user})=>{
@@ -32,10 +32,10 @@ window.sessionLogin = async (email, password, redirect = null)=>{
     });
 
     return !error;
-}
+};
 
 
-window.changeEmail = async (currentEmail, newEmail, confirmNewEmail, password)=>{
+window.changeEmail = async (currentEmail, newEmail, confirmNewEmail, password) => {
 
     const changeEmailForm = $("#change_email_form");
 
@@ -72,10 +72,10 @@ window.changeEmail = async (currentEmail, newEmail, confirmNewEmail, password)=>
         });
     }
 
-}
+};
 
 
-window.changePassword = async (currentPassword, newPassword, confirmNewPassword, email)=>{
+window.changePassword = async (currentPassword, newPassword, confirmNewPassword, email) => {
 
     const changePasswordForm = $("#change_password_form");
 
@@ -108,11 +108,9 @@ window.changePassword = async (currentPassword, newPassword, confirmNewPassword,
             alert(`${e}`);
         });
     }
-}
+};
 
-window.FirebaseController = {
-
-    signIn : async function(token){
+window.signIn = async (token) => {
         await signInWithCustomToken(getAuth(), `${token}`).then((userCredential) => {
             // Signed in
             console.log("Sign in success!");
@@ -122,10 +120,10 @@ window.FirebaseController = {
             console.log(`Sign in fail! ${e}`);
             // ...
         });    
-    },
+};
 
 
-    uploadRestrictionEnzyme: async function(name, restrictionSite){
+window.uploadRestrictionEnzyme = async (name, restrictionSite) => {
 
         const DOC_NAME = $("#userUid").val();
 
@@ -139,26 +137,4 @@ window.FirebaseController = {
         } else {
             await setDoc(docRef, {'restriction_enzymes': [{'name': name, 'restrictionSite': restrictionSite, 'id': `${Date.now()}${name}${restrictionSite}`}]});
         }
-    },
-
-    updateRestrictionEnzyme: async function (){
-
-        try{
-            const DOC_NAME = $("#userUid").val();
-
-            console.log("updating firestore");
-            var docRef = doc(getFirestore(), 'restriction_enzymes', DOC_NAME)
-            
-            restriction_enzymes[enzymeSelect.selectedIndex].name = enzymeName.value
-            restriction_enzymes[enzymeSelect.selectedIndex].restrictionSite = enzymeSite.value
-    
-            await setDoc(docRef, {restriction_enzymes});
-            $(restriction_enzymes[enzymeSelect.selectedIndex]['id']).html(enzymeName.value);
-    
-            console.log("file updated")
-            
-        } catch(e){
-            console.log(`update failed: ${e}`);
-        }
-    }
-}
+};

@@ -1,5 +1,5 @@
 window.onload = () => {
-    FirebaseController.signIn(USER_TOKEN);
+    signIn(USER_TOKEN);
     enzymeUploadButton.on("click", uploadEnzyme);
 };
 
@@ -25,7 +25,7 @@ async function uploadEnzyme(){
         radUploadBlock.removeClass("display-none");
 
         try{
-            await FirebaseController.uploadRestrictionEnzyme(enzymeName.val(), restrictionSite.val());
+            await uploadRestrictionEnzyme(enzymeName.val(), restrictionSite.val());
         } catch(e) {
             error.removeClass("display-none");
             error.html(`${e}`);

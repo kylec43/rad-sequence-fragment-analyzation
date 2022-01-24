@@ -65,34 +65,6 @@ async function registerUser(req, res)
     }
 }
 
-async function changeEmail(req, res) 
-{
-    const newEmail = req.body.newEmail;
-    const confirmNewEmail = req.body.confirmNewEmail;
-    console.log("===================1===============================");
-    const user = await verifySession(req.cookies.__session);
-    console.log("2");
-
-
-    let errorMessage = "";
-    if(newEmail !== confirmNewEmail){
-        error = true;
-        errorMessage += "Email and Confirmation Email do not match";
-    }
-
-    if(errorMessage.length > 0){
-        return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage, user: req.user, successMessage: null});
-    } else {
-        await FirebaseAdmin.auth().updateUser(user.uid, {
-            email: newEmail
-        }).then(()=>{
-            return res.render(Pages.LOGIN_PAGE, {error:false, errorMessage: null, user: req.user, successMessage: "Email successfully changed! Please Log In.", csrfToken: req.csrfToken()});
-        }).catch((e)=>{
-            return res.render(Pages.CHANGE_EMAIL_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null, csrfToken: req.csrfToken()});
-        });
-    }
-}
-
 
 async function sendPasswordResetLink(req, res) 
 {
@@ -104,49 +76,10 @@ async function sendPasswordResetLink(req, res)
     });
 }
 
-
-async function changePassword(req, res) 
-{
-    const newPassword = req.body.newPassword;
-    const confirmNewPassword = req.body.confirmNewPassword;
-
-
-    let errorMessage = "";
-    if(newPassword !== confirmNewPassword){
-        error = true;
-        errorMessage += "New password and New password confirmation do not match";
-    }
-
-    if(errorMessage.length > 0){
-        return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage, user: req.user, successMessage: null});
-    } else {
-        
-        FirebaseAdmin.auth().updateUser(req.user.uid, {
-            password: newPassword
-        }).then(()=>{
-            return res.render(Pages.LOGIN_PAGE, {errorMessage: null, user: req.user, successMessage: "Password successfully changed! Please Log In.", csrfToken: req.csrfToken()});
-        }).catch((e)=>{
-            return res.render(Pages.CHANGE_PASSWORD_PAGE, {errorMessage: `${e}`, user: req.user, successMessage: null, csrfToken: req.csrfToken()});
-        });
-    }
-
-}
-
 async function logoutUser(req, res){
 
     res.clearCookie("__session");
     return res.redirect('/login');
-}
-
-function getCurrentUser(){
-    
-   return FirebaseAuth.getAuth().currentUser;
-
-}
-
-async function userSignedIn(){
-    let currentUser = FirebaseAuth.getAuth().currentUser;
-    return currentUser ? true : false;
 }
 
 
@@ -211,31 +144,6 @@ async function getGenomes(user){
 }
 
 
-async function generateV4UploadSignedUrl(user) {
-
-    // These options will allow temporary uploading of the file with outgoing
-    // Content-Type: application/octet-stream header.
-    const options = {
-        version: 'v4',
-        action: 'write',
-        expires: Date.now() + 1500 * 60 * 1000, // 15 minutes
-        contentType: 'application/octet-stream',
-    };
-    let filePath = `genomes/${user.uid}/${Date.now()}`;
-    var [url] = await FirebaseAdmin.storage().bucket().file(`${filePath}`).getSignedUrl(options);
-  
-    console.log('Generated PUT signed URL:');
-    console.log(url);
-    console.log('You can use this URL with any user agent, for example:');
-    console.log(
-      "curl -X PUT -H 'Content-Type: application/octet-stream' " +
-        `--upload-file my-file '${url}'`
-    );
-
-    return {signedUrl: url, filePath};
-}
-
-
 async function generateToken(user){
     let token = null;
     await FirebaseAdmin.auth().createCustomToken(user.uid).then((customToken) => {
@@ -247,28 +155,6 @@ async function generateToken(user){
                 });
     return token;
 }
-
-async function deleteDoc(){
-    try{
-        
-        for(let i = 0; i < 60; i++){
-            const querySnapshot = await FirebaseFirestore.collection("genomes_text_data").where("index", "==", i).get();
-            console.log("Got query snapshot");
-            console.log(`Snapshot size is ${querySnapshot.size}`);
-            querySnapshot.forEach(async (doc) => {
-                try{
-                await FirebaseFirestore.deleteDoc(doc.ref)
-                console.log("Deleted Doc");
-                } catch(e){
-                    console.log(`Error ocurred: ${e}`);
-                }
-            });
-        }
-    } catch(e){
-            console.log(`Error ocurred: ${e}`);
-    }
-}
-
 
 async function sessionLogin(req, res){
     const idToken = req.body.idToken.toString();
@@ -330,17 +216,11 @@ async function verifySession(sessionCookie){
   
 
 module.exports = {
-    deleteDoc,
     registerUser,
-    getCurrentUser,
-    userSignedIn,
     logoutUser,
-    changeEmail,
-    changePassword,
     sendPasswordResetLink,
     getRestrictionEnzymes,
     getGenomes,
-    generateV4UploadSignedUrl,
     generateToken,
     sessionLogin,
     verifySession,

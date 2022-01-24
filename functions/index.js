@@ -3,9 +3,6 @@ const express = require('express');
 const cookieParser = require("cookie-parser");
 const csrf = require("csurf");
 const bodyParser = require("body-parser");
-const Pages = require('./model/ejs_constants.js');
-const FragmentAnalyzer = require('./model/dna_fragment_analyzer');
-const FirebaseController = require('./apis/firebase.js');
 
 const app = express();
 app.set('view engine', 'ejs');
