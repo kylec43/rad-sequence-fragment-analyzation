@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(csrfMiddleware);
 app.use(cookieMiddleware);
+app.use(express.static("public"));
 
 
 /* Routes */

@@ -351,13 +351,13 @@ function createTotalTable(data){
                         text: data.totalSiteCount
                     },
                     {
-                        text: data.totalSiteCount
-                    },
-                    {
                         text: data.expectedSiteCount
                     },
                     {
                         text: data.actualSiteCount
+                    },
+                    {
+                        text: data.fragmentCount
                     },
                 ]
             }
