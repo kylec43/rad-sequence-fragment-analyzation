@@ -84,7 +84,8 @@ window.DataTableBuilder = class {
             doc.body.innerHTML += table;
         }
 
-        if(!document.dataTableClickEventActivated){
+        if(typeof dataTableClickEventActivated === "undefined"){
+            console.log("FFAALSSEE_+++++++++++++++++");
             doc.body.innerHTML += `
                 <script>
                     const dataTableClickEventActivated = true;

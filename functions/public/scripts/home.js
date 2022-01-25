@@ -298,6 +298,7 @@ function onResultCallback(data){
     builder.addTable(createGraphRangeTable(data));
     builder.addTable(createFocusRangeTable(data));
     builder.addTable(createInputPropertiesTable(data));
+    fragmentTableContainer.html("");
     fragmentTableContainer.html(builder.build() + "<hr>");
 
     displayChart(data.fragmentDistributions);
