@@ -110,17 +110,11 @@ function getFragmentSizes(sliceIndexes){
 
     //fragmentSizes: An array holding the count for each distribution
     let fragmentSizes = {};
-    let total = 0;
+
     for(let i = 0; i < sliceIndexes.length-1; i++){
         let fragmentSize = sliceIndexes[i+1] - sliceIndexes[i];
         fragmentSizes[fragmentSize] = fragmentSizes[fragmentSize] != undefined ? fragmentSizes[fragmentSize]+1 : 1;
     }
-
-    for(const k in fragmentSizes){
-        total += fragmentSizes[k];
-    }
-
-    console.log(`Total 2 is ${total}`);
 
     return fragmentSizes;
 }
@@ -195,10 +189,9 @@ function getFragmentDistributions(fragmentSizes, config){
 
 
     /*Add up all fragment sizes into their distribtions*/
-    let total = 0;
-    for(const size in fragmentSizes){
-        total += fragmentSizes[size];
-        if(size >= config.graphRangeMin && size <= config.focusRangeMin-1 && fragmentDistributionsBegin.length > 0){
+    for(let size in fragmentSizes){
+        size = parseInt(size);
+        if(size >= config.graphRangeMin && size < config.focusRangeMin-1 && fragmentDistributionsBegin.length > 0){
             let index = Math.floor((size-config.graphRangeMin)/config.lengthDistribution);
             fragmentDistributionsBegin[index].count += fragmentSizes[size];
         } else if(size >= config.focusRangeMin && size <= config.focusRangeMax){
@@ -213,7 +206,6 @@ function getFragmentDistributions(fragmentSizes, config){
             outliersEnd[0].count += fragmentSizes[size];
         }
     }
-    console.log(`The total is ${total}`);
 
     /*Combine all distributions together. beginning, middle, end, and outliers if necessary */
     let totalDistributions = null;
