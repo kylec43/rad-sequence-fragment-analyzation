@@ -254,132 +254,126 @@ function getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, ou
 }
 
 
-async function mergeAndSlice(sliceIndexes, config, callbacks){
+async function mergeAndSlice(sliceIndexes1, sliceIndexes2, config, callbacks){
 
-    let result = new Set();
 
     //if the start of restrictionSite2 or a slice index is in the range [ (first char of restrictionSite1 - length2 + 1)-(last char of restrictionSite1) ], there is a conflict
     let conflictCount = 0;
     let lastPercentage = 70;
-    let survivingConflictIndexes = new Set();
+
+    if(slice)
 
     console.log(`enzyme site 1 is ${config.restrictionEnzymes[0].site}`);
 
-    for(let i = 0; i < sliceIndexes.length; i++){
-        let sliceOffset1 = config.restrictionEnzymes[i].sliceOffset;
-        let length1 = config.restrictionEnzymes[i].site.length;
-        let loopedCount = 0;
-        const sliceIndexesLength = sliceIndexes[i].size;
-        console.log(sliceIndexesLength);
-        for(let index of sliceIndexes[i]){
-            let indexSliceFailed = false;
-            let conflict = false;
-            for(let k = 0; k < sliceIndexes.length; k++){
-                if(k === i){
+    const sliceOffset1 = config.restrictionEnzymes[0].sliceOffset;
+    const length1 = config.restrictionEnzymes[0].site.length;
+    const sliceOffset2 = config.restrictionEnzymes[1].sliceOffset;
+    const length2 = config.restrictionEnzymes[1].site.length;
+
+    let loopedCount = 0;
+
+    //Keeps track of deleted indexes from sliceIndexes2 because of conflicts
+    const deletedSliceIndexes2 = new Set();
+
+
+    for(let index of sliceIndexes1){
+        let conflict = false;
+        let conflictIndex = 0;
+
+        //Keeps track of whether or not the current index from indexSlices1 got removed from a conflict 
+        let indexWasDeleted = false;
+
+        /*Resolve conflicts by seeing if a restriction site 2 index is within a range that conflicts with a restriction site 1 index */
+        for(let j = index-sliceOffset1+length1-1; j > index-sliceOffset1-length2 && j >= 0; j--){
+            if(sliceIndexes2.has(j+sliceOffset2) || deletedSliceIndexes2.has(j+sliceOffset2)){
+                console.log(`CONFLICT: ${j+sliceOffset2} conflicts with ${index}`);
+                conflictCount++;
+
+                /*
+                If one of the indexes were already deleted from a conflict, skip dealing with the conflict site since one doesn't actually exist.
+                If one index was deleted already, we are only adding to the conflict site count.
+                */
+                if(indexWasDeleted || deletedSliceIndexes2.has(j+sliceOffset2)){
                     continue;
                 }
 
-                let sliceOffset2 = config.restrictionEnzymes[k].sliceOffset;
-                let length2 = config.restrictionEnzymes[k].site.length;
+                conflict = true;
+                conflictIndex = j+sliceOffset2;
+                let firstChoice = index;
+                let secondChoice = conflictIndex;
+                let swapped = false;
 
-                let conflictIndex = 0;
+                //Randomly choose which restriction enzyme reaches the site first
+                let randomNumber = Math.floor((Math.random() * 2) + 1);
+                if(randomNumber === 1){
+                    swapped = true;
+                    firstChoice = conflictIndex;
+                    secondChoice = index;
+                }
 
-
-                /*Resolve conflicts by seeing if a restriction site 2 index is within a range that conflicts with a restriction site 1 index */
-                for(let j = index-sliceOffset1+length1-1; j > index-sliceOffset1-length2 && j >= 0; j--){
-                    if(sliceIndexes[k].has(j+sliceOffset2)){
-                        conflict = true;
-                        conflictCount++;
-                        conflictIndex = j+sliceOffset2;
-                        let firstChoice = index;
-                        let secondChoice = conflictIndex;
-                        let swapped = false;
-
-
-                        //Randomly choose which restriction enzyme reaches the site first
-                        let randomNumber = Math.floor((Math.random() * 2) + 1);
-                        if(randomNumber === 1){
-                            swapped = true;
-                            firstChoice = conflictIndex;
-                            secondChoice = index;
-                        }
-
-                        //If the first choice slices, it beats out the second choice
-                        randomNumber = Math.floor((Math.random() * 1000) + 1);
-                        if(randomNumber <= config.probability){
-                            survivingConflictIndexes.add(firstChoice);
-                            if(swapped){
-                                sliceIndexes[i].delete(secondChoice);
-                                indexSliceFailed = true;
-                                break;
-                            } else {
-                                sliceIndexes[k].delete(secondChoice);
-                            }
-                        //If the first choice fails, the second choice attempts to slice it
+                //If the first choice slices, it beats out the second choice
+                randomNumber = Math.floor((Math.random() * 1000) + 1);
+                if(randomNumber <= config.probability){
+                    if(swapped){
+                        sliceIndexes1.delete(secondChoice);
+                        indexWasDeleted = true;
+                    } else {
+                        sliceIndexes2.delete(secondChoice);
+                        deletedSliceIndexes2.add(secondChoice);
+                    }
+                //If the first choice fails, the second choice attempts to slice it
+                } else {
+                    randomNumber = Math.floor((Math.random() * 1000) + 1);
+                    if(randomNumber <= config.probability){
+                        if(swapped){
+                            sliceIndexes2.delete(firstChoice);
+                            deletedSliceIndexes2.add(firstChoice);
                         } else {
-                            randomNumber = Math.floor((Math.random() * 1000) + 1);
-                            if(randomNumber <= config.probability){
-                                survivingConflictIndexes.add(secondChoice);
-                                if(swapped){
-                                    sliceIndexes[k].delete(firstChoice);
-                                } else {
-                                    sliceIndexes[i].delete(firstChoice);
-                                    indexSliceFailed = true;
-                                    break;
-                                }
-                            } else {
-                                if(swapped){
-                                    sliceIndexes[k].delete(firstChoice);
-                                    sliceIndexes[i].delete(secondChoice);
-                                } else {
-                                    sliceIndexes[i].delete(firstChoice);
-                                    sliceIndexes[k].delete(secondChoice);
-                                }
-                                indexSliceFailed = true;
-                                break;
-                            }
+                            sliceIndexes1.delete(firstChoice);
+                            indexWasDeleted = true;
                         }
+                    } else {
+                        if(swapped){
+                            sliceIndexes2.delete(firstChoice);
+                            sliceIndexes1.delete(secondChoice);
+                            deletedSliceIndexes2.add(firstChoice);
+                        } else {
+                            sliceIndexes1.delete(firstChoice);
+                            sliceIndexes2.delete(secondChoice);
+                            deletedSliceIndexes2.add(secondChoice);
+                        }
+
+                        indexWasDeleted = true;
                     }
                 }
-                //If there is not a conflict, add the restriction site to the merged indexes
-                if(!conflict) {
-                    //If the index survived a conflict and has no more conflicts, it has already succeeded in slicing
-                    if(!survivingConflictIndexes.has(index)){
-                        let randomNumber = Math.floor((Math.random() * 1000) + 1);
-                        if(randomNumber > config.probability){
-                            sliceIndexes[i].delete(index);
-                        }
-                    }
-                }
-
-                
-                if (indexSliceFailed){
-                    break;
-                }
             }
-
-            //prevent interface from freezing, update progressBar percent 0.33
-            let percentage = (loopedCount/sliceIndexesLength)/(sliceIndexes.length) + (i/sliceIndexes.length);
-            percentage = 0.70 + (0.30 * percentage);
-            percentage = (percentage*100);
-            if(lastPercentage != Math.floor(percentage)){
-
-                lastPercentage = Math.floor(percentage);
-                console.log(lastPercentage);
-                console.log(`loop count: ${loopedCount}`);
-                callbacks.onProgress(percentage);
-                await new Promise(resolve => setTimeout(resolve, 1));
-            }
-            loopedCount++;
         }
+        //If there is not a conflict, add the restriction site to the merged indexes
+        if(!conflict) {
+            let randomNumber = Math.floor((Math.random() * 1000) + 1);
+            if(randomNumber > config.probability){
+                sliceIndexes1.delete(index);
+            }
+        }
+
+        //prevent interface from freezing, update progressBar percent 0.33
+        let percentage = loopedCount/sliceIndexes1.size;
+        percentage = 0.70 + (0.30 * percentage);
+        percentage = (percentage*100);
+        if(lastPercentage != Math.floor(percentage)){
+
+            lastPercentage = Math.floor(percentage);
+            console.log(lastPercentage);
+            console.log(`loop count: ${loopedCount}`);
+            callbacks.onProgress(percentage);
+            await new Promise(resolve => setTimeout(resolve, 1));
+        }
+        loopedCount++;
     }
 
-    //Add the remaining indexes that did not have any conflicts
-    sliceIndexes.forEach((indexes)=>{
-        for (let index of indexes){
-            result.add(index);
-        }
-    });
+
+    const result = new Set([...sliceIndexes1, ...sliceIndexes2]);
+
     console.log(result.size);
     console.log(config.probability);
     console.log(conflictCount);
@@ -436,9 +430,11 @@ async function enzymeDigest(genomeFile, config, callbacks){
             let timeStart = new Date();
 
             /*Get file text content, removing all whitespaces, newlines*/
-            let contents = reader.result.replace(/>.*[\n]/gm, "").replace(/(\r\n|\n|\r)/gm, "");
+            let contents = reader.result;
+            contents = contents.replace(/>.*/gm, "");
+            contents = contents.replace(/(\r\n|\n|\r)/gm, "");
             console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
-
+            console.log(contents);
 
             /*First Enzyme Operation*/
             let sliceIndexes = []
@@ -492,7 +488,7 @@ async function enzymeDigest(genomeFile, config, callbacks){
             let indexSliceResults = null;
             let conflicts = 0;
             if(sliceIndexes.length > 1) {
-                const mergeResult = await mergeAndSlice(sliceIndexes, config, callbacks);
+                const mergeResult = await mergeAndSlice(sliceIndexes[0], sliceIndexes[1], config, callbacks);
                 indexSliceResults = mergeResult.result;
                 conflicts = mergeResult.conflicts;
              } else { 
