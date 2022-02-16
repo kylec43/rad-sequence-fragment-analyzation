@@ -14,9 +14,7 @@ window.RadSequencingAnalyzer = class {
 
 
         //config = JSON.parse(JSON.stringify(config));
-        console.log(1);
-        console.log(config.restrictionEnzymes[0].site);
-        console.log(2);
+
         if(_isUndefined(config.restrictionEnzymes) || config.restrictionEnzymes.length < 1){
             throw Error("Restriction Site is required");
         }
@@ -126,11 +124,9 @@ function getFragmentDistributions(fragmentSizes, config){
     let distributionCountBegin = getDistributionCount(config.graphRangeMin, config.focusRangeMin-1, config);
     let distributionCountMiddle = getDistributionCount(config.focusRangeMin, config.focusRangeMax, config);
     let distributionCountEnd = getDistributionCount(config.focusRangeMax+1, config.graphRangeMax, config);
-    console.log(`${distributionCountBegin} ${distributionCountMiddle} ${distributionCountEnd}`);
 
 
     /*Create the beginning distributions before the focus range*/
-    console.log(`Begin Length ${distributionCountBegin}`);
     let fragmentDistributionsBegin = distributionCountBegin > 0 ? new Array(distributionCountBegin) : [];
     for(let i = 0; i < fragmentDistributionsBegin.length; i++){
         let min = `${config.graphRangeMin + i*config.lengthDistribution}`;
@@ -144,7 +140,6 @@ function getFragmentDistributions(fragmentSizes, config){
     }
 
     /*Create the middle graph/the focus range */
-    console.log(`Middle Length ${distributionCountMiddle}`);
     let fragmentDistributionsMiddle = new Array(distributionCountMiddle);
     for(let i = 0; i < fragmentDistributionsMiddle.length; i++){
         let min = `${config.focusRangeMin + i*config.lengthDistribution}`;
@@ -158,7 +153,6 @@ function getFragmentDistributions(fragmentSizes, config){
     }
 
     /*Create the latter distributions after the focus range */
-    console.log(`End Length ${distributionCountEnd}`);
     let fragmentDistributionsEnd = distributionCountEnd > 0 ? new Array(distributionCountEnd) : [];
     for(let i = 0; i < fragmentDistributionsEnd.length; i++){
         let min = `${(config.focusRangeMax+1) + i*config.lengthDistribution}`;
@@ -218,7 +212,6 @@ function getFragmentDistributions(fragmentSizes, config){
     }
 
 
-    console.log(totalDistributions[10]);
 
     return totalDistributions
 }
@@ -244,7 +237,6 @@ function getFragmentFocusRangeCount(fragmentDistributions, outlierHeadExists, ou
 Get the amount of fragments size within the specified min and max graph range.
 */
 function getFragmentGraphRangeCount(fragmentDistributions, outlierHeadExists, outlierTailExists){
-    console.log(outlierHeadExists ? "EXISTS" : "DOES NOT");
     let fragmentGraphRangeCount = 0;
     for(let i = outlierHeadExists ? 1 : 0; i < fragmentDistributions.length - outlierTailExists ? 1 : 0; i++){
         fragmentGraphRangeCount += fragmentDistributions[i].count;
@@ -260,10 +252,6 @@ async function mergeAndSlice(sliceIndexes1, sliceIndexes2, config, callbacks){
     //if the start of restrictionSite2 or a slice index is in the range [ (first char of restrictionSite1 - length2 + 1)-(last char of restrictionSite1) ], there is a conflict
     let conflictCount = 0;
     let lastPercentage = 70;
-
-    if(slice)
-
-    console.log(`enzyme site 1 is ${config.restrictionEnzymes[0].site}`);
 
     const sliceOffset1 = config.restrictionEnzymes[0].sliceOffset;
     const length1 = config.restrictionEnzymes[0].site.length;
@@ -286,7 +274,6 @@ async function mergeAndSlice(sliceIndexes1, sliceIndexes2, config, callbacks){
         /*Resolve conflicts by seeing if a restriction site 2 index is within a range that conflicts with a restriction site 1 index */
         for(let j = index-sliceOffset1+length1-1; j > index-sliceOffset1-length2 && j >= 0; j--){
             if(sliceIndexes2.has(j+sliceOffset2) || deletedSliceIndexes2.has(j+sliceOffset2)){
-                console.log(`CONFLICT: ${j+sliceOffset2} conflicts with ${index}`);
                 conflictCount++;
 
                 /*
@@ -363,8 +350,7 @@ async function mergeAndSlice(sliceIndexes1, sliceIndexes2, config, callbacks){
         if(lastPercentage != Math.floor(percentage)){
 
             lastPercentage = Math.floor(percentage);
-            console.log(lastPercentage);
-            console.log(`loop count: ${loopedCount}`);
+
             callbacks.onProgress(percentage);
             await new Promise(resolve => setTimeout(resolve, 1));
         }
@@ -374,9 +360,6 @@ async function mergeAndSlice(sliceIndexes1, sliceIndexes2, config, callbacks){
 
     const result = new Set([...sliceIndexes1, ...sliceIndexes2]);
 
-    console.log(result.size);
-    console.log(config.probability);
-    console.log(conflictCount);
     return {
             result,
             conflicts: conflictCount
@@ -401,8 +384,7 @@ async function slice(sliceIndexes, config, callbacks) {
         if(lastPercentage != Math.floor(percentage)){
 
             lastPercentage = Math.floor(percentage);
-            console.log(lastPercentage);
-            console.log(`loop count: ${loopedCount}`);
+
             callbacks.onProgress(percentage);
             await new Promise(resolve => setTimeout(resolve, 1));
         }
@@ -431,11 +413,10 @@ async function enzymeDigest(genomeFile, config, callbacks){
 
             /*Get file text content, removing all whitespaces, newlines*/
             let contents = reader.result;
-            contents = contents.replace(/>.*/gm, "");
-            contents = contents.replace(/(\r\n|\n|\r)/gm, "");
-            console.log(`The first 10 characters is ${contents.slice(0, 10)}`);
-            console.log(contents);
-
+            contents = contents.replace(/(>.*|\r\n|\n|\r)/gm, "");
+            contents = contents.toUpperCase();
+            console.log(`First ten characters: ${contents.slice(0, 10)}`);
+            
             /*First Enzyme Operation*/
             let sliceIndexes = []
             for(let i = 0; i < config.restrictionEnzymes.length; i++){
